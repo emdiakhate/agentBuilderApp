@@ -23,7 +23,7 @@ export const LiveTranscription: React.FC<LiveTranscriptionProps> = ({
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
-    // Scroll to bottom whenever messages change
+    // Défiler vers le bas chaque fois que les messages changent
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
@@ -34,8 +34,8 @@ export const LiveTranscription: React.FC<LiveTranscriptionProps> = ({
       {messages.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-full text-center text-fgMuted my-auto">
           <Bot className="h-12 w-12 mb-4 text-fgMuted/50" />
-          <p className="text-lg">Your conversation will appear here</p>
-          <p className="text-sm">The AI will guide you through creating your agent</p>
+          <p className="text-lg">Votre conversation apparaîtra ici</p>
+          <p className="text-sm">L'IA vous guidera dans la création de votre agent</p>
         </div>
       ) : (
         <div className="space-y-4 w-full flex-1">

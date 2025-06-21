@@ -111,7 +111,7 @@ export const CallInterface: React.FC<CallInterfaceProps> = ({
         callStartTimeRef.current = new Date();
         
         if (isDirectCall) {
-          setTranscriptions([`System: Connected to ${directCallInfo?.phoneNumber}. You are now speaking with a real person.`]);
+          setTranscriptions([`Système: Connecté à ${directCallInfo?.phoneNumber}. Vous parlez maintenant avec une vraie personne.`]);
         } else if (persona) {
           const initialMessage = getInitialMessage(persona);
           setTranscriptions([`${persona.name}: ${initialMessage}`]);
@@ -130,10 +130,10 @@ export const CallInterface: React.FC<CallInterfaceProps> = ({
             stream.getTracks().forEach(track => track.stop());
           })
           .catch(error => {
-            console.error("Microphone permission denied:", error);
+            console.error("Accès au microphone refusé:", error);
             toast({
-              title: "Microphone Access Denied",
-              description: "Please allow microphone access to use the call feature",
+              title: "Accès au Microphone Refusé",
+              description: "Veuillez autoriser l'accès au microphone pour utiliser la fonction d'appel",
             });
           });
 
@@ -147,10 +147,10 @@ export const CallInterface: React.FC<CallInterfaceProps> = ({
         if (mics.length > 0) setSelectedMic(mics[0].deviceId);
         if (speakers.length > 0) setSelectedSpeaker(speakers[0].deviceId);
       } catch (error) {
-        console.error("Error accessing media devices:", error);
+        console.error("Erreur lors de l'accès aux périphériques audio:", error);
         toast({
-          title: "Device Error",
-          description: "Unable to access audio devices",
+          title: "Erreur de Périphérique",
+          description: "Impossible d'accéder aux périphériques audio",
         });
       }
     };
@@ -193,18 +193,18 @@ export const CallInterface: React.FC<CallInterfaceProps> = ({
 
   const getInitialMessage = (persona: UserPersona): string => {
     switch (persona.id) {
-      case "1": return "Hi there! I'm interested in learning more about your product. Can you tell me about the basic features?";
-      case "2": return "I've been trying to use your software for hours and I'm really frustrated. Nothing is working!";
-      case "3": return "Hello, I've been using your service for a while now and I'm thinking about upgrading. What options do you have?";
-      case "4": return "Hello agent, I'll be simulating various customer scenarios. Let's start with a basic inquiry about your product.";
-      case "5": return "Hi, I've been comparing your product with your competitors. I have some technical questions.";
-      case "6": return "I'm considering cancelling my subscription. I'm not happy with the recent changes you've made.";
-      default: return "Hello, how can you help me today?";
+      case "1": return "Bonjour ! Je suis intéressé(e) par votre produit. Pouvez-vous me parler des fonctionnalités de base ?";
+      case "2": return "J'essaie d'utiliser votre logiciel depuis des heures et je suis vraiment frustré(e). Rien ne fonctionne !";
+      case "3": return "Bonjour, j'utilise votre service depuis un moment et je pense à faire une mise à niveau. Quelles options avez-vous ?";
+      case "4": return "Bonjour agent, je vais simuler différents scénarios client. Commençons par une demande basique sur votre produit.";
+      case "5": return "Bonjour, je compare votre produit avec vos concurrents. J'ai quelques questions techniques.";
+      case "6": return "Je pense annuler mon abonnement. Je ne suis pas satisfait(e) des récents changements que vous avez apportés.";
+      default: return "Bonjour, comment pouvez-vous m'aider aujourd'hui ?";
     }
   };
 
   const formatTimestamp = (date: Date): string => {
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    return date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
   };
 
   const formatDuration = (seconds: number): string => {
@@ -223,14 +223,14 @@ export const CallInterface: React.FC<CallInterfaceProps> = ({
     
     if (onCallComplete) {
       const now = new Date();
-      const date = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-      const time = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+      const date = now.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
+      const time = now.toLocaleTimeString('fr-FR', { hour: 'numeric', minute: '2-digit' });
       
       const recordingData: RecordingData = {
         id: Math.random().toString(36).substring(2, 9),
         title: isDirectCall 
-          ? `Call with ${directCallInfo?.phoneNumber}`
-          : `Call with ${persona?.name || 'Unknown'}`,
+          ? `Appel avec ${directCallInfo?.phoneNumber}`
+          : `Appel avec ${persona?.name || 'Inconnu'}`,
         date,
         time,
         duration: formatDuration(callDuration),
@@ -247,26 +247,26 @@ export const CallInterface: React.FC<CallInterfaceProps> = ({
   const handleToggleMute = () => {
     setIsMuted(!isMuted);
     toast({
-      title: isMuted ? "Microphone Unmuted" : "Microphone Muted",
-      description: isMuted ? "Your microphone is now active" : "Your microphone has been muted",
+      title: isMuted ? "Microphone Réactivé" : "Microphone Coupé",
+      description: isMuted ? "Votre microphone est maintenant actif" : "Votre microphone a été coupé",
     });
   };
 
   const handleToggleAudio = () => {
     setIsAudioMuted(!isAudioMuted);
     toast({
-      title: isAudioMuted ? "Audio Unmuted" : "Audio Muted",
-      description: isAudioMuted ? "You can now hear the call" : "Call audio has been muted",
+      title: isAudioMuted ? "Audio Réactivé" : "Audio Coupé",
+      description: isAudioMuted ? "Vous pouvez maintenant entendre l'appel" : "L'audio de l'appel a été coupé",
     });
   };
 
   const handleSendMessage = () => {
-    const userMessage = "I understand. Let me help you with that...";
-    setTranscriptions(prev => [...prev, `You: ${userMessage}`]);
+    const userMessage = "Je comprends. Laissez-moi vous aider avec cela...";
+    setTranscriptions(prev => [...prev, `Vous: ${userMessage}`]);
     
     setTimeout(() => {
       if (persona) {
-        const responseText = "Thank you for your help. Can you tell me more about the pricing options?";
+        const responseText = "Merci pour votre aide. Pouvez-vous me parler davantage des options de tarification ?";
         setTranscriptions(prev => [...prev, `${persona.name}: ${responseText}`]);
       }
     }, 3000);
@@ -291,8 +291,8 @@ export const CallInterface: React.FC<CallInterfaceProps> = ({
       <AlertDialogContent className="max-w-md sm:max-w-2xl bg-white dark:bg-[#0F172A] border-gray-200 dark:border-gray-800">
         <AlertDialogDescription className="sr-only">
           {isDirectCall 
-            ? `Direct call to ${directCallInfo?.phoneNumber}` 
-            : `Call interface with ${persona?.name}. You can communicate and train with this persona.`}
+            ? `Appel direct vers ${directCallInfo?.phoneNumber}` 
+            : `Interface d'appel avec ${persona?.name}. Vous pouvez communiquer et vous entraîner avec ce persona.`}
         </AlertDialogDescription>
         
         <AlertDialogHeader className="space-y-2 border-b border-gray-200 dark:border-gray-800 pb-4">
@@ -307,19 +307,19 @@ export const CallInterface: React.FC<CallInterfaceProps> = ({
               )}
               <span className="text-gray-900 dark:text-white">
                 {isDirectCall 
-                  ? `Direct Call: ${directCallInfo?.phoneNumber}`
+                  ? `Appel Direct: ${directCallInfo?.phoneNumber}`
                   : persona?.name}
               </span>
               <Badge variant="outline" className="ml-2">
                 {isDirectCall 
-                  ? "Live Call" 
-                  : persona?.type === "customer" ? "Customer" : "Training Bot"}
+                  ? "Appel en Direct" 
+                  : persona?.type === "customer" ? "Client" : "Bot d'Entraînement"}
               </Badge>
             </div>
             <div className="flex items-center gap-2 text-sm font-normal">
               {callStatus === "connecting" ? (
                 <Badge variant="outline" className="bg-amber-500/10 text-amber-500 border-amber-500/20">
-                  Connecting...
+                  Connexion...
                 </Badge>
               ) : (
                 <Badge variant="outline" className="bg-green-500/10 text-green-500 border-green-500/20">
@@ -346,8 +346,8 @@ export const CallInterface: React.FC<CallInterfaceProps> = ({
               </div>
               <h3 className="text-lg font-medium mb-2 text-gray-900 dark:text-white">
                 {isDirectCall
-                  ? `Connecting to ${directCallInfo?.phoneNumber}...`
-                  : `Connecting to ${persona?.name}...`}
+                  ? `Connexion à ${directCallInfo?.phoneNumber}...`
+                  : `Connexion à ${persona?.name}...`}
               </h3>
               <Progress value={45} className="w-48 h-1" />
             </div>
@@ -359,18 +359,18 @@ export const CallInterface: React.FC<CallInterfaceProps> = ({
             <div className="space-y-4 h-full flex flex-col">
               <div className="rounded-lg border border-gray-200 dark:border-gray-800 p-3 bg-gray-50 dark:bg-gray-900/50 text-sm flex-shrink-0">
                 <h4 className="font-medium text-sm mb-1.5 text-gray-900 dark:text-white">
-                  {isDirectCall ? "Direct Call Info" : `About ${persona?.name}`}
+                  {isDirectCall ? "Informations de l'Appel Direct" : `À propos de ${persona?.name}`}
                 </h4>
                 {isDirectCall ? (
                   <p className="text-gray-600 dark:text-gray-400 mb-2">
-                    Live call with {directCallInfo?.phoneNumber}. The person on the other end will roleplay as a customer.
+                    Appel en direct avec {directCallInfo?.phoneNumber}. La personne à l'autre bout jouera le rôle d'un client.
                   </p>
                 ) : (
                   <>
                     <p className="text-gray-600 dark:text-gray-400 mb-2">{persona?.description}</p>
                     {persona?.scenario && (
                       <div className="bg-gray-100 dark:bg-gray-800 rounded p-2 text-xs text-gray-700 dark:text-gray-300">
-                        <span className="font-medium">Scenario:</span> {persona?.scenario}
+                        <span className="font-medium">Scénario:</span> {persona?.scenario}
                       </div>
                     )}
                   </>
@@ -378,7 +378,7 @@ export const CallInterface: React.FC<CallInterfaceProps> = ({
               </div>
 
               <div className="rounded-lg border border-gray-200 dark:border-gray-800 p-3 space-y-3 flex-grow overflow-auto">
-                <h4 className="font-medium text-sm text-gray-900 dark:text-white">Audio Devices</h4>
+                <h4 className="font-medium text-sm text-gray-900 dark:text-white">Périphériques Audio</h4>
                 <div className="space-y-2">
                   <Label htmlFor="mic-select" className="text-xs text-gray-700 dark:text-gray-300">Microphone</Label>
                   <Select 
@@ -387,7 +387,7 @@ export const CallInterface: React.FC<CallInterfaceProps> = ({
                     disabled={isDirectCall}
                   >
                     <SelectTrigger id="mic-select" className="h-8 text-xs border-gray-300 dark:border-gray-800 bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
-                      <SelectValue placeholder="Select microphone" />
+                      <SelectValue placeholder="Sélectionner un microphone" />
                     </SelectTrigger>
                     <SelectContent>
                       {availableMics.map((mic) => (
@@ -400,19 +400,19 @@ export const CallInterface: React.FC<CallInterfaceProps> = ({
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="speaker-select" className="text-xs text-gray-700 dark:text-gray-300">Speaker</Label>
+                  <Label htmlFor="speaker-select" className="text-xs text-gray-700 dark:text-gray-300">Haut-parleur</Label>
                   <Select 
                     value={selectedSpeaker} 
                     onValueChange={setSelectedSpeaker}
                     disabled={isDirectCall}
                   >
                     <SelectTrigger id="speaker-select" className="h-8 text-xs border-gray-300 dark:border-gray-800 bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
-                      <SelectValue placeholder="Select speaker" />
+                      <SelectValue placeholder="Sélectionner un haut-parleur" />
                     </SelectTrigger>
                     <SelectContent>
                       {availableSpeakers.map((speaker) => (
                         <SelectItem key={speaker.deviceId} value={speaker.deviceId}>
-                          {speaker.label || `Speaker ${speaker.deviceId.slice(0, 5)}`}
+                          {speaker.label || `Haut-parleur ${speaker.deviceId.slice(0, 5)}`}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -422,7 +422,7 @@ export const CallInterface: React.FC<CallInterfaceProps> = ({
             </div>
 
             <div className="rounded-lg border border-gray-200 dark:border-gray-800 p-4 flex flex-col h-full overflow-hidden">
-              <h4 className="font-medium text-sm mb-3 text-gray-900 dark:text-white">Live Transcription</h4>
+              <h4 className="font-medium text-sm mb-3 text-gray-900 dark:text-white">Transcription en Direct</h4>
               <ScrollArea className="flex-1 pr-2">
                 <div className="space-y-4">
                   {transcriptions.map((text, index) => {
@@ -481,7 +481,7 @@ export const CallInterface: React.FC<CallInterfaceProps> = ({
             disabled={callStatus !== "active" || isMuted}
             className="bg-white text-black hover:bg-gray-200 dark:bg-white dark:text-black dark:hover:bg-gray-200"
           >
-            Speak
+            Parler
           </Button>
           
           <Button

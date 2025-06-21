@@ -1,158 +1,137 @@
 
-import { AgentType, AgentTypeCategory } from '@/types/agent';
+import { AgentType } from '@/types/agent';
 
-// Mock data for development
 const mockAgents: AgentType[] = [
   {
-    id: "1",
-    name: "Customer Support Bot",
-    description: "Handles customer inquiries and support tickets automatically.",
-    type: "Customer Service",
-    status: "active",
-    createdAt: "2023-10-15",
-    interactions: 1253,
-    isPersonal: true,
-    model: "GPT-4",
-    channels: ["voice", "chat", "email"],
-    avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=1",
-    purpose: "Help users with their customer support questions and resolve issues.",
-    prompt: "You are a customer support bot. Your job is to help users solve their problems and answer their questions about our products and services."
+    id: '1',
+    name: 'Ami',
+    status: 'active',
+    description: 'Un assistant IA polyvalent spécialisé dans le support client et les requêtes générales',
+    avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=ami',
+    type: 'support',
+    lastActive: '2024-03-15T10:30:00Z',
+    totalCalls: 1247,
+    averageRating: 4.8,
+    language: 'Français',
+    timezone: 'Europe/Paris',
+    capabilities: ['Support client', 'FAQ', 'Transfert d\'appels'],
+    isOnline: true,
+    responseTime: '< 2s'
   },
   {
-    id: "2",
-    name: "Sales Assistant",
-    description: "Guides customers through the sales process and answers product questions.",
-    type: "Sales & Marketing" as AgentTypeCategory, // Adding type assertion to ensure exact match
-    status: "active",
-    createdAt: "2023-11-22",
-    interactions: 876,
-    isPersonal: false,
-    model: "Claude-2",
-    channels: ["voice", "chat", "whatsapp", "sms"],
-    avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=2",
-    purpose: "Help users find the right products and make purchasing decisions.",
-    prompt: "You are a sales assistant bot. Your job is to help users find the right products for their needs and guide them through the purchasing process."
+    id: '2',
+    name: 'Omar',
+    status: 'active',
+    description: 'Assistant commercial expert en ventes et génération de leads',
+    avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=omar',
+    type: 'sales',
+    lastActive: '2024-03-15T09:15:00Z',
+    totalCalls: 892,
+    averageRating: 4.9,
+    language: 'Français',
+    timezone: 'Europe/Paris',
+    capabilities: ['Génération de leads', 'Qualification des prospects', 'Présentation produit'],
+    isOnline: true,
+    responseTime: '< 1s'
   },
   {
-    id: "3",
-    name: "Knowledge Base Agent",
-    description: "Provides information from company documentation and knowledge base.",
-    type: "FAQ & Knowledge Base",
-    status: "inactive",
-    createdAt: "2024-01-05",
-    interactions: 432,
-    isPersonal: true,
-    model: "GPT-3.5 Turbo",
-    channels: ["voice", "chat"]
+    id: '3',
+    name: 'Awa',
+    status: 'inactive',
+    description: 'Spécialiste en support technique et résolution de problèmes complexes',
+    avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=awa',
+    type: 'support',
+    lastActive: '2024-03-14T16:45:00Z',
+    totalCalls: 623,
+    averageRating: 4.7,
+    language: 'Français',
+    timezone: 'Europe/Paris',
+    capabilities: ['Support technique', 'Dépannage', 'Documentation'],
+    isOnline: false,
+    responseTime: '< 3s'
   },
   {
-    id: "4",
-    name: "Meeting Scheduler",
-    description: "Helps schedule and manage meetings with clients and team members.",
-    type: "Appointment Booking",
-    status: "active",
-    createdAt: "2024-02-10",
-    interactions: 198,
-    isPersonal: false,
-    model: "LLama-2",
-    channels: ["voice", "email", "sms"]
+    id: '4',
+    name: 'Adja',
+    status: 'active',
+    description: 'Expert en onboarding client et formation produit',
+    avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=adja',
+    type: 'training',
+    lastActive: '2024-03-15T11:20:00Z',
+    totalCalls: 445,
+    averageRating: 4.6,
+    language: 'Français',
+    timezone: 'Europe/Paris',
+    capabilities: ['Formation client', 'Onboarding', 'Tutoriels'],
+    isOnline: true,
+    responseTime: '< 2s'
   },
   {
-    id: "5",
-    name: "Document Analyzer",
-    description: "Analyzes documents and extracts key information automatically.",
-    type: "Technical Support", // Changed from "Other Function" to a valid category
-    status: "inactive",
-    createdAt: "2024-03-01",
-    interactions: 52,
-    isPersonal: true,
-    model: "GPT-4",
-    channels: ["voice"]
+    id: '5',
+    name: 'Moussa',
+    status: 'active',
+    description: 'Analyste de données et génération de rapports intelligents',
+    avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=moussa',
+    type: 'analytics',
+    lastActive: '2024-03-15T08:30:00Z',
+    totalCalls: 278,
+    averageRating: 4.5,
+    language: 'Français',
+    timezone: 'Europe/Paris',
+    capabilities: ['Analyse de données', 'Rapports', 'Insights'],
+    isOnline: true,
+    responseTime: '< 4s'
+  },
+  {
+    id: '6',
+    name: 'Astou',
+    status: 'maintenance',
+    description: 'Assistant multilingue pour support international',
+    avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=astou',
+    type: 'support',
+    lastActive: '2024-03-13T14:10:00Z',
+    totalCalls: 567,
+    averageRating: 4.4,
+    language: 'Français, Anglais, Espagnol',
+    timezone: 'Europe/Paris',
+    capabilities: ['Support multilingue', 'Traduction', 'Support international'],
+    isOnline: false,
+    responseTime: '< 5s'
   }
 ];
 
-// Simulating API call to fetch agents
-export const fetchAgents = async (filter: string): Promise<AgentType[]> => {
-  // Simulate network delay
-  await new Promise(resolve => setTimeout(resolve, 800));
+export const fetchAgents = async (filter: string = 'all-agents'): Promise<AgentType[]> => {
+  // Simuler un délai d'API
+  await new Promise(resolve => setTimeout(resolve, 500));
   
-  // Filter the mock data based on the filter parameter
-  if (filter === 'my-agents') {
-    return mockAgents.filter(agent => agent.isPersonal);
-  } else if (filter === 'team-agents') {
-    return mockAgents.filter(agent => !agent.isPersonal);
+  let filteredAgents = mockAgents;
+  
+  switch (filter) {
+    case 'active-agents':
+      filteredAgents = mockAgents.filter(agent => agent.status === 'active');
+      break;
+    case 'inactive-agents':
+      filteredAgents = mockAgents.filter(agent => agent.status === 'inactive');
+      break;
+    case 'maintenance-agents':
+      filteredAgents = mockAgents.filter(agent => agent.status === 'maintenance');
+      break;
+    default:
+      filteredAgents = mockAgents;
   }
   
-  // Default: return all agents
-  return mockAgents;
+  return filteredAgents;
 };
 
-// Simulating API call to fetch agent by ID
-export const fetchAgentById = async (agentId: string): Promise<AgentType> => {
-  // Simulate network delay
-  await new Promise(resolve => setTimeout(resolve, 600));
+export const fetchAgentById = async (id: string): Promise<AgentType> => {
+  // Simuler un délai d'API
+  await new Promise(resolve => setTimeout(resolve, 300));
   
-  const agent = mockAgents.find(a => a.id === agentId);
+  const agent = mockAgents.find(agent => agent.id === id);
   
   if (!agent) {
-    throw new Error(`Agent with id ${agentId} not found`);
+    throw new Error(`Agent avec l'id ${id} non trouvé`);
   }
   
   return agent;
-};
-
-// Simulating API call to create a new agent
-export const createAgent = async (agentData: Omit<AgentType, 'id' | 'createdAt' | 'interactions'>): Promise<AgentType> => {
-  // Simulate network delay
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  
-  // Create a new agent with mock data
-  const newAgent: AgentType = {
-    ...agentData,
-    id: Math.random().toString(36).substring(2, 9),
-    createdAt: new Date().toISOString().split('T')[0],
-    interactions: 0
-  };
-  
-  // In a real app, you would add this to the database
-  // mockAgents.push(newAgent);
-  
-  return newAgent;
-};
-
-// Simulating API call to update an agent
-export const updateAgent = async (agentId: string, agentData: Partial<AgentType>): Promise<AgentType> => {
-  // Simulate network delay
-  await new Promise(resolve => setTimeout(resolve, 800));
-  
-  const agent = mockAgents.find(a => a.id === agentId);
-  
-  if (!agent) {
-    throw new Error(`Agent with id ${agentId} not found`);
-  }
-  
-  // Update the agent
-  const updatedAgent = { ...agent, ...agentData };
-  
-  // In a real app, you would update this in the database
-  // const index = mockAgents.findIndex(a => a.id === agentId);
-  // mockAgents[index] = updatedAgent;
-  
-  return updatedAgent;
-};
-
-// Simulating API call to delete an agent
-export const deleteAgent = async (agentId: string): Promise<void> => {
-  // Simulate network delay
-  await new Promise(resolve => setTimeout(resolve, 600));
-  
-  const agent = mockAgents.find(a => a.id === agentId);
-  
-  if (!agent) {
-    throw new Error(`Agent with id ${agentId} not found`);
-  }
-  
-  // In a real app, you would remove this from the database
-  // const index = mockAgents.findIndex(a => a.id === agentId);
-  // mockAgents.splice(index, 1);
 };
