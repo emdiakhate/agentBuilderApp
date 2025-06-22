@@ -1,4 +1,5 @@
 
+
 export type AgentStatus = "active" | "inactive" | "draft";
 export type AgentTypeCategory = 
   | "Customer Service" 
@@ -53,4 +54,13 @@ export interface AgentType {
   customIndustry?: string;
   botFunction?: string;
   customFunction?: string;
+  // Propriétés supplémentaires pour la compatibilité
+  totalCalls?: number;
+  averageRating?: number;
+  language?: string;
+  timezone?: string;
+  capabilities?: string[];
+  isOnline?: boolean;
+  responseTime?: string;
 }
+

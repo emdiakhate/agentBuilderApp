@@ -1,4 +1,5 @@
 
+
 import { AgentType } from '@/types/agent';
 
 const mockAgents: AgentType[] = [
@@ -8,10 +9,15 @@ const mockAgents: AgentType[] = [
     status: 'active',
     description: 'Un assistant IA polyvalent spécialisé dans le support client et les requêtes générales',
     avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=ami',
-    type: 'support',
-    lastActive: '2024-03-15T10:30:00Z',
+    type: 'Customer Service',
+    createdAt: '2024-03-15T10:30:00Z',
+    updatedAt: '2024-03-15T10:30:00Z',
     totalCalls: 1247,
     averageRating: 4.8,
+    interactions: 1247,
+    csat: 4.8,
+    performance: 85,
+    avmScore: 4.8,
     language: 'Français',
     timezone: 'Europe/Paris',
     capabilities: ['Support client', 'FAQ', 'Transfert d\'appels'],
@@ -24,10 +30,15 @@ const mockAgents: AgentType[] = [
     status: 'active',
     description: 'Assistant commercial expert en ventes et génération de leads',
     avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=omar',
-    type: 'sales',
-    lastActive: '2024-03-15T09:15:00Z',
+    type: 'Sales & Marketing',
+    createdAt: '2024-03-15T09:15:00Z',
+    updatedAt: '2024-03-15T09:15:00Z',
     totalCalls: 892,
     averageRating: 4.9,
+    interactions: 892,
+    csat: 4.9,
+    performance: 92,
+    avmScore: 4.9,
     language: 'Français',
     timezone: 'Europe/Paris',
     capabilities: ['Génération de leads', 'Qualification des prospects', 'Présentation produit'],
@@ -40,10 +51,15 @@ const mockAgents: AgentType[] = [
     status: 'inactive',
     description: 'Spécialiste en support technique et résolution de problèmes complexes',
     avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=awa',
-    type: 'support',
-    lastActive: '2024-03-14T16:45:00Z',
+    type: 'Technical Support',
+    createdAt: '2024-03-14T16:45:00Z',
+    updatedAt: '2024-03-14T16:45:00Z',
     totalCalls: 623,
     averageRating: 4.7,
+    interactions: 623,
+    csat: 4.7,
+    performance: 78,
+    avmScore: 4.7,
     language: 'Français',
     timezone: 'Europe/Paris',
     capabilities: ['Support technique', 'Dépannage', 'Documentation'],
@@ -56,10 +72,15 @@ const mockAgents: AgentType[] = [
     status: 'active',
     description: 'Expert en onboarding client et formation produit',
     avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=adja',
-    type: 'training',
-    lastActive: '2024-03-15T11:20:00Z',
+    type: 'Customer Onboarding',
+    createdAt: '2024-03-15T11:20:00Z',
+    updatedAt: '2024-03-15T11:20:00Z',
     totalCalls: 445,
     averageRating: 4.6,
+    interactions: 445,
+    csat: 4.6,
+    performance: 82,
+    avmScore: 4.6,
     language: 'Français',
     timezone: 'Europe/Paris',
     capabilities: ['Formation client', 'Onboarding', 'Tutoriels'],
@@ -72,10 +93,15 @@ const mockAgents: AgentType[] = [
     status: 'active',
     description: 'Analyste de données et génération de rapports intelligents',
     avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=moussa',
-    type: 'analytics',
-    lastActive: '2024-03-15T08:30:00Z',
+    type: 'Other Function',
+    createdAt: '2024-03-15T08:30:00Z',
+    updatedAt: '2024-03-15T08:30:00Z',
     totalCalls: 278,
     averageRating: 4.5,
+    interactions: 278,
+    csat: 4.5,
+    performance: 75,
+    avmScore: 4.5,
     language: 'Français',
     timezone: 'Europe/Paris',
     capabilities: ['Analyse de données', 'Rapports', 'Insights'],
@@ -85,13 +111,18 @@ const mockAgents: AgentType[] = [
   {
     id: '6',
     name: 'Astou',
-    status: 'maintenance',
+    status: 'draft',
     description: 'Assistant multilingue pour support international',
     avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=astou',
-    type: 'support',
-    lastActive: '2024-03-13T14:10:00Z',
+    type: 'Customer Service',
+    createdAt: '2024-03-13T14:10:00Z',
+    updatedAt: '2024-03-13T14:10:00Z',
     totalCalls: 567,
     averageRating: 4.4,
+    interactions: 567,
+    csat: 4.4,
+    performance: 70,
+    avmScore: 4.4,
     language: 'Français, Anglais, Espagnol',
     timezone: 'Europe/Paris',
     capabilities: ['Support multilingue', 'Traduction', 'Support international'],
@@ -114,7 +145,7 @@ export const fetchAgents = async (filter: string = 'all-agents'): Promise<AgentT
       filteredAgents = mockAgents.filter(agent => agent.status === 'inactive');
       break;
     case 'maintenance-agents':
-      filteredAgents = mockAgents.filter(agent => agent.status === 'maintenance');
+      filteredAgents = mockAgents.filter(agent => agent.status === 'draft');
       break;
     default:
       filteredAgents = mockAgents;
@@ -135,3 +166,25 @@ export const fetchAgentById = async (id: string): Promise<AgentType> => {
   
   return agent;
 };
+
+export const updateAgent = async (id: string, updates: Partial<AgentType>): Promise<AgentType> => {
+  // Simuler un délai d'API
+  await new Promise(resolve => setTimeout(resolve, 300));
+  
+  const agentIndex = mockAgents.findIndex(agent => agent.id === id);
+  
+  if (agentIndex === -1) {
+    throw new Error(`Agent avec l'id ${id} non trouvé`);
+  }
+  
+  const updatedAgent = {
+    ...mockAgents[agentIndex],
+    ...updates,
+    updatedAt: new Date().toISOString()
+  };
+  
+  mockAgents[agentIndex] = updatedAgent;
+  
+  return updatedAgent;
+};
+
