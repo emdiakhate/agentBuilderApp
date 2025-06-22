@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -37,9 +38,9 @@ const AgentsDashboard: React.FC = () => {
         name: agent.name,
         type: "agent" as const,
         description: agent.description,
-        scenario: `Vous testez ${agent.name}, un ${agent.type === 'Customer Service' ? 'assistant support' : 
-                   agent.type === 'Sales & Marketing' ? 'assistant commercial' : 
-                   agent.type === 'Customer Onboarding' ? 'assistant formation' : 'assistant spécialisé'}.`
+        scenario: `Vous testez ${agent.name}, un ${agent.type === 'support' ? 'assistant support' : 
+                   agent.type === 'sales' ? 'assistant commercial' : 
+                   agent.type === 'training' ? 'assistant formation' : 'assistant analytique'}.`
       };
       
       setSelectedPersona(persona);
@@ -82,7 +83,7 @@ const AgentsDashboard: React.FC = () => {
     switch (status) {
       case 'active': return 'bg-green-100 text-green-800 border-green-200';
       case 'inactive': return 'bg-gray-100 text-gray-800 border-gray-200';
-      case 'draft': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'maintenance': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
       default: return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
@@ -91,18 +92,17 @@ const AgentsDashboard: React.FC = () => {
     switch (status) {
       case 'active': return 'Actif';
       case 'inactive': return 'Inactif';
-      case 'draft': return 'Brouillon';
+      case 'maintenance': return 'Maintenance';
       default: return 'Inconnu';
     }
   };
 
   const getTypeText = (type: string) => {
     switch (type) {
-      case 'Customer Service': return 'Service Client';
-      case 'Sales & Marketing': return 'Ventes';
-      case 'Technical Support': return 'Support Technique';
-      case 'Customer Onboarding': return 'Formation';
-      case 'Other Function': return 'Autre';
+      case 'support': return 'Support';
+      case 'sales': return 'Ventes';
+      case 'training': return 'Formation';
+      case 'analytics': return 'Analytique';
       default: return 'Général';
     }
   };
@@ -239,11 +239,11 @@ const AgentsDashboard: React.FC = () => {
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
                         <p className="text-gray-500 dark:text-gray-400">Total Appels</p>
-                        <p className="font-semibold text-gray-900 dark:text-white">{agent.totalCalls || 0}</p>
+                        <p className="font-semibold text-gray-900 dark:text-white">{agent.totalCalls}</p>
                       </div>
                       <div>
                         <p className="text-gray-500 dark:text-gray-400">Note Moyenne</p>
-                        <p className="font-semibold text-gray-900 dark:text-white">{agent.averageRating || 0}/5</p>
+                        <p className="font-semibold text-gray-900 dark:text-white">{agent.averageRating}/5</p>
                       </div>
                     </div>
                     

@@ -53,12 +53,4 @@ export interface AgentType {
   customIndustry?: string;
   botFunction?: string;
   customFunction?: string;
-  // Propriétés ajoutées pour compatibilité
-  totalCalls?: number;
-  averageRating?: number;
-  language?: string;
-  timezone?: string;
-  capabilities?: string[];
-  isOnline?: boolean;
-  responseTime?: string;
 }
