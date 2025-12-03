@@ -4,7 +4,8 @@ from loguru import logger
 
 from app.core.config import settings
 from app.core.database import init_db
-from app.api.endpoints import auth, agents, chat
+from app.api.endpoints import auth, agents, chat, documents
+from app.services.vector_store_service import vector_store_service
 
 # Create FastAPI app
 app = FastAPI(
@@ -26,16 +27,27 @@ app.add_middleware(
 # Include routers
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
 app.include_router(agents.router, prefix="/api/agents", tags=["Agents"])
+app.include_router(documents.router, prefix="/api/agents", tags=["Documents"])
 app.include_router(chat.router, prefix="/api/chat", tags=["Chat"])
 
 
 @app.on_event("startup")
 async def startup_event():
-    """Initialize database on startup"""
+    """Initialize database and services on startup"""
     logger.info("Starting up application...")
     logger.info(f"Environment: {settings.ENVIRONMENT}")
+
+    # Initialize database
     init_db()
     logger.info("Database initialized")
+
+    # Initialize Qdrant collection
+    try:
+        vector_store_service.ensure_collection()
+        logger.info("Qdrant vector store ready")
+    except Exception as e:
+        logger.warning(f"Could not initialize Qdrant: {e}")
+        logger.warning("RAG features will not be available")
 
 
 @app.get("/")
