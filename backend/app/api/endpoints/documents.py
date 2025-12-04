@@ -5,7 +5,7 @@ from datetime import datetime
 import uuid
 
 from app.core.database import get_db
-from app.core.security import get_current_user
+from app.core.security import get_current_user_optional
 from app.models.user import User
 from app.models.agent import Agent
 from app.models.document import Document
@@ -79,7 +79,7 @@ async def upload_document(
     agent_id: str,
     background_tasks: BackgroundTasks,
     file: UploadFile = File(...),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user_optional),
     db: Session = Depends(get_db)
 ):
     """Upload a document to an agent's knowledge base"""
@@ -168,7 +168,7 @@ async def upload_document(
 @router.get("/{agent_id}/documents", response_model=List[DocumentResponse])
 async def list_documents(
     agent_id: str,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user_optional),
     db: Session = Depends(get_db)
 ):
     """List all documents for an agent"""
@@ -197,7 +197,7 @@ async def list_documents(
 async def delete_document(
     agent_id: str,
     document_id: str,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user_optional),
     db: Session = Depends(get_db)
 ):
     """Delete a document"""

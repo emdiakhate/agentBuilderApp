@@ -5,7 +5,7 @@ from typing import List, Optional
 from pydantic import BaseModel
 
 from app.core.database import get_db
-from app.core.security import get_current_user
+from app.core.security import get_current_user_optional
 from app.models.user import User
 from app.models.agent import Agent
 from app.models.conversation import Conversation
@@ -33,7 +33,7 @@ class ChatResponse(BaseModel):
 async def send_message(
     agent_id: str,
     chat_request: ChatRequest,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user_optional),
     db: Session = Depends(get_db)
 ):
     """Send a message to an agent and get response"""
@@ -147,7 +147,7 @@ async def send_message(
 @router.get("/{agent_id}/conversations", response_model=List[ConversationResponse])
 async def get_conversations(
     agent_id: str,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user_optional),
     db: Session = Depends(get_db)
 ):
     """Get all conversations for an agent"""
@@ -177,7 +177,7 @@ async def get_conversations(
 async def get_conversation(
     agent_id: str,
     conversation_id: str,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user_optional),
     db: Session = Depends(get_db)
 ):
     """Get a specific conversation"""
@@ -214,7 +214,7 @@ async def get_conversation(
 async def delete_conversation(
     agent_id: str,
     conversation_id: str,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user_optional),
     db: Session = Depends(get_db)
 ):
     """Delete a conversation"""

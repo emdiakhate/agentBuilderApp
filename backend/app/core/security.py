@@ -3,8 +3,9 @@ from typing import Optional
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import OAuth2PasswordBearer, HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
+import uuid
 
 from app.core.config import settings
 from app.core.database import get_db
@@ -84,3 +85,56 @@ async def get_current_active_user(
     if not current_user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
+
+
+# Development mode: Optional authentication
+http_bearer = HTTPBearer(auto_error=False)
+
+
+async def get_current_user_optional(
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(http_bearer),
+    db: Session = Depends(get_db)
+) -> User:
+    """
+    Get current user (optional authentication for development)
+    - In development mode: creates/uses a default dev user if no token provided
+    - In production: requires authentication
+    """
+
+    # If token is provided, validate it
+    if credentials:
+        token = credentials.credentials
+        user_id = decode_access_token(token)
+
+        if user_id:
+            user = db.query(User).filter(User.id == user_id).first()
+            if user and user.is_active:
+                return user
+
+    # Development mode: create/use dev user
+    if settings.ENVIRONMENT == "development":
+        # Try to find existing dev user
+        dev_user = db.query(User).filter(User.email == "dev@example.com").first()
+
+        if not dev_user:
+            # Create dev user
+            dev_user = User(
+                id=str(uuid.uuid4()),
+                email="dev@example.com",
+                hashed_password=get_password_hash("dev123"),
+                full_name="Dev User",
+                is_active=True,
+                is_superuser=False
+            )
+            db.add(dev_user)
+            db.commit()
+            db.refresh(dev_user)
+
+        return dev_user
+
+    # Production mode: require authentication
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Not authenticated",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
