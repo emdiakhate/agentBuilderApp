@@ -1,10 +1,16 @@
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import List
 import os
 
 
 class Settings(BaseSettings):
     """Application settings from environment variables"""
+
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        case_sensitive=True,
+        extra="ignore"  # Ignore extra environment variables
+    )
 
     # Application
     APP_NAME: str = "Agent Builder API"
@@ -72,10 +78,6 @@ class Settings(BaseSettings):
         "anthropic/claude-3.5-sonnet",
         "anthropic/claude-3-haiku"
     ]
-
-    class Config:
-        env_file = ".env"
-        case_sensitive = True
 
 
 # Global settings instance
