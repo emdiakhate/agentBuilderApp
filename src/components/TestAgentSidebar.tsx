@@ -11,6 +11,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { AgentType } from "@/types/agent";
 import { Mic, PhoneOutgoing, PhoneIncoming, MessageSquare, Bot, Rocket, ArrowUp } from "lucide-react";
 import { LiveTranscription } from "@/components/LiveTranscription";
+import { sendChatMessage } from "@/services/agentService";
+import { useToast } from "@/components/ui/use-toast";
 
 interface TestAgentSidebarProps {
   open: boolean;
@@ -38,6 +40,8 @@ export const TestAgentSidebar: React.FC<TestAgentSidebarProps> = ({
   const [chatMessages, setChatMessages] = useState<{role: "system" | "user"; text: string}[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [hasStartedChat, setHasStartedChat] = useState(false);
+  const [conversationId, setConversationId] = useState<string | undefined>(undefined);
+  const { toast } = useToast();
 
   React.useEffect(() => {
     if (open) {
@@ -91,25 +95,51 @@ export const TestAgentSidebar: React.FC<TestAgentSidebarProps> = ({
     }
   };
 
-  const handleSendMessage = () => {
-    if (chatMessage.trim()) {
-      const newMessages = [...chatMessages, { role: "user" as const, text: chatMessage }];
+  const handleSendMessage = async () => {
+    if (chatMessage.trim() && agent) {
+      const userMessage = chatMessage;
+      const newMessages = [...chatMessages, { role: "user" as const, text: userMessage }];
       setChatMessages(newMessages);
-      
+
       setChatMessage("");
-      
       setIsProcessing(true);
-      setTimeout(() => {
-        const agentResponse = { 
-          role: "system" as const, 
-          text: `I'm ${agent?.name || 'the AI assistant'}, and I'm here to help. ${chatMessage.length > 30 ? 'That\'s an interesting point you raised.' : 'How can I assist you today?'}` 
+
+      try {
+        // Call the backend API with RAG
+        const response = await sendChatMessage(agent.id, userMessage, conversationId);
+
+        // Save conversation ID for context
+        if (!conversationId) {
+          setConversationId(response.conversation_id);
+        }
+
+        // Add agent response to messages
+        const agentResponse = {
+          role: "system" as const,
+          text: response.response
         };
         setChatMessages([...newMessages, agentResponse]);
+
+        // Show RAG info if used
+        if (response.used_rag && response.num_context_chunks > 0) {
+          toast({
+            title: "RAG utilisé",
+            description: `${response.num_context_chunks} chunk(s) de contexte utilisé(s)`,
+          });
+        }
+
+        if (!hasStartedChat) {
+          setHasStartedChat(true);
+        }
+      } catch (error) {
+        console.error('Error sending message:', error);
+        toast({
+          title: "Erreur",
+          description: "Impossible d'envoyer le message",
+          variant: "destructive",
+        });
+      } finally {
         setIsProcessing(false);
-      }, 1000);
-      
-      if (!hasStartedChat) {
-        setHasStartedChat(true);
       }
     }
   };

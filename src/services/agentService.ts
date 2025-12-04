@@ -236,5 +236,42 @@ export async function deleteDocument(agentId: string, documentId: string): Promi
   }
 }
 
+/**
+ * Chat interfaces
+ */
+export interface ChatMessage {
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+  timestamp?: string;
+}
+
+export interface ChatResponse {
+  response: string;
+  conversation_id: string;
+  used_rag: boolean;
+  num_context_chunks: number;
+}
+
+/**
+ * Send a chat message to an agent
+ */
+export async function sendChatMessage(
+  agentId: string,
+  message: string,
+  conversationId?: string
+): Promise<ChatResponse> {
+  try {
+    const response = await apiClient.post<ChatResponse>(`/api/chat/${agentId}`, {
+      message,
+      conversation_id: conversationId,
+      use_rag: true
+    });
+    return response;
+  } catch (error) {
+    console.error(`Error sending chat message to agent ${agentId}:`, error);
+    throw new Error('Impossible d\'envoyer le message');
+  }
+}
+
 // Export types
 export type { CreateAgentData, UpdateAgentData };
