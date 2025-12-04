@@ -22,7 +22,7 @@ class Conversation(Base):
     messages = Column(JSON, default=list)
 
     # Metadata
-    metadata = Column(JSON, nullable=True)  # Additional context, tags, etc.
+    extra_metadata = Column(JSON, nullable=True)  # Additional context, tags, etc.
 
     # Statistics
     message_count = Column(Integer, default=0)
