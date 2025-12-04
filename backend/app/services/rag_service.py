@@ -23,7 +23,7 @@ class RAGService:
         query: str,
         agent_id: str,
         top_k: int = 5,
-        score_threshold: float = 0.7,
+        score_threshold: float = 0.3,
         embedding_provider: str = "voyage"
     ) -> List[Dict[str, Any]]:
         """
@@ -113,7 +113,7 @@ class RAGService:
                     query=query,
                     agent_id=agent_id,
                     top_k=5,
-                    score_threshold=0.7
+                    score_threshold=0.3
                 )
 
                 if retrieved_chunks:
