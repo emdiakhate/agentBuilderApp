@@ -97,7 +97,7 @@ async def get_current_user_optional(
 ) -> User:
     """
     Get current user (optional authentication for development)
-    - In development mode: creates/uses a default dev user if no token provided
+    - In development mode: uses the default dev user if no token provided
     - In production: requires authentication
     """
 
@@ -111,26 +111,18 @@ async def get_current_user_optional(
             if user and user.is_active:
                 return user
 
-    # Development mode: create/use dev user
+    # Development mode: use existing dev user
     if settings.ENVIRONMENT == "development":
-        # Try to find existing dev user
         dev_user = db.query(User).filter(User.email == "dev@example.com").first()
 
-        if not dev_user:
-            # Create dev user
-            dev_user = User(
-                id=str(uuid.uuid4()),
-                email="dev@example.com",
-                hashed_password=get_password_hash("dev123"),
-                full_name="Dev User",
-                is_active=True,
-                is_superuser=False
-            )
-            db.add(dev_user)
-            db.commit()
-            db.refresh(dev_user)
+        if dev_user:
+            return dev_user
 
-        return dev_user
+        # If dev user doesn't exist, something went wrong at startup
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Dev user not found. Please restart the application.",
+        )
 
     # Production mode: require authentication
     raise HTTPException(
