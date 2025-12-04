@@ -28,7 +28,7 @@ class Document(Base):
     total_tokens = Column(Integer, default=0)
 
     # Metadata
-    metadata = Column(JSON, nullable=True)  # Additional metadata
+    file_metadata = Column(JSON, nullable=True)  # Additional file metadata
 
     # Timestamps
     uploaded_at = Column(DateTime, default=datetime.utcnow)
