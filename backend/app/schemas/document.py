@@ -14,7 +14,7 @@ class DocumentResponse(BaseModel):
     error_message: Optional[str]
     num_chunks: int
     total_tokens: int
-    metadata: Optional[Dict[str, Any]]
+    file_metadata: Optional[Dict[str, Any]]
     uploaded_at: datetime
     processed_at: Optional[datetime]
 
