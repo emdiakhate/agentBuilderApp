@@ -281,9 +281,11 @@ export const KnowledgeBaseCardConnected: React.FC<KnowledgeBaseCardConnectedProp
                             <FileText className="h-5 w-5 text-gray-500 dark:text-gray-400" />
                           </div>
                           <div>
-                            <h5 className="font-medium text-gray-900 dark:text-white">{doc.original_filename}</h5>
+                            <h5 className="font-medium text-gray-900 dark:text-white">{doc.original_filename || doc.filename || 'Document'}</h5>
                             <p className="text-xs text-gray-500 dark:text-gray-500">
-                              {doc.file_type.toUpperCase()} • {formatFileSize(doc.file_size)} • {formatDate(doc.uploaded_at)}
+                              {doc.file_type?.toUpperCase() || 'FICHIER'}
+                              {doc.file_size && ` • ${formatFileSize(doc.file_size)}`}
+                              {doc.uploaded_at && ` • ${formatDate(doc.uploaded_at)}`}
                               {doc.num_chunks && ` • ${doc.num_chunks} chunks`}
                             </p>
                           </div>

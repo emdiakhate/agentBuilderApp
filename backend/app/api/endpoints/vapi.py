@@ -114,6 +114,29 @@ async def upload_document_to_vapi(
         )
 
 
+def normalize_vapi_file(vapi_file: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Normalize Vapi file structure to match frontend expectations
+
+    Vapi file structure may include: id, name, createdAt, updatedAt, bytes, etc.
+    Frontend expects: id, filename, original_filename, file_type, file_size, status, uploaded_at
+    """
+    # Extract file extension from name
+    name = vapi_file.get("name", "unknown")
+    file_ext = name.rsplit(".", 1)[-1] if "." in name else "file"
+
+    return {
+        "id": vapi_file.get("id"),
+        "filename": name,
+        "original_filename": name,
+        "file_type": file_ext.lower(),
+        "file_size": vapi_file.get("bytes") or vapi_file.get("size", 0),
+        "status": vapi_file.get("status", "completed"),
+        "uploaded_at": vapi_file.get("createdAt") or vapi_file.get("created_at"),
+        "num_chunks": vapi_file.get("numChunks") or vapi_file.get("num_chunks"),
+    }
+
+
 @router.get("/{agent_id}/files")
 async def list_vapi_files(
     agent_id: str,
@@ -140,9 +163,13 @@ async def list_vapi_files(
         )
 
     try:
-        files = await vapi_service.list_files()
+        vapi_files = await vapi_service.list_files()
+
+        # Normalize Vapi file structure to match frontend expectations
+        normalized_files = [normalize_vapi_file(f) for f in vapi_files]
+
         return {
-            "files": files,
+            "files": normalized_files,
             "agent_knowledge_base_id": agent.vapi_knowledge_base_id
         }
 
