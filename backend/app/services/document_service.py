@@ -63,11 +63,26 @@ class DocumentService:
             raise
 
     def _extract_docx(self, file_path: str) -> str:
-        """Extract text from DOCX"""
+        """Extract text from DOCX including tables"""
         try:
             doc = DocxDocument(file_path)
-            text = "\n".join([paragraph.text for paragraph in doc.paragraphs])
-            logger.info(f"Extracted text from DOCX: {len(text)} characters")
+
+            # Extract paragraphs
+            paragraphs = [paragraph.text for paragraph in doc.paragraphs]
+
+            # Extract tables
+            table_texts = []
+            for table in doc.tables:
+                for row in table.rows:
+                    row_text = " | ".join([cell.text.strip() for cell in row.cells])
+                    if row_text.strip():  # Only add non-empty rows
+                        table_texts.append(row_text)
+
+            # Combine paragraphs and tables
+            all_text = paragraphs + table_texts
+            text = "\n".join(all_text)
+
+            logger.info(f"Extracted text from DOCX: {len(text)} characters ({len(paragraphs)} paragraphs, {len(table_texts)} table rows)")
             return text.strip()
         except Exception as e:
             logger.error(f"Error reading DOCX: {e}")
