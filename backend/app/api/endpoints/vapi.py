@@ -72,24 +72,17 @@ async def upload_document_to_vapi(
         file_id = uploaded_file.get("id")
         logger.info(f"File uploaded to Vapi: {file.filename} (ID: {file_id})")
 
-        # Attach file directly to assistant's knowledge base
-        # Vapi manages the knowledge base automatically via fileIds
-        if agent.vapi_assistant_id:
-            await vapi_service.update_assistant(
-                assistant_id=agent.vapi_assistant_id,
-                knowledgeBase={
-                    "provider": "canonical",
-                    "fileIds": [file_id]
-                }
-            )
-            logger.info(f"Attached file {file_id} to assistant {agent.vapi_assistant_id}")
+        # Note: Files are uploaded to Vapi but need to be manually attached to assistant
+        # via the Vapi dashboard or by updating the assistant's model.knowledgeBase
+        # This avoids overwriting existing knowledge base configuration
 
         return {
             "message": "Document uploaded successfully",
             "file_id": file_id,
             "filename": file.filename,
             "size": file_size,
-            "knowledge_base_id": agent.vapi_knowledge_base_id
+            "knowledge_base_id": agent.vapi_knowledge_base_id,
+            "note": "File uploaded. Attach to assistant via Vapi dashboard or update assistant configuration."
         }
 
     except Exception as e:

@@ -102,14 +102,35 @@ async def send_message(
         )
 
         # Extract assistant response from Vapi
-        # Vapi response format may vary, adjust based on actual response
-        assistant_message = vapi_response.get("message") or vapi_response.get("content") or vapi_response.get("text")
+        # Log the full response for debugging
+        logger.info(f"Vapi chat response: {vapi_response}")
+
+        # Try different possible response formats from Vapi
+        assistant_message = None
+
+        # Check if response has a 'message' object with 'content'
+        if isinstance(vapi_response.get("message"), dict):
+            assistant_message = vapi_response["message"].get("content")
+        # Check direct fields
+        elif vapi_response.get("message"):
+            assistant_message = vapi_response.get("message")
+        elif vapi_response.get("content"):
+            assistant_message = vapi_response.get("content")
+        elif vapi_response.get("text"):
+            assistant_message = vapi_response.get("text")
+        # Check if there's an 'output' field
+        elif vapi_response.get("output"):
+            assistant_message = vapi_response.get("output")
+
         vapi_chat_id = vapi_response.get("id") or vapi_response.get("chatId")
 
         if not assistant_message:
             # Log full response for debugging
-            logger.warning(f"Unexpected Vapi response format: {vapi_response}")
-            assistant_message = str(vapi_response)
+            logger.error(f"Could not extract message from Vapi response: {vapi_response}")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Invalid response format from Vapi"
+            )
 
         # Save user message to conversation
         conversation.messages.append({
