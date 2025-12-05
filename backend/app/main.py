@@ -4,7 +4,7 @@ from loguru import logger
 
 from app.core.config import settings
 from app.core.database import init_db
-from app.api.endpoints import auth, agents, vapi
+from app.api.endpoints import auth, agents, vapi, chat
 
 # Create FastAPI app
 app = FastAPI(
@@ -27,6 +27,7 @@ app.add_middleware(
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
 app.include_router(agents.router, prefix="/api/agents", tags=["Agents"])
 app.include_router(vapi.router, prefix="/api/vapi", tags=["Vapi Integration"])
+app.include_router(chat.router, prefix="/api/chat", tags=["Chat"])
 
 
 @app.on_event("startup")

@@ -4,6 +4,7 @@ Vapi Service - Integration with Vapi.ai API
 
 from typing import Dict, Any, List, Optional
 import httpx
+import mimetypes
 from loguru import logger
 
 from app.core.config import settings
@@ -233,8 +234,33 @@ class VapiService:
             Uploaded file data including file_id
         """
         try:
+            # Detect MIME type from filename
+            mime_type, _ = mimetypes.guess_type(filename)
+            if not mime_type:
+                # Fallback based on file extension
+                ext = filename.lower().split('.')[-1]
+                mime_map = {
+                    'pdf': 'application/pdf',
+                    'txt': 'text/plain',
+                    'md': 'text/markdown',
+                    'csv': 'text/csv',
+                    'json': 'application/json',
+                    'xml': 'application/xml',
+                    'doc': 'application/msword',
+                    'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                    'html': 'text/html',
+                    'css': 'text/css',
+                    'js': 'text/javascript',
+                    'ts': 'text/typescript',
+                    'yaml': 'application/x-yaml',
+                    'yml': 'application/x-yaml',
+                }
+                mime_type = mime_map.get(ext, 'application/octet-stream')
+
+            logger.info(f"Uploading {filename} with MIME type: {mime_type}")
+
             files = {
-                "file": (filename, file_content)
+                "file": (filename, file_content, mime_type)
             }
 
             headers = {
