@@ -343,7 +343,7 @@ class VapiService:
     async def send_chat_message(
         self,
         assistant_id: str,
-        messages: List[Dict[str, str]],
+        message_content: str,
         previous_chat_id: Optional[str] = None
     ) -> Dict[str, Any]:
         """
@@ -351,7 +351,7 @@ class VapiService:
 
         Args:
             assistant_id: Vapi assistant ID
-            messages: Array of messages in OpenAI format [{role: "user", content: "..."}]
+            message_content: The user's message content (string)
             previous_chat_id: Optional previous chat ID for context
 
         Returns:
@@ -360,7 +360,7 @@ class VapiService:
         try:
             payload = {
                 "assistantId": assistant_id,
-                "messages": messages
+                "input": message_content
             }
 
             if previous_chat_id:

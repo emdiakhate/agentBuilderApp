@@ -83,27 +83,8 @@ async def send_message(
             db.commit()
             db.refresh(conversation)
 
-        # Get conversation history for Vapi
-        history = conversation.messages[-10:] if conversation.messages else []
-
-        # Build messages array for Vapi (OpenAI format)
-        messages = []
-
-        # Add conversation history (exclude timestamp metadata)
-        for msg in history:
-            if msg.get("role") in ["user", "assistant"]:
-                messages.append({
-                    "role": msg["role"],
-                    "content": msg["content"]
-                })
-
-        # Add current user message
-        messages.append({
-            "role": "user",
-            "content": chat_request.message
-        })
-
         # Get previous Vapi chat ID if exists (for context continuity)
+        # Vapi maintains conversation context via previousChatId
         previous_chat_id = None
         if conversation.messages:
             # Look for vapi_chat_id in last message metadata
@@ -112,10 +93,11 @@ async def send_message(
                     previous_chat_id = msg["vapi_chat_id"]
                     break
 
-        # Call Vapi Chat API
+        # Call Vapi Chat API with just the current message
+        # Vapi handles context via previousChatId
         vapi_response = await vapi_service.send_chat_message(
             assistant_id=agent.vapi_assistant_id,
-            messages=messages,
+            message_content=chat_request.message,
             previous_chat_id=previous_chat_id
         )
 

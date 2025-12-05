@@ -72,31 +72,17 @@ async def upload_document_to_vapi(
         file_id = uploaded_file.get("id")
         logger.info(f"File uploaded to Vapi: {file.filename} (ID: {file_id})")
 
-        # Create or update knowledge base for this agent
-        if not agent.vapi_knowledge_base_id:
-            # Create new knowledge base
-            kb = await vapi_service.create_knowledge_base(
-                name=f"KB for {agent.name}",
-                files=[file_id]
-            )
-            agent.vapi_knowledge_base_id = kb.get("id")
-            db.commit()
-            logger.info(f"Created knowledge base: {agent.vapi_knowledge_base_id}")
-        else:
-            # TODO: Add file to existing knowledge base
-            # Vapi API doesn't have a direct "add file to KB" endpoint yet
-            # For now, files are added when KB is created
-            pass
-
-        # Update Vapi assistant to use the knowledge base
+        # Attach file directly to assistant's knowledge base
+        # Vapi manages the knowledge base automatically via fileIds
         if agent.vapi_assistant_id:
             await vapi_service.update_assistant(
                 assistant_id=agent.vapi_assistant_id,
                 knowledgeBase={
-                    "provider": "vapi",
-                    "knowledgeBaseId": agent.vapi_knowledge_base_id
+                    "provider": "canonical",
+                    "fileIds": [file_id]
                 }
             )
+            logger.info(f"Attached file {file_id} to assistant {agent.vapi_assistant_id}")
 
         return {
             "message": "Document uploaded successfully",
