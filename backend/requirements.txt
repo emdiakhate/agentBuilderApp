@@ -14,21 +14,11 @@ passlib[bcrypt]==1.7.4
 bcrypt==3.2.2
 python-dotenv==1.0.1
 
-# AI/LLM - Multi-provider support
-langchain==0.3.7
-langchain-community==0.3.5
-langchain-openai==0.2.5
-langchain-anthropic==0.2.3
-langgraph==0.2.45
+# AI/LLM - Minimal for potential proxy usage
 openai==1.54.3
-anthropic==0.39.0
 
-# Vector Database
-qdrant-client==1.12.0
-langchain-qdrant==0.2.0
-
-# Embeddings
-voyageai==0.2.3
+# Vapi Integration
+# vapi-python==0.1.0  # Will add when available
 
 # Document Processing
 pypdf2==3.0.1

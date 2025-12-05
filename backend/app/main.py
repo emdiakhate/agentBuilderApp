@@ -4,14 +4,13 @@ from loguru import logger
 
 from app.core.config import settings
 from app.core.database import init_db
-from app.api.endpoints import auth, agents, chat, documents
-from app.services.vector_store_service import vector_store_service
+from app.api.endpoints import auth, agents
 
 # Create FastAPI app
 app = FastAPI(
     title=settings.APP_NAME,
     version=settings.VERSION,
-    description="Multi-LLM AI Agent Platform with RAG",
+    description="AI Voice Agent Builder Platform powered by Vapi.ai",
     debug=settings.DEBUG
 )
 
@@ -27,8 +26,7 @@ app.add_middleware(
 # Include routers
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
 app.include_router(agents.router, prefix="/api/agents", tags=["Agents"])
-app.include_router(documents.router, prefix="/api/agents", tags=["Documents"])
-app.include_router(chat.router, prefix="/api/chat", tags=["Chat"])
+# Vapi integration endpoints will be added here
 
 
 @app.on_event("startup")
@@ -71,13 +69,7 @@ async def startup_event():
         finally:
             db.close()
 
-    # Initialize Qdrant collection
-    try:
-        vector_store_service.ensure_collection()
-        logger.info("Qdrant vector store ready")
-    except Exception as e:
-        logger.warning(f"Could not initialize Qdrant: {e}")
-        logger.warning("RAG features will not be available")
+    logger.info("✅ Application startup complete")
 
 
 @app.get("/")
