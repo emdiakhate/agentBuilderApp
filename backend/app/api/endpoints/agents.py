@@ -1,12 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
+from loguru import logger
 
 from app.core.database import get_db
 from app.core.security import get_current_user_optional
 from app.models.user import User
 from app.models.agent import Agent
 from app.schemas.agent import AgentCreate, AgentUpdate, AgentResponse
+from app.services.vapi_service import vapi_service
 
 router = APIRouter()
 
@@ -17,19 +19,42 @@ async def create_agent(
     current_user: User = Depends(get_current_user_optional),
     db: Session = Depends(get_db)
 ):
-    """Create a new agent"""
+    """Create a new agent and sync with Vapi"""
 
-    # Create agent
-    new_agent = Agent(
-        user_id=current_user.id,
-        **agent_data.model_dump()
-    )
+    try:
+        # Create Vapi assistant first
+        vapi_assistant = await vapi_service.create_assistant(
+            name=agent_data.name,
+            model=agent_data.model or "gpt-4o-mini",
+            voice=agent_data.voice or "jennifer-playht",
+            first_message=f"Bonjour ! Je suis {agent_data.name}. Comment puis-je vous aider ?",
+            system_prompt=agent_data.prompt or f"""Vous êtes {agent_data.name}, un assistant IA.
+{agent_data.description or ''}
+Votre rôle : {agent_data.type or 'Assistant'}
+Objectif : {agent_data.purpose or 'Aider les utilisateurs avec leurs questions'}"""
+        )
 
-    db.add(new_agent)
-    db.commit()
-    db.refresh(new_agent)
+        # Create local agent with Vapi ID
+        new_agent = Agent(
+            user_id=current_user.id,
+            vapi_assistant_id=vapi_assistant.get("id"),
+            **agent_data.model_dump()
+        )
 
-    return new_agent
+        db.add(new_agent)
+        db.commit()
+        db.refresh(new_agent)
+
+        logger.info(f"Agent created: {new_agent.id} (Vapi: {new_agent.vapi_assistant_id})")
+        return new_agent
+
+    except Exception as e:
+        logger.error(f"Error creating agent: {e}")
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to create agent: {str(e)}"
+        )
 
 
 @router.get("", response_model=List[AgentResponse])
@@ -79,7 +104,7 @@ async def update_agent(
     current_user: User = Depends(get_current_user_optional),
     db: Session = Depends(get_db)
 ):
-    """Update an agent"""
+    """Update an agent and sync with Vapi"""
 
     agent = db.query(Agent).filter(
         Agent.id == agent_id,
@@ -92,15 +117,54 @@ async def update_agent(
             detail="Agent not found"
         )
 
-    # Update agent fields
-    update_data = agent_data.model_dump(exclude_unset=True)
-    for field, value in update_data.items():
-        setattr(agent, field, value)
+    try:
+        # Update Vapi assistant if it exists
+        if agent.vapi_assistant_id:
+            vapi_updates = {}
+            update_data = agent_data.model_dump(exclude_unset=True)
 
-    db.commit()
-    db.refresh(agent)
+            # Map fields to Vapi format
+            if "name" in update_data:
+                vapi_updates["name"] = update_data["name"]
+            if "model" in update_data:
+                vapi_updates["model"] = {
+                    "provider": "openai",
+                    "model": update_data["model"]
+                }
+            if "voice" in update_data:
+                vapi_updates["voice"] = {
+                    "provider": "playht",
+                    "voiceId": update_data["voice"]
+                }
+            if "prompt" in update_data:
+                vapi_updates["model"] = vapi_updates.get("model", {})
+                vapi_updates["model"]["systemPrompt"] = update_data["prompt"]
 
-    return agent
+            # Update Vapi if there are changes
+            if vapi_updates:
+                await vapi_service.update_assistant(
+                    assistant_id=agent.vapi_assistant_id,
+                    **vapi_updates
+                )
+
+        # Update local agent fields
+        update_data = agent_data.model_dump(exclude_unset=True)
+        for field, value in update_data.items():
+            setattr(agent, field, value)
+
+        db.commit()
+        db.refresh(agent)
+
+        logger.info(f"Agent updated: {agent.id}")
+        return agent
+
+    except Exception as e:
+        logger.error(f"Error updating agent: {e}")
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to update agent: {str(e)}"
+        )
 
 
 @router.delete("/{agent_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -109,7 +173,7 @@ async def delete_agent(
     current_user: User = Depends(get_current_user_optional),
     db: Session = Depends(get_db)
 ):
-    """Delete an agent"""
+    """Delete an agent and remove from Vapi"""
 
     agent = db.query(Agent).filter(
         Agent.id == agent_id,
@@ -122,7 +186,27 @@ async def delete_agent(
             detail="Agent not found"
         )
 
-    db.delete(agent)
-    db.commit()
+    try:
+        # Delete from Vapi if assistant exists
+        if agent.vapi_assistant_id:
+            try:
+                await vapi_service.delete_assistant(agent.vapi_assistant_id)
+                logger.info(f"Deleted Vapi assistant: {agent.vapi_assistant_id}")
+            except Exception as vapi_error:
+                # Log but don't fail - continue with local deletion
+                logger.warning(f"Failed to delete Vapi assistant: {vapi_error}")
 
-    return None
+        # Delete local agent
+        db.delete(agent)
+        db.commit()
+
+        logger.info(f"Agent deleted: {agent_id}")
+        return None
+
+    except Exception as e:
+        logger.error(f"Error deleting agent: {e}")
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to delete agent: {str(e)}"
+        )
