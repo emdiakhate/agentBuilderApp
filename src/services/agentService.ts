@@ -10,6 +10,8 @@ import { AgentType, AgentStatus } from '@/types/agent';
 interface BackendAgent {
   id: string;
   user_id: string;
+  vapi_assistant_id: string | null;
+  vapi_knowledge_base_id: string | null;
   name: string;
   description: string | null;
   type: string;
@@ -196,14 +198,14 @@ export async function deleteAgent(id: string): Promise<void> {
 }
 
 /**
- * Upload document for an agent
+ * Upload document for an agent (via Vapi)
  */
 export async function uploadDocument(agentId: string, file: File): Promise<any> {
   try {
     const formData = new FormData();
     formData.append('file', file);
 
-    const result = await apiClient.upload(`/api/agents/${agentId}/documents`, formData);
+    const result = await apiClient.upload(`/api/vapi/${agentId}/upload-document`, formData);
     return result;
   } catch (error) {
     console.error(`Error uploading document for agent ${agentId}:`, error);
@@ -212,12 +214,12 @@ export async function uploadDocument(agentId: string, file: File): Promise<any> 
 }
 
 /**
- * Fetch documents for an agent
+ * Fetch documents for an agent (from Vapi)
  */
 export async function fetchAgentDocuments(agentId: string): Promise<any[]> {
   try {
-    const documents = await apiClient.get<any[]>(`/api/agents/${agentId}/documents`);
-    return documents;
+    const response = await apiClient.get<{ files: any[]; agent_knowledge_base_id: string | null }>(`/api/vapi/${agentId}/files`);
+    return response.files || [];
   } catch (error) {
     console.error(`Error fetching documents for agent ${agentId}:`, error);
     throw new Error('Impossible de récupérer les documents');
@@ -225,13 +227,13 @@ export async function fetchAgentDocuments(agentId: string): Promise<any[]> {
 }
 
 /**
- * Delete a document
+ * Delete a document (from Vapi)
  */
-export async function deleteDocument(agentId: string, documentId: string): Promise<void> {
+export async function deleteDocument(agentId: string, fileId: string): Promise<void> {
   try {
-    await apiClient.delete(`/api/agents/${agentId}/documents/${documentId}`);
+    await apiClient.delete(`/api/vapi/${agentId}/files/${fileId}`);
   } catch (error) {
-    console.error(`Error deleting document ${documentId}:`, error);
+    console.error(`Error deleting document ${fileId}:`, error);
     throw new Error('Impossible de supprimer le document');
   }
 }
