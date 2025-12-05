@@ -36,48 +36,13 @@ class Settings(BaseSettings):
     # LLM API Keys
     OPENAI_API_KEY: str = ""
     ANTHROPIC_API_KEY: str = ""
-    OPENROUTER_API_KEY: str = ""
-    VOYAGE_API_KEY: str = ""
 
-    # Qdrant Vector DB
-    QDRANT_HOST: str = "localhost"
-    QDRANT_PORT: int = 6333
-    QDRANT_COLLECTION_NAME: str = "agent_documents"
+    # Vapi.ai Integration
+    VAPI_API_KEY: str = ""
 
-    # File Upload
+    # File Upload (for potential file validation before Vapi upload)
     MAX_UPLOAD_SIZE_MB: int = 10
     UPLOAD_DIR: str = "uploads"
-
-    # Embeddings
-    EMBEDDING_MODEL: str = "voyage-2"
-    EMBEDDING_DIMENSION: int = 1024
-
-    # Default LLM Configuration
-    DEFAULT_LLM_PROVIDER: str = "openai"  # openai, anthropic, openrouter
-    DEFAULT_MODEL: str = "gpt-4o-mini"
-
-    # Supported Models by Provider
-    OPENAI_MODELS: List[str] = [
-        "gpt-4o",
-        "gpt-4o-mini",
-        "gpt-4-turbo",
-        "gpt-3.5-turbo"
-    ]
-
-    ANTHROPIC_MODELS: List[str] = [
-        "claude-3-5-sonnet-20241022",
-        "claude-3-5-haiku-20241022",
-        "claude-3-opus-20240229",
-        "claude-3-haiku-20240307"
-    ]
-
-    # OpenRouter supports both OpenAI and Anthropic models
-    OPENROUTER_MODELS: List[str] = [
-        "openai/gpt-4o",
-        "openai/gpt-4o-mini",
-        "anthropic/claude-3.5-sonnet",
-        "anthropic/claude-3-haiku"
-    ]
 
 
 # Global settings instance

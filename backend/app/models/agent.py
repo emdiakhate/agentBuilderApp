@@ -12,6 +12,10 @@ class Agent(Base):
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
     user_id = Column(String, ForeignKey("users.id"), nullable=False)
 
+    # Vapi Integration
+    vapi_assistant_id = Column(String(255), nullable=True, unique=True)  # Vapi assistant ID
+    vapi_knowledge_base_id = Column(String(255), nullable=True)  # Vapi knowledge base ID
+
     # Basic Info
     name = Column(String(255), nullable=False)
     description = Column(Text, nullable=True)
