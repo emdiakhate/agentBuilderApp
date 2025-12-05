@@ -4,7 +4,7 @@ Vapi endpoints - Document upload and management via Vapi.ai
 
 from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Dict, Any
 from loguru import logger
 
 from app.core.database import get_db
