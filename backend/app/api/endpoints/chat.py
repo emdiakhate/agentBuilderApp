@@ -1,5 +1,5 @@
 """
-Chat endpoints - Simple text chat using OpenAI
+Chat endpoints - Text chat using Vapi Chat API
 """
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -8,14 +8,13 @@ from typing import List, Optional
 from pydantic import BaseModel
 from datetime import datetime
 from loguru import logger
-import openai
 
 from app.core.database import get_db
 from app.core.security import get_current_user_optional
-from app.core.config import settings
 from app.models.user import User
 from app.models.agent import Agent
 from app.models.conversation import Conversation
+from app.services.vapi_service import vapi_service
 
 router = APIRouter()
 
@@ -37,7 +36,7 @@ async def send_message(
     current_user: User = Depends(get_current_user_optional),
     db: Session = Depends(get_db)
 ):
-    """Send a text message to an agent"""
+    """Send a text message to an agent using Vapi Chat API"""
 
     # Check if agent exists and belongs to user
     agent = db.query(Agent).filter(
@@ -49,6 +48,13 @@ async def send_message(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Agent not found"
+        )
+
+    # Check if agent has Vapi assistant ID
+    if not agent.vapi_assistant_id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Agent is not configured with Vapi assistant"
         )
 
     try:
@@ -77,50 +83,70 @@ async def send_message(
             db.commit()
             db.refresh(conversation)
 
-        # Get conversation history (last 10 messages)
+        # Get conversation history for Vapi
         history = conversation.messages[-10:] if conversation.messages else []
 
-        # Build messages for OpenAI
+        # Build messages array for Vapi (OpenAI format)
         messages = []
 
-        # System prompt
-        system_prompt = agent.prompt or f"""Vous êtes {agent.name}, un assistant IA.
-{agent.description or ''}
-Votre rôle : {agent.type or 'Assistant'}
-Objectif : {agent.purpose or 'Aider les utilisateurs avec leurs questions'}"""
-
-        messages.append({"role": "system", "content": system_prompt})
-
-        # Add conversation history
+        # Add conversation history (exclude timestamp metadata)
         for msg in history:
-            messages.append({"role": msg["role"], "content": msg["content"]})
+            if msg.get("role") in ["user", "assistant"]:
+                messages.append({
+                    "role": msg["role"],
+                    "content": msg["content"]
+                })
 
-        # Add current message
-        messages.append({"role": "user", "content": chat_request.message})
+        # Add current user message
+        messages.append({
+            "role": "user",
+            "content": chat_request.message
+        })
 
-        # Call OpenAI
-        client = openai.OpenAI(api_key=settings.OPENAI_API_KEY)
-        response = client.chat.completions.create(
-            model=agent.model or "gpt-4o-mini",
+        # Get previous Vapi chat ID if exists (for context continuity)
+        previous_chat_id = None
+        if conversation.messages:
+            # Look for vapi_chat_id in last message metadata
+            for msg in reversed(conversation.messages):
+                if msg.get("vapi_chat_id"):
+                    previous_chat_id = msg["vapi_chat_id"]
+                    break
+
+        # Call Vapi Chat API
+        vapi_response = await vapi_service.send_chat_message(
+            assistant_id=agent.vapi_assistant_id,
             messages=messages,
-            temperature=agent.temperature or 0.7,
-            max_tokens=agent.max_tokens or 1000
+            previous_chat_id=previous_chat_id
         )
 
-        assistant_message = response.choices[0].message.content
+        # Extract assistant response from Vapi
+        # Vapi response format may vary, adjust based on actual response
+        assistant_message = vapi_response.get("message") or vapi_response.get("content") or vapi_response.get("text")
+        vapi_chat_id = vapi_response.get("id") or vapi_response.get("chatId")
 
-        # Save messages to conversation
+        if not assistant_message:
+            # Log full response for debugging
+            logger.warning(f"Unexpected Vapi response format: {vapi_response}")
+            assistant_message = str(vapi_response)
+
+        # Save user message to conversation
         conversation.messages.append({
             "role": "user",
             "content": chat_request.message,
             "timestamp": datetime.utcnow().isoformat()
         })
 
-        conversation.messages.append({
+        # Save assistant message to conversation with Vapi chat ID
+        assistant_msg = {
             "role": "assistant",
             "content": assistant_message,
             "timestamp": datetime.utcnow().isoformat()
-        })
+        }
+
+        if vapi_chat_id:
+            assistant_msg["vapi_chat_id"] = vapi_chat_id
+
+        conversation.messages.append(assistant_msg)
 
         # Update conversation stats
         conversation.message_count = len(conversation.messages)
@@ -131,17 +157,19 @@ Objectif : {agent.purpose or 'Aider les utilisateurs avec leurs questions'}"""
 
         db.commit()
 
-        logger.info(f"Chat response generated for agent {agent_id}")
+        logger.info(f"Chat response generated via Vapi for agent {agent_id}")
 
         return ChatResponse(
             response=assistant_message,
             conversation_id=conversation.id
         )
 
+    except HTTPException:
+        raise
     except Exception as e:
-        logger.error(f"Error in chat: {e}")
+        logger.error(f"Error in Vapi chat: {e}")
         db.rollback()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error generating response: {str(e)}"
+            detail=f"Error generating response from Vapi: {str(e)}"
         )

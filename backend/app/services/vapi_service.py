@@ -340,6 +340,52 @@ class VapiService:
             logger.error(f"Error deleting file: {e}")
             raise
 
+    async def send_chat_message(
+        self,
+        assistant_id: str,
+        messages: List[Dict[str, str]],
+        previous_chat_id: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """
+        Send a chat message to a Vapi assistant using Chat API
+
+        Args:
+            assistant_id: Vapi assistant ID
+            messages: Array of messages in OpenAI format [{role: "user", content: "..."}]
+            previous_chat_id: Optional previous chat ID for context
+
+        Returns:
+            Chat response from Vapi including message content and chat ID
+        """
+        try:
+            payload = {
+                "assistantId": assistant_id,
+                "messages": messages
+            }
+
+            if previous_chat_id:
+                payload["previousChatId"] = previous_chat_id
+
+            async with httpx.AsyncClient() as client:
+                response = await client.post(
+                    f"{self.base_url}/chat",
+                    headers=self.headers,
+                    json=payload,
+                    timeout=60.0
+                )
+                response.raise_for_status()
+                result = response.json()
+
+            logger.info(f"Sent chat message to assistant: {assistant_id}")
+            return result
+
+        except httpx.HTTPStatusError as e:
+            logger.error(f"Error sending chat message: {e.response.status_code} - {e.response.text}")
+            raise
+        except Exception as e:
+            logger.error(f"Error sending chat message: {e}")
+            raise
+
 
 # Global instance
 vapi_service = VapiService()
