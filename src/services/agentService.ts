@@ -1,190 +1,279 @@
+/**
+ * Agent Service
+ * Handles all agent-related API calls
+ */
 
+import { apiClient } from '@/lib/api';
+import { AgentType, AgentStatus } from '@/types/agent';
 
-import { AgentType } from '@/types/agent';
+// Backend agent response interface
+interface BackendAgent {
+  id: string;
+  user_id: string;
+  vapi_assistant_id: string | null;
+  vapi_knowledge_base_id: string | null;
+  name: string;
+  description: string | null;
+  type: string;
+  status: string;
+  avatar: string | null;
+  llm_provider: string | null;
+  model: string | null;
+  temperature: number | null;
+  max_tokens: number | null;
+  voice: string | null;
+  voice_provider: string | null;
+  custom_voice_id: string | null;
+  voice_traits: any;
+  purpose: string | null;
+  prompt: string | null;
+  industry: string | null;
+  custom_industry: string | null;
+  bot_function: string | null;
+  custom_function: string | null;
+  channels: string[] | null;
+  channel_configs: any;
+  phone: string | null;
+  email: string | null;
+  avm_score: number | null;
+  interactions: number | null;
+  csat: number | null;
+  performance: number | null;
+  total_calls: number | null;
+  average_rating: number | null;
+  language: string | null;
+  timezone: string | null;
+  capabilities: any;
+  is_online: boolean | null;
+  response_time: string | null;
+  created_at: string;
+  updated_at: string;
+}
 
-const mockAgents: AgentType[] = [
-  {
-    id: '1',
-    name: 'Ami',
-    status: 'active',
-    description: 'Un assistant IA polyvalent spécialisé dans le support client et les requêtes générales',
-    avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=ami',
-    type: 'Customer Service',
-    createdAt: '2024-03-15T10:30:00Z',
-    updatedAt: '2024-03-15T10:30:00Z',
-    totalCalls: 1247,
-    averageRating: 4.8,
-    interactions: 1247,
-    csat: 4.8,
-    performance: 85,
-    avmScore: 4.8,
-    language: 'Français',
-    timezone: 'Europe/Paris',
-    capabilities: ['Support client', 'FAQ', 'Transfert d\'appels'],
-    isOnline: true,
-    responseTime: '< 2s'
-  },
-  {
-    id: '2',
-    name: 'Omar',
-    status: 'active',
-    description: 'Assistant commercial expert en ventes et génération de leads',
-    avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=omar',
-    type: 'Sales & Marketing',
-    createdAt: '2024-03-15T09:15:00Z',
-    updatedAt: '2024-03-15T09:15:00Z',
-    totalCalls: 892,
-    averageRating: 4.9,
-    interactions: 892,
-    csat: 4.9,
-    performance: 92,
-    avmScore: 4.9,
-    language: 'Français',
-    timezone: 'Europe/Paris',
-    capabilities: ['Génération de leads', 'Qualification des prospects', 'Présentation produit'],
-    isOnline: true,
-    responseTime: '< 1s'
-  },
-  {
-    id: '3',
-    name: 'Awa',
-    status: 'inactive',
-    description: 'Spécialiste en support technique et résolution de problèmes complexes',
-    avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=awa',
-    type: 'Technical Support',
-    createdAt: '2024-03-14T16:45:00Z',
-    updatedAt: '2024-03-14T16:45:00Z',
-    totalCalls: 623,
-    averageRating: 4.7,
-    interactions: 623,
-    csat: 4.7,
-    performance: 78,
-    avmScore: 4.7,
-    language: 'Français',
-    timezone: 'Europe/Paris',
-    capabilities: ['Support technique', 'Dépannage', 'Documentation'],
-    isOnline: false,
-    responseTime: '< 3s'
-  },
-  {
-    id: '4',
-    name: 'Adja',
-    status: 'active',
-    description: 'Expert en onboarding client et formation produit',
-    avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=adja',
-    type: 'Customer Onboarding',
-    createdAt: '2024-03-15T11:20:00Z',
-    updatedAt: '2024-03-15T11:20:00Z',
-    totalCalls: 445,
-    averageRating: 4.6,
-    interactions: 445,
-    csat: 4.6,
-    performance: 82,
-    avmScore: 4.6,
-    language: 'Français',
-    timezone: 'Europe/Paris',
-    capabilities: ['Formation client', 'Onboarding', 'Tutoriels'],
-    isOnline: true,
-    responseTime: '< 2s'
-  },
-  {
-    id: '5',
-    name: 'Moussa',
-    status: 'active',
-    description: 'Analyste de données et génération de rapports intelligents',
-    avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=moussa',
-    type: 'Other Function',
-    createdAt: '2024-03-15T08:30:00Z',
-    updatedAt: '2024-03-15T08:30:00Z',
-    totalCalls: 278,
-    averageRating: 4.5,
-    interactions: 278,
-    csat: 4.5,
-    performance: 75,
-    avmScore: 4.5,
-    language: 'Français',
-    timezone: 'Europe/Paris',
-    capabilities: ['Analyse de données', 'Rapports', 'Insights'],
-    isOnline: true,
-    responseTime: '< 4s'
-  },
-  {
-    id: '6',
-    name: 'Astou',
-    status: 'draft',
-    description: 'Assistant multilingue pour support international',
-    avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=astou',
-    type: 'Customer Service',
-    createdAt: '2024-03-13T14:10:00Z',
-    updatedAt: '2024-03-13T14:10:00Z',
-    totalCalls: 567,
-    averageRating: 4.4,
-    interactions: 567,
-    csat: 4.4,
-    performance: 70,
-    avmScore: 4.4,
-    language: 'Français, Anglais, Espagnol',
-    timezone: 'Europe/Paris',
-    capabilities: ['Support multilingue', 'Traduction', 'Support international'],
-    isOnline: false,
-    responseTime: '< 5s'
-  }
-];
+interface CreateAgentData {
+  name: string;
+  description?: string;
+  type: string;
+  llm_provider?: string;
+  model?: string;
+  temperature?: number;
+  purpose?: string;
+  language?: string;
+  status?: string;
+}
 
-export const fetchAgents = async (filter: string = 'all-agents'): Promise<AgentType[]> => {
-  // Simuler un délai d'API
-  await new Promise(resolve => setTimeout(resolve, 500));
-  
-  let filteredAgents = mockAgents;
-  
-  switch (filter) {
-    case 'active-agents':
-      filteredAgents = mockAgents.filter(agent => agent.status === 'active');
-      break;
-    case 'inactive-agents':
-      filteredAgents = mockAgents.filter(agent => agent.status === 'inactive');
-      break;
-    case 'maintenance-agents':
-      filteredAgents = mockAgents.filter(agent => agent.status === 'draft');
-      break;
-    default:
-      filteredAgents = mockAgents;
-  }
-  
-  return filteredAgents;
-};
+interface UpdateAgentData extends Partial<CreateAgentData> {
+  avatar?: string;
+  voice?: string;
+  voice_provider?: string;
+  channels?: string[];
+  phone?: string;
+  email?: string;
+  prompt?: string;
+}
 
-export const fetchAgentById = async (id: string): Promise<AgentType> => {
-  // Simuler un délai d'API
-  await new Promise(resolve => setTimeout(resolve, 300));
-  
-  const agent = mockAgents.find(agent => agent.id === id);
-  
-  if (!agent) {
-    throw new Error(`Agent avec l'id ${id} non trouvé`);
-  }
-  
-  return agent;
-};
-
-export const updateAgent = async (id: string, updates: Partial<AgentType>): Promise<AgentType> => {
-  // Simuler un délai d'API
-  await new Promise(resolve => setTimeout(resolve, 300));
-  
-  const agentIndex = mockAgents.findIndex(agent => agent.id === id);
-  
-  if (agentIndex === -1) {
-    throw new Error(`Agent avec l'id ${id} non trouvé`);
-  }
-  
-  const updatedAgent = {
-    ...mockAgents[agentIndex],
-    ...updates,
-    updatedAt: new Date().toISOString()
+/**
+ * Map backend agent to frontend AgentType
+ */
+function mapBackendAgentToFrontend(agent: BackendAgent): AgentType {
+  return {
+    id: agent.id,
+    name: agent.name,
+    description: agent.description || '',
+    type: agent.type as any,
+    status: (agent.status || 'draft') as AgentStatus,
+    createdAt: agent.created_at,
+    updatedAt: agent.updated_at,
+    model: agent.model || undefined,
+    voice: agent.voice || undefined,
+    voiceProvider: agent.voice_provider || undefined,
+    customVoiceId: agent.custom_voice_id || undefined,
+    voiceTraits: agent.voice_traits || undefined,
+    avmScore: agent.avm_score || undefined,
+    interactions: agent.interactions || 0,
+    csat: agent.csat || undefined,
+    performance: agent.performance || undefined,
+    channels: agent.channels || undefined,
+    channelConfigs: agent.channel_configs || undefined,
+    phone: agent.phone || undefined,
+    email: agent.email || undefined,
+    avatar: agent.avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${agent.name}`,
+    purpose: agent.purpose || undefined,
+    prompt: agent.prompt || undefined,
+    industry: agent.industry || undefined,
+    customIndustry: agent.custom_industry || undefined,
+    botFunction: agent.bot_function || undefined,
+    customFunction: agent.custom_function || undefined,
+    totalCalls: agent.total_calls || 0,
+    averageRating: agent.average_rating || undefined,
+    language: agent.language || 'Français',
+    timezone: agent.timezone || 'Europe/Paris',
+    capabilities: agent.capabilities || [],
+    isOnline: agent.is_online ?? true,
+    responseTime: agent.response_time || '< 2s',
   };
-  
-  mockAgents[agentIndex] = updatedAgent;
-  
-  return updatedAgent;
-};
+}
 
+/**
+ * Fetch all agents with optional status filter
+ */
+export async function fetchAgents(filter: string = 'all-agents'): Promise<AgentType[]> {
+  try {
+    const agents = await apiClient.get<BackendAgent[]>('/api/agents');
+
+    let filteredAgents = agents.map(mapBackendAgentToFrontend);
+
+    // Apply frontend filters
+    switch (filter) {
+      case 'active-agents':
+        filteredAgents = filteredAgents.filter(agent => agent.status === 'active');
+        break;
+      case 'inactive-agents':
+        filteredAgents = filteredAgents.filter(agent => agent.status === 'inactive');
+        break;
+      case 'maintenance-agents':
+        filteredAgents = filteredAgents.filter(agent => agent.status === 'draft');
+        break;
+      default:
+        // all-agents - no filter
+        break;
+    }
+
+    return filteredAgents;
+  } catch (error) {
+    console.error('Error fetching agents:', error);
+    throw new Error('Impossible de récupérer les agents');
+  }
+}
+
+/**
+ * Fetch a single agent by ID
+ */
+export async function fetchAgentById(id: string): Promise<AgentType> {
+  try {
+    const agent = await apiClient.get<BackendAgent>(`/api/agents/${id}`);
+    return mapBackendAgentToFrontend(agent);
+  } catch (error) {
+    console.error(`Error fetching agent ${id}:`, error);
+    throw new Error(`Agent avec l'id ${id} non trouvé`);
+  }
+}
+
+/**
+ * Create a new agent
+ */
+export async function createAgent(data: CreateAgentData): Promise<AgentType> {
+  try {
+    const agent = await apiClient.post<BackendAgent>('/api/agents', data);
+    return mapBackendAgentToFrontend(agent);
+  } catch (error) {
+    console.error('Error creating agent:', error);
+    throw new Error('Impossible de créer l\'agent');
+  }
+}
+
+/**
+ * Update an existing agent
+ */
+export async function updateAgent(id: string, updates: UpdateAgentData): Promise<AgentType> {
+  try {
+    const agent = await apiClient.patch<BackendAgent>(`/api/agents/${id}`, updates);
+    return mapBackendAgentToFrontend(agent);
+  } catch (error) {
+    console.error(`Error updating agent ${id}:`, error);
+    throw new Error('Impossible de mettre à jour l\'agent');
+  }
+}
+
+/**
+ * Delete an agent
+ */
+export async function deleteAgent(id: string): Promise<void> {
+  try {
+    await apiClient.delete(`/api/agents/${id}`);
+  } catch (error) {
+    console.error(`Error deleting agent ${id}:`, error);
+    throw new Error('Impossible de supprimer l\'agent');
+  }
+}
+
+/**
+ * Upload document for an agent (via Vapi)
+ */
+export async function uploadDocument(agentId: string, file: File): Promise<any> {
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const result = await apiClient.upload(`/api/vapi/${agentId}/upload-document`, formData);
+    return result;
+  } catch (error) {
+    console.error(`Error uploading document for agent ${agentId}:`, error);
+    throw new Error('Impossible d\'uploader le document');
+  }
+}
+
+/**
+ * Fetch documents for an agent (from Vapi)
+ */
+export async function fetchAgentDocuments(agentId: string): Promise<any[]> {
+  try {
+    const response = await apiClient.get<{ files: any[]; agent_knowledge_base_id: string | null }>(`/api/vapi/${agentId}/files`);
+    return response.files || [];
+  } catch (error) {
+    console.error(`Error fetching documents for agent ${agentId}:`, error);
+    throw new Error('Impossible de récupérer les documents');
+  }
+}
+
+/**
+ * Delete a document (from Vapi)
+ */
+export async function deleteDocument(agentId: string, fileId: string): Promise<void> {
+  try {
+    await apiClient.delete(`/api/vapi/${agentId}/files/${fileId}`);
+  } catch (error) {
+    console.error(`Error deleting document ${fileId}:`, error);
+    throw new Error('Impossible de supprimer le document');
+  }
+}
+
+/**
+ * Chat interfaces
+ */
+export interface ChatMessage {
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+  timestamp?: string;
+}
+
+export interface ChatResponse {
+  response: string;
+  conversation_id: string;
+  used_rag: boolean;
+  num_context_chunks: number;
+}
+
+/**
+ * Send a chat message to an agent
+ */
+export async function sendChatMessage(
+  agentId: string,
+  message: string,
+  conversationId?: string
+): Promise<ChatResponse> {
+  try {
+    const response = await apiClient.post<ChatResponse>(`/api/chat/${agentId}`, {
+      message,
+      conversation_id: conversationId,
+      use_rag: true
+    });
+    return response;
+  } catch (error) {
+    console.error(`Error sending chat message to agent ${agentId}:`, error);
+    throw new Error('Impossible d\'envoyer le message');
+  }
+}
+
+// Export types
+export type { CreateAgentData, UpdateAgentData };

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { AgentTrainingCard } from "./AgentTrainingCard";
 import { WorkflowCard } from "./WorkflowCard";
 import { SimulationCard } from "./SimulationCard";
+import { KnowledgeBaseCardConnected } from "./KnowledgeBaseCardConnected";
 import { Progress } from "@/components/ui/progress";
 
 interface AgentSetupStepperProps {
@@ -18,14 +19,16 @@ interface StepState {
 
 export const AgentSetupStepper: React.FC<AgentSetupStepperProps> = ({ agent }) => {
   const [steps, setSteps] = useState({
-    training: { status: 'not-started' as StepStatus, active: true },
+    knowledgeBase: { status: 'not-started' as StepStatus, active: true },
+    training: { status: 'not-started' as StepStatus, active: false },
     workflow: { status: 'not-started' as StepStatus, active: false },
     simulation: { status: 'not-started' as StepStatus, active: false }
   });
 
   // Track expanded state for each card
   const [expanded, setExpanded] = useState({
-    training: true,
+    knowledgeBase: true,
+    training: false,
     workflow: false,
     simulation: false
   });
@@ -150,10 +153,13 @@ export const AgentSetupStepper: React.FC<AgentSetupStepperProps> = ({ agent }) =
       </div>
       
       <div className="space-y-4 mt-8">
+        {/* Knowledge Base Step */}
+        <KnowledgeBaseCardConnected agentId={agent.id} />
+
         {steps.training.status === 'not-started' && (
-          <AgentTrainingCard 
-            status="not-started" 
-            stepNumber={1}
+          <AgentTrainingCard
+            status="not-started"
+            stepNumber={2}
             isActive={steps.training.active}
             onStart={() => handleStepStart('training')}
             onComplete={() => handleStepComplete('training')}
@@ -163,9 +169,9 @@ export const AgentSetupStepper: React.FC<AgentSetupStepperProps> = ({ agent }) =
         )}
         
         {steps.training.status === 'in-progress' && (
-          <AgentTrainingCard 
+          <AgentTrainingCard
             status="in-progress"
-            stepNumber={1}
+            stepNumber={2}
             voiceSamples={3}
             voiceConfidence={65}
             talkTime="45s"
@@ -176,11 +182,11 @@ export const AgentSetupStepper: React.FC<AgentSetupStepperProps> = ({ agent }) =
             onToggleExpand={() => toggleExpanded('training')}
           />
         )}
-        
+
         {steps.training.status === 'completed' && (
-          <AgentTrainingCard 
+          <AgentTrainingCard
             status="completed"
-            stepNumber={1}
+            stepNumber={2}
             voiceSamples={10}
             totalSamples={10}
             voiceConfidence={95}
@@ -191,32 +197,32 @@ export const AgentSetupStepper: React.FC<AgentSetupStepperProps> = ({ agent }) =
             onToggleExpand={() => toggleExpanded('training')}
           />
         )}
-        
+
         {steps.workflow.status === 'not-started' && (
-          <WorkflowCard 
+          <WorkflowCard
             status="not-started"
-            stepNumber={2}
+            stepNumber={3}
             onStart={() => handleStepStart('workflow')}
             onComplete={() => handleStepComplete('workflow')}
             isExpanded={expanded.workflow}
             onToggleExpand={() => toggleExpanded('workflow')}
           />
         )}
-        
+
         {steps.workflow.status === 'in-progress' && (
-          <WorkflowCard 
+          <WorkflowCard
             status="in-progress"
-            stepNumber={2}
+            stepNumber={3}
             onComplete={() => handleStepComplete('workflow')}
             isExpanded={expanded.workflow}
             onToggleExpand={() => toggleExpanded('workflow')}
           />
         )}
-        
+
         {steps.workflow.status === 'completed' && (
-          <WorkflowCard 
+          <WorkflowCard
             status="completed"
-            stepNumber={2}
+            stepNumber={3}
             isExpanded={expanded.workflow}
             onToggleExpand={() => toggleExpanded('workflow')}
           />
