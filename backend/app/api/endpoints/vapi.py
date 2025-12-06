@@ -72,17 +72,55 @@ async def upload_document_to_vapi(
         file_id = uploaded_file.get("id")
         logger.info(f"File uploaded to Vapi: {file.filename} (ID: {file_id})")
 
-        # Note: Files are uploaded to Vapi but need to be manually attached to assistant
-        # via the Vapi dashboard or by updating the assistant's model.knowledgeBase
-        # This avoids overwriting existing knowledge base configuration
+        # Attach file to assistant's knowledge base automatically
+        if agent.vapi_assistant_id:
+            try:
+                # Get current assistant configuration
+                current_assistant = await vapi_service.get_assistant(agent.vapi_assistant_id)
+
+                # Get existing fileIds from knowledge base (if any)
+                existing_file_ids = []
+                if current_assistant.get("model") and current_assistant["model"].get("knowledgeBase"):
+                    kb = current_assistant["model"]["knowledgeBase"]
+                    if isinstance(kb.get("fileIds"), list):
+                        existing_file_ids = kb["fileIds"]
+
+                # Add new file to the list (avoid duplicates)
+                if file_id not in existing_file_ids:
+                    existing_file_ids.append(file_id)
+
+                # Preserve existing model configuration and add knowledge base
+                model_config = {
+                    "provider": current_assistant.get("model", {}).get("provider", "openai"),
+                    "model": current_assistant.get("model", {}).get("model", "gpt-4o-mini"),
+                    "knowledgeBase": {
+                        "provider": "canonical",
+                        "fileIds": existing_file_ids
+                    }
+                }
+
+                # Preserve systemPrompt if it exists
+                if current_assistant.get("model", {}).get("systemPrompt"):
+                    model_config["systemPrompt"] = current_assistant["model"]["systemPrompt"]
+
+                # Update assistant with all files
+                await vapi_service.update_assistant(
+                    assistant_id=agent.vapi_assistant_id,
+                    model=model_config
+                )
+                logger.info(f"Attached file {file_id} to assistant {agent.vapi_assistant_id} (total files: {len(existing_file_ids)})")
+
+            except Exception as attach_error:
+                # Log error but don't fail the upload - file is already on Vapi
+                logger.error(f"Failed to attach file to assistant: {attach_error}")
+                logger.info(f"File uploaded but not attached. Attach manually via Vapi dashboard.")
 
         return {
             "message": "Document uploaded successfully",
             "file_id": file_id,
             "filename": file.filename,
             "size": file_size,
-            "knowledge_base_id": agent.vapi_knowledge_base_id,
-            "note": "File uploaded. Attach to assistant via Vapi dashboard or update assistant configuration."
+            "knowledge_base_id": agent.vapi_knowledge_base_id
         }
 
     except Exception as e:
