@@ -38,6 +38,8 @@ class Agent(Base):
     # Agent Configuration
     purpose = Column(Text, nullable=True)
     prompt = Column(Text, nullable=True)  # System prompt
+    first_message = Column(Text, nullable=True)  # First message to say
+    first_message_mode = Column(String(50), default="assistant-speaks-first")  # assistant-speaks-first, assistant-waits
     industry = Column(String(100), nullable=True)
     custom_industry = Column(String(255), nullable=True)
     bot_function = Column(String(100), nullable=True)

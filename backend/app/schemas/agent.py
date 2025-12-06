@@ -21,6 +21,8 @@ class AgentCreate(AgentBase):
     # Agent Configuration
     purpose: Optional[str] = None
     prompt: Optional[str] = None
+    first_message: Optional[str] = None
+    first_message_mode: Optional[str] = "assistant-speaks-first"
     industry: Optional[str] = None
     custom_industry: Optional[str] = None
     bot_function: Optional[str] = None
@@ -62,6 +64,8 @@ class AgentUpdate(BaseModel):
     # Agent Configuration
     purpose: Optional[str] = None
     prompt: Optional[str] = None
+    first_message: Optional[str] = None
+    first_message_mode: Optional[str] = None
     industry: Optional[str] = None
     custom_industry: Optional[str] = None
     bot_function: Optional[str] = None
@@ -101,6 +105,8 @@ class AgentResponse(AgentBase):
     # Agent Configuration
     purpose: Optional[str]
     prompt: Optional[str]
+    first_message: Optional[str]
+    first_message_mode: Optional[str]
     industry: Optional[str]
     custom_industry: Optional[str]
     bot_function: Optional[str]

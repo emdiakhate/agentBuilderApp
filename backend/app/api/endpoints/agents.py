@@ -22,16 +22,26 @@ async def create_agent(
     """Create a new agent and sync with Vapi"""
 
     try:
+        # Prepare first message
+        first_message = agent_data.first_message
+        if not first_message:
+            first_message = f"Bonjour ! Je suis {agent_data.name}. Comment puis-je vous aider ?"
+
+        # Prepare system prompt
+        system_prompt = agent_data.prompt
+        if not system_prompt:
+            system_prompt = f"""Vous êtes {agent_data.name}, un assistant IA.
+{agent_data.description or ''}
+Votre rôle : {agent_data.type or 'Assistant'}
+Objectif : {agent_data.purpose or 'Aider les utilisateurs avec leurs questions'}"""
+
         # Create Vapi assistant first
         vapi_assistant = await vapi_service.create_assistant(
             name=agent_data.name,
             model=agent_data.model or "gpt-4o-mini",
             voice=agent_data.voice or "jennifer-playht",
-            first_message=f"Bonjour ! Je suis {agent_data.name}. Comment puis-je vous aider ?",
-            system_prompt=agent_data.prompt or f"""Vous êtes {agent_data.name}, un assistant IA.
-{agent_data.description or ''}
-Votre rôle : {agent_data.type or 'Assistant'}
-Objectif : {agent_data.purpose or 'Aider les utilisateurs avec leurs questions'}"""
+            first_message=first_message,
+            system_prompt=system_prompt
         )
 
         # Create local agent with Vapi ID
@@ -139,6 +149,8 @@ async def update_agent(
             if "prompt" in update_data:
                 vapi_updates["model"] = vapi_updates.get("model", {})
                 vapi_updates["model"]["systemPrompt"] = update_data["prompt"]
+            if "first_message" in update_data:
+                vapi_updates["firstMessage"] = update_data["first_message"]
 
             # Update Vapi if there are changes
             if vapi_updates:
