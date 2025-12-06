@@ -35,9 +35,10 @@ async def generate_system_prompt(
     current_user: User = Depends(get_current_user_optional)
 ):
     """
-    Generate a system prompt using OpenAI based on agent details
+    Generate a system prompt in Vapi format using OpenAI based on agent details
 
-    This mimics Vapi's "Generate" button functionality
+    Uses the same structured format as Vapi with sections:
+    [Identity], [Style], [Response Guidelines], [Task & Goals], [Error Handling / Fallback]
     """
 
     try:
@@ -59,34 +60,68 @@ async def generate_system_prompt(
 
         context = "\n".join(context_parts)
 
-        # Prepare OpenAI API request
+        # Prepare OpenAI API request with Vapi format instructions
         openai_payload = {
             "model": "gpt-4o-mini",
             "messages": [
                 {
                     "role": "system",
-                    "content": f"""Tu es un expert en création de prompts pour assistants IA vocaux.
-Génère un system prompt professionnel, concis et efficace pour un assistant IA basé sur les informations fournies.
+                    "content": f"""Tu es un expert en création de prompts pour assistants IA vocaux utilisant le format Vapi.
 
-Le prompt doit:
-- Être rédigé en {request.language}
-- Définir clairement l'identité et le rôle de l'assistant
-- Être adapté à une interaction vocale (naturelle, conversationnelle)
-- Inclure des directives de comportement appropriées
-- Rester concis (2-4 paragraphes maximum)
-- Utiliser un ton professionnel mais accessible
+Génère un system prompt structuré selon le format Vapi avec les sections suivantes :
 
-Génère UNIQUEMENT le system prompt, sans introduction ni explication."""
+[Identity] - L'identité de l'assistant et sa mission principale
+[Style] - Le ton et le style de communication (liste à puces)
+[Response Guidelines] - Directives pour les réponses (liste à puces)
+[Task & Goals] - Tâches et objectifs étape par étape (liste numérotée avec "< attendez la réponse de l'utilisateur >" quand approprié)
+[Error Handling / Fallback] - Gestion des erreurs et cas limites (liste à puces)
+
+RÈGLES IMPORTANTES:
+- Rédige en {request.language}
+- Utilise des listes à puces (-) ou numérotées selon la section
+- Sois concis et clair
+- Adapte le contenu pour une interaction vocale naturelle
+- Utilise un ton professionnel et empathique
+- Ajoute "< attendez la réponse de l'utilisateur >" dans [Task & Goals] quand l'assistant doit attendre
+
+Génère UNIQUEMENT le system prompt au format Vapi, sans introduction ni explication."""
                 },
                 {
                     "role": "user",
-                    "content": f"""Génère un system prompt pour cet assistant IA:
+                    "content": f"""Génère un system prompt au format Vapi pour cet assistant IA:
 
-{context}"""
+{context}
+
+EXEMPLE DE FORMAT (à adapter selon le contexte):
+
+[Identity]
+Vous êtes {{nom}}, un assistant IA. Votre mission est de {{mission}}.
+
+[Style]
+- Adoptez un ton amical et professionnel.
+- Communiquez de manière claire et concise tout en restant empathique.
+
+[Response Guidelines]
+- Répondez aux questions en utilisant les informations disponibles.
+- Limitez vos réponses à l'essentiel tout en fournissant des explications claires.
+- Utilisez un langage simple et accessible.
+
+[Task & Goals]
+1. Accueillez l'utilisateur et demandez comment vous pouvez l'aider.
+2. Écoutez attentivement la question de l'utilisateur.
+3. Recherchez les informations nécessaires.
+4. Fournissez une réponse basée sur les informations disponibles.
+5. Si nécessaire, posez des questions de clarification.
+6. < attendez la réponse de l'utilisateur >
+7. Proposez des solutions ou des informations supplémentaires si demandées.
+
+[Error Handling / Fallback]
+- Si une question n'est pas claire, demandez des précisions à l'utilisateur.
+- Si vous ne trouvez pas d'informations, informez poliment l'utilisateur et proposez d'autres moyens d'assistance."""
                 }
             ],
             "temperature": 0.7,
-            "max_tokens": 500
+            "max_tokens": 800
         }
 
         # Call OpenAI API
@@ -108,7 +143,7 @@ Génère UNIQUEMENT le system prompt, sans introduction ni explication."""
         # Extract generated prompt
         system_prompt = result["choices"][0]["message"]["content"].strip()
 
-        logger.info(f"Generated system prompt for agent: {request.name}")
+        logger.info(f"Generated Vapi-format system prompt for agent: {request.name}")
 
         return GeneratePromptResponse(system_prompt=system_prompt)
 
