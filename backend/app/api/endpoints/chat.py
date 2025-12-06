@@ -108,8 +108,15 @@ async def send_message(
         # Try different possible response formats from Vapi
         assistant_message = None
 
-        # Check if response is a list of messages (most common format)
-        if isinstance(vapi_response, list):
+        # Check if response has 'output' array (Vapi Chat API format)
+        if isinstance(vapi_response.get("output"), list):
+            # Find the last assistant message in output
+            for msg in reversed(vapi_response["output"]):
+                if isinstance(msg, dict) and msg.get("role") == "assistant":
+                    assistant_message = msg.get("content")
+                    break
+        # Check if response is a list of messages
+        elif isinstance(vapi_response, list):
             # Find the last assistant message
             for msg in reversed(vapi_response):
                 if isinstance(msg, dict) and msg.get("role") == "assistant":
@@ -131,9 +138,6 @@ async def send_message(
             assistant_message = vapi_response.get("content")
         elif vapi_response.get("text"):
             assistant_message = vapi_response.get("text")
-        # Check if there's an 'output' field
-        elif vapi_response.get("output"):
-            assistant_message = vapi_response.get("output")
 
         vapi_chat_id = vapi_response.get("id") or vapi_response.get("chatId") if isinstance(vapi_response, dict) else None
 
