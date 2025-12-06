@@ -72,48 +72,89 @@ async def upload_document_to_vapi(
         file_id = uploaded_file.get("id")
         logger.info(f"File uploaded to Vapi: {file.filename} (ID: {file_id})")
 
-        # Attach file to assistant's knowledge base automatically
+        # Create or update Query Tool with knowledge base
         if agent.vapi_assistant_id:
             try:
-                # Get current assistant configuration
+                # Get current assistant to check for existing toolIds
                 current_assistant = await vapi_service.get_assistant(agent.vapi_assistant_id)
 
-                # Get existing fileIds from knowledge base (if any)
+                # Get existing query tool ID (stored in vapi_knowledge_base_id)
+                query_tool_id = agent.vapi_knowledge_base_id
                 existing_file_ids = []
-                if current_assistant.get("model") and current_assistant["model"].get("knowledgeBase"):
-                    kb = current_assistant["model"]["knowledgeBase"]
-                    if isinstance(kb.get("fileIds"), list):
-                        existing_file_ids = kb["fileIds"]
 
-                # Add new file to the list (avoid duplicates)
-                if file_id not in existing_file_ids:
-                    existing_file_ids.append(file_id)
+                if query_tool_id:
+                    # Update existing query tool
+                    try:
+                        existing_tool = await vapi_service.get_tool(query_tool_id)
+                        # Extract existing file IDs from knowledge bases
+                        if existing_tool.get("knowledgeBases") and len(existing_tool["knowledgeBases"]) > 0:
+                            kb = existing_tool["knowledgeBases"][0]
+                            if isinstance(kb.get("fileIds"), list):
+                                existing_file_ids = kb["fileIds"]
 
-                # Preserve existing model configuration and add knowledge base
+                        # Add new file (avoid duplicates)
+                        if file_id not in existing_file_ids:
+                            existing_file_ids.append(file_id)
+
+                        # Update query tool
+                        await vapi_service.update_query_tool(
+                            tool_id=query_tool_id,
+                            file_ids=existing_file_ids,
+                            description=f"Knowledge base for {agent.name}"
+                        )
+                        logger.info(f"Updated query tool {query_tool_id} with file {file_id} (total files: {len(existing_file_ids)})")
+
+                    except Exception as tool_error:
+                        logger.warning(f"Could not update existing tool: {tool_error}. Creating new one.")
+                        query_tool_id = None
+
+                if not query_tool_id:
+                    # Create new query tool
+                    query_tool = await vapi_service.create_query_tool(
+                        name=f"{agent.name.lower().replace(' ', '-')}-knowledge",
+                        file_ids=[file_id],
+                        description=f"Knowledge base for {agent.name}"
+                    )
+                    query_tool_id = query_tool.get("id")
+
+                    # Save query tool ID
+                    agent.vapi_knowledge_base_id = query_tool_id
+                    db.commit()
+
+                    logger.info(f"Created new query tool: {query_tool_id}")
+
+                # Attach query tool to assistant
+                existing_tool_ids = current_assistant.get("model", {}).get("toolIds", [])
+                if query_tool_id not in existing_tool_ids:
+                    existing_tool_ids.append(query_tool_id)
+
+                # Preserve existing model configuration
                 model_config = {
                     "provider": current_assistant.get("model", {}).get("provider", "openai"),
                     "model": current_assistant.get("model", {}).get("model", "gpt-4o-mini"),
-                    "knowledgeBase": {
-                        "provider": "canonical",
-                        "fileIds": existing_file_ids
-                    }
+                    "toolIds": existing_tool_ids
                 }
 
-                # Preserve systemPrompt if it exists
-                if current_assistant.get("model", {}).get("systemPrompt"):
-                    model_config["systemPrompt"] = current_assistant["model"]["systemPrompt"]
+                # Preserve systemPrompt and enhance it to use documents
+                system_prompt = current_assistant.get("model", {}).get("systemPrompt", "")
+                if system_prompt and "knowledge" not in system_prompt.lower():
+                    system_prompt += "\n\nTu as accès à des documents via un outil de requête. Utilise-les pour répondre aux questions des utilisateurs de manière précise et détaillée."
+                elif not system_prompt:
+                    system_prompt = f"Tu es {agent.name}. Tu as accès à des documents via un outil de requête. Utilise-les pour répondre aux questions des utilisateurs de manière précise et détaillée."
 
-                # Update assistant with all files
+                model_config["systemPrompt"] = system_prompt
+
+                # Update assistant
                 await vapi_service.update_assistant(
                     assistant_id=agent.vapi_assistant_id,
                     model=model_config
                 )
-                logger.info(f"Attached file {file_id} to assistant {agent.vapi_assistant_id} (total files: {len(existing_file_ids)})")
+                logger.info(f"Attached query tool to assistant {agent.vapi_assistant_id}")
 
             except Exception as attach_error:
                 # Log error but don't fail the upload - file is already on Vapi
-                logger.error(f"Failed to attach file to assistant: {attach_error}")
-                logger.info(f"File uploaded but not attached. Attach manually via Vapi dashboard.")
+                logger.error(f"Failed to attach query tool to assistant: {attach_error}")
+                logger.info(f"File uploaded but not attached. Configure manually via Vapi dashboard.")
 
         return {
             "message": "Document uploaded successfully",

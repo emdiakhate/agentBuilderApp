@@ -386,6 +386,136 @@ class VapiService:
             logger.error(f"Error sending chat message: {e}")
             raise
 
+    async def create_query_tool(
+        self,
+        name: str,
+        file_ids: List[str],
+        description: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """
+        Create a Query Tool with knowledge base for file-based retrieval
+
+        Args:
+            name: Name for the query tool function
+            file_ids: List of file IDs to include in knowledge base
+            description: Optional description of the knowledge base
+
+        Returns:
+            Created query tool data including tool ID
+        """
+        try:
+            payload = {
+                "type": "query",
+                "function": {
+                    "name": name
+                },
+                "knowledgeBases": [
+                    {
+                        "provider": "canonical",
+                        "name": f"{name}-kb",
+                        "description": description or "Knowledge base for document retrieval",
+                        "fileIds": file_ids
+                    }
+                ]
+            }
+
+            async with httpx.AsyncClient() as client:
+                response = await client.post(
+                    f"{self.base_url}/tool",
+                    headers=self.headers,
+                    json=payload,
+                    timeout=30.0
+                )
+                response.raise_for_status()
+                result = response.json()
+
+            logger.info(f"Created query tool: {result.get('id')}")
+            return result
+
+        except httpx.HTTPStatusError as e:
+            logger.error(f"Error creating query tool: {e.response.status_code} - {e.response.text}")
+            raise
+        except Exception as e:
+            logger.error(f"Error creating query tool: {e}")
+            raise
+
+    async def update_query_tool(
+        self,
+        tool_id: str,
+        file_ids: List[str],
+        description: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """
+        Update an existing Query Tool with new file IDs
+
+        Args:
+            tool_id: Query tool ID to update
+            file_ids: Updated list of file IDs
+            description: Optional updated description
+
+        Returns:
+            Updated query tool data
+        """
+        try:
+            payload = {
+                "knowledgeBases": [
+                    {
+                        "provider": "canonical",
+                        "fileIds": file_ids
+                    }
+                ]
+            }
+
+            if description:
+                payload["knowledgeBases"][0]["description"] = description
+
+            async with httpx.AsyncClient() as client:
+                response = await client.patch(
+                    f"{self.base_url}/tool/{tool_id}",
+                    headers=self.headers,
+                    json=payload,
+                    timeout=30.0
+                )
+                response.raise_for_status()
+                result = response.json()
+
+            logger.info(f"Updated query tool: {tool_id}")
+            return result
+
+        except httpx.HTTPStatusError as e:
+            logger.error(f"Error updating query tool: {e.response.status_code} - {e.response.text}")
+            raise
+        except Exception as e:
+            logger.error(f"Error updating query tool: {e}")
+            raise
+
+    async def get_tool(self, tool_id: str) -> Dict[str, Any]:
+        """
+        Get tool details from Vapi
+
+        Args:
+            tool_id: Tool ID
+
+        Returns:
+            Tool data
+        """
+        try:
+            async with httpx.AsyncClient() as client:
+                response = await client.get(
+                    f"{self.base_url}/tool/{tool_id}",
+                    headers=self.headers,
+                    timeout=30.0
+                )
+                response.raise_for_status()
+                return response.json()
+
+        except httpx.HTTPStatusError as e:
+            logger.error(f"Error getting tool: {e.response.status_code} - {e.response.text}")
+            raise
+        except Exception as e:
+            logger.error(f"Error getting tool: {e}")
+            raise
+
 
 # Global instance
 vapi_service = VapiService()
