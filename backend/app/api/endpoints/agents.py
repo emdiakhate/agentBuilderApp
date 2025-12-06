@@ -142,10 +142,15 @@ async def update_agent(
 
             # Update Vapi if there are changes
             if vapi_updates:
-                await vapi_service.update_assistant(
-                    assistant_id=agent.vapi_assistant_id,
-                    **vapi_updates
-                )
+                try:
+                    await vapi_service.update_assistant(
+                        assistant_id=agent.vapi_assistant_id,
+                        **vapi_updates
+                    )
+                except Exception as vapi_error:
+                    # Log but continue - voice config can be fixed in Vapi dashboard
+                    logger.warning(f"Failed to update Vapi assistant (will update local only): {vapi_error}")
+                    logger.info("Agent will be updated locally. Configure voice/model in Vapi dashboard if needed.")
 
         # Update local agent fields
         update_data = agent_data.model_dump(exclude_unset=True)
