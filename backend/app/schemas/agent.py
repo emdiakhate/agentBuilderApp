@@ -96,6 +96,10 @@ class AgentResponse(AgentBase):
     id: str
     user_id: str
 
+    # Vapi Integration
+    vapi_assistant_id: Optional[str] = None
+    vapi_knowledge_base_id: Optional[str] = None
+
     # LLM Configuration
     llm_provider: str
     model: str
