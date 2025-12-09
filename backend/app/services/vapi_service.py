@@ -27,6 +27,7 @@ class VapiService:
         model: str = "gpt-4o-mini",
         voice: str = "jennifer-playht",
         first_message: Optional[str] = None,
+        first_message_mode: str = "assistant-speaks-first",
         system_prompt: Optional[str] = None,
         **kwargs
     ) -> Dict[str, Any]:
@@ -38,6 +39,7 @@ class VapiService:
             model: LLM model to use
             voice: Voice ID to use
             first_message: First message to say
+            first_message_mode: Mode for first message ("assistant-speaks-first" or "assistant-waits")
             system_prompt: System prompt for the assistant
             **kwargs: Additional Vapi assistant configuration
 
@@ -56,6 +58,7 @@ class VapiService:
                     "provider": "playht",
                     "voiceId": voice
                 },
+                "firstMessageMode": first_message_mode,
                 **kwargs
             }
 

@@ -710,6 +710,8 @@ const AgentDetails = () => {
         }}
         persona={selectedPersona}
         directCallInfo={directCallInfo}
+        vapiAssistantId={agent?.vapi_assistant_id}
+        agentName={agent?.name || "Agent"}
         onCallComplete={(recordingData) => {
           toast({
             title: "Call completed",

@@ -41,6 +41,7 @@ Objectif : {agent_data.purpose or 'Aider les utilisateurs avec leurs questions'}
             model=agent_data.model or "gpt-4o-mini",
             voice=agent_data.voice or "jennifer-playht",
             first_message=first_message,
+            first_message_mode=agent_data.first_message_mode or "assistant-speaks-first",
             system_prompt=system_prompt
         )
 

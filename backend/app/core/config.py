@@ -39,6 +39,7 @@ class Settings(BaseSettings):
 
     # Vapi.ai Integration
     VAPI_API_KEY: str = ""
+    VAPI_PUBLIC_KEY: str = ""
 
     # File Upload (for potential file validation before Vapi upload)
     MAX_UPLOAD_SIZE_MB: int = 10
