@@ -165,19 +165,28 @@ export const CallInterface: React.FC<CallInterfaceProps> = ({
   useEffect(() => {
     if (open && vapiAssistantId && !isCallActive && !isLoading) {
       // Start the call automatically when dialog opens
+      console.log("🔵 Starting Vapi call with assistant ID:", vapiAssistantId);
       const initCall = async () => {
         try {
           await startCall(vapiAssistantId);
+          console.log("✅ Vapi call started successfully");
         } catch (err) {
-          console.error("Failed to start Vapi call:", err);
+          console.error("❌ Failed to start Vapi call:", err);
           toast({
             title: "Erreur",
-            description: "Impossible de démarrer l'appel. Vérifiez votre configuration Vapi.",
+            description: `Impossible de démarrer l'appel: ${err instanceof Error ? err.message : 'Erreur inconnue'}`,
             variant: "destructive"
           });
         }
       };
       initCall();
+    } else {
+      console.log("🟡 Vapi call not started. Conditions:", {
+        open,
+        vapiAssistantId,
+        isCallActive,
+        isLoading
+      });
     }
   }, [open, vapiAssistantId]);
 
