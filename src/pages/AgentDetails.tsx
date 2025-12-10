@@ -353,16 +353,36 @@ const AgentDetails = () => {
       }
     }
   };
-  
-  const handleDelete = () => {
-    toast({
-      title: "Agent deleted",
-      description: "The agent has been successfully deleted.",
-      variant: "destructive"
-    });
-    navigate("/agents");
+
+  const handleDelete = async () => {
+    if (!agent || !agentId) return;
+
+    const confirmDelete = window.confirm(
+      `Êtes-vous sûr de vouloir supprimer l'agent "${agent.name}" ? Cette action est irréversible.`
+    );
+
+    if (!confirmDelete) return;
+
+    try {
+      const { deleteAgent } = await import("@/services/agentService");
+      await deleteAgent(agentId);
+
+      toast({
+        title: "✅ Agent supprimé",
+        description: `L'agent "${agent.name}" a été supprimé avec succès.`,
+      });
+
+      navigate("/agents");
+    } catch (error) {
+      console.error("Error deleting agent:", error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de supprimer l'agent. Vérifiez votre connexion.",
+        variant: "destructive",
+      });
+    }
   };
-  
+
   const handleUpdateChannel = async (channel: string, config: {
     enabled: boolean;
     details?: string;
@@ -613,19 +633,19 @@ const AgentDetails = () => {
                 <DropdownMenuContent>
                   <DropdownMenuItem onClick={handleEditClick} className="cursor-pointer flex items-center gap-2">
                     <PenSquare className="h-4 w-4 text-muted-foreground" />
-                    <span>Edit Agent</span>
+                    <span>Modifier l'agent</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleDeactivateAgent} className="cursor-pointer flex items-center gap-2">
                     <UserMinus className="h-4 w-4 text-muted-foreground" />
-                    <span>Deactivate Agent</span>
+                    <span>Désactiver l'agent</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleArchiveAgent} className="cursor-pointer flex items-center gap-2">
                     <Archive className="h-4 w-4 text-muted-foreground" />
-                    <span>Archive Agent</span>
+                    <span>Archiver l'agent</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleDelete} className="cursor-pointer flex items-center gap-2 text-red-400">
                     <Trash2 className="h-4 w-4" />
-                    <span>Delete Agent</span>
+                    <span>Supprimer l'agent</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

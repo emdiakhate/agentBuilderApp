@@ -154,7 +154,16 @@ export const AgentSetupStepper: React.FC<AgentSetupStepperProps> = ({ agent }) =
       
       <div className="space-y-4 mt-8">
         {/* Knowledge Base Step */}
-        <KnowledgeBaseCardConnected agentId={agent.id} />
+        <KnowledgeBaseCardConnected
+          agentId={agent.id}
+          currentPrompt={agent.prompt || ""}
+          onPromptUpdate={(newPrompt) => {
+            // Update agent object locally
+            if (agent) {
+              agent.prompt = newPrompt;
+            }
+          }}
+        />
 
         {steps.training.status === 'not-started' && (
           <AgentTrainingCard
