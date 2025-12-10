@@ -25,9 +25,9 @@ class VapiService:
         self,
         name: str,
         model: str = "gpt-4o-mini",
-        voice: str = "79a125e8-cd45-4c13-8a67-188112f4dd22",  # French conversational lady (Cartesia)
+        voice: str = "79a125e8-cd45-4c13-8a67-188112f4dd22",  # Helpful French lady (Cartesia)
         voice_provider: str = "cartesia",
-        voice_model: str = "sonic-english",
+        voice_model: str = "sonic-multilingual",  # Sonic 2 multilingual for French
         first_message: Optional[str] = None,
         first_message_mode: str = "assistant-speaks-first",
         system_prompt: Optional[str] = None,
@@ -39,9 +39,9 @@ class VapiService:
         Args:
             name: Assistant name
             model: LLM model to use
-            voice: Voice ID to use
+            voice: Voice ID to use (default: Helpful French lady)
             voice_provider: Voice provider (cartesia, playht, elevenlabs, etc.)
-            voice_model: Voice model to use (for Cartesia: sonic-english, sonic-multilingual)
+            voice_model: Voice model to use (Sonic 2 multilingual for French)
             first_message: First message to say
             first_message_mode: Mode for first message ("assistant-speaks-first" or "assistant-waits")
             system_prompt: System prompt for the assistant

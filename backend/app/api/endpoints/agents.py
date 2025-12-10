@@ -36,7 +36,7 @@ Votre rôle : {agent_data.type or 'Assistant'}
 Objectif : {agent_data.purpose or 'Aider les utilisateurs avec leurs questions'}"""
 
         # Create Vapi assistant first
-        # Default to Cartesia voice with French conversational lady
+        # Default to Cartesia voice with Helpful French lady
         voice_id = agent_data.voice or "79a125e8-cd45-4c13-8a67-188112f4dd22"
         voice_provider = agent_data.voice_provider or "cartesia"
 
@@ -45,17 +45,24 @@ Objectif : {agent_data.purpose or 'Aider les utilisateurs avec leurs questions'}
             model=agent_data.model or "gpt-4o-mini",
             voice=voice_id,
             voice_provider=voice_provider,
-            voice_model="sonic-english",  # Cartesia Sonic 2
+            voice_model="sonic-multilingual",  # Cartesia Sonic 2 - multilingual for French
             first_message=first_message,
             first_message_mode=agent_data.first_message_mode or "assistant-speaks-first",
             system_prompt=system_prompt
         )
 
+        # Prepare agent data with defaults applied
+        agent_dict = agent_data.model_dump()
+        if not agent_dict.get("voice"):
+            agent_dict["voice"] = voice_id
+        if not agent_dict.get("voice_provider"):
+            agent_dict["voice_provider"] = voice_provider
+
         # Create local agent with Vapi ID
         new_agent = Agent(
             user_id=current_user.id,
             vapi_assistant_id=vapi_assistant.get("id"),
-            **agent_data.model_dump()
+            **agent_dict
         )
 
         db.add(new_agent)
@@ -155,7 +162,7 @@ async def update_agent(
                     "voiceId": update_data.get("voice", "79a125e8-cd45-4c13-8a67-188112f4dd22")
                 }
                 if voice_provider == "cartesia":
-                    voice_config["model"] = "sonic-english"
+                    voice_config["model"] = "sonic-multilingual"  # Sonic 2 multilingual for French
                 vapi_updates["voice"] = voice_config
             if "prompt" in update_data:
                 vapi_updates["model"] = vapi_updates.get("model", {})
