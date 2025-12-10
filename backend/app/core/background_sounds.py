@@ -16,7 +16,7 @@ BACKGROUND_SOUND_URLS = {
     # - Low volume (subtle ambient sound)
     # - Publicly accessible HTTPS URL
 
-    "restaurant": "https://cdn.pixabay.com/download/audio/2022/03/15/audio_c84c5b3f3f.mp3",  # Restaurant ambient sound
+    "restaurant": "https://raw.githubusercontent.com/iantrepreneur/bank_audio/main/restaurant-1.mp3",  # Restaurant ambient sound
     "clinic": "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3",  # Hospital/clinic ambient
     "noisy": "https://cdn.pixabay.com/download/audio/2022/03/10/audio_4d8b2e1e46.mp3",  # Call center / busy office
     "home": "https://cdn.pixabay.com/download/audio/2021/08/04/audio_12b0c7443c.mp3",  # Home ambient with TV
