@@ -25,7 +25,7 @@ class VapiService:
         self,
         name: str,
         model: str = "gpt-4o-mini",
-        voice: str = "79a125e8-cd45-4c13-8a67-188112f4dd22",  # Helpful French lady (Cartesia)
+        voice: str = "65b25c5d-ff07-4687-a04c-da2f43ef6fa9",  # Helpful French lady (Cartesia)
         voice_provider: str = "cartesia",
         voice_model: str = "sonic-multilingual",  # Sonic 2 multilingual for French
         first_message: Optional[str] = None,

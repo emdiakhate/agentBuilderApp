@@ -37,7 +37,7 @@ Objectif : {agent_data.purpose or 'Aider les utilisateurs avec leurs questions'}
 
         # Create Vapi assistant first
         # Default to Cartesia voice with Helpful French lady
-        voice_id = agent_data.voice or "79a125e8-cd45-4c13-8a67-188112f4dd22"
+        voice_id = agent_data.voice or "65b25c5d-ff07-4687-a04c-da2f43ef6fa9"
         voice_provider = agent_data.voice_provider or "cartesia"
 
         vapi_assistant = await vapi_service.create_assistant(
@@ -159,7 +159,7 @@ async def update_agent(
                 voice_provider = update_data.get("voice_provider", "cartesia")
                 voice_config = {
                     "provider": voice_provider,
-                    "voiceId": update_data.get("voice", "79a125e8-cd45-4c13-8a67-188112f4dd22")
+                    "voiceId": update_data.get("voice", "65b25c5d-ff07-4687-a04c-da2f43ef6fa9")
                 }
                 if voice_provider == "cartesia":
                     voice_config["model"] = "sonic-multilingual"  # Sonic 2 multilingual for French
