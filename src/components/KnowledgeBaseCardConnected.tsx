@@ -203,6 +203,38 @@ export const KnowledgeBaseCardConnected: React.FC<KnowledgeBaseCardConnectedProp
     return date.toLocaleDateString("fr-FR");
   };
 
+  const getDocumentStatusBadge = (status: string) => {
+    // Vapi statuses: uploaded, processing, ready, failed, pending
+    switch (status?.toLowerCase()) {
+      case 'ready':
+      case 'uploaded':
+        return {
+          className: "bg-green-500/20 text-green-600",
+          label: "✓ Prêt"
+        };
+      case 'processing':
+        return {
+          className: "bg-yellow-500/20 text-yellow-600",
+          label: "⏳ En cours..."
+        };
+      case 'failed':
+        return {
+          className: "bg-red-500/20 text-red-600",
+          label: "✗ Échec"
+        };
+      case 'pending':
+        return {
+          className: "bg-blue-500/20 text-blue-600",
+          label: "⏸ En attente"
+        };
+      default:
+        return {
+          className: "bg-gray-500/20 text-gray-600",
+          label: "⚪ Inconnu"
+        };
+    }
+  };
+
   const status = documents.length === 0 ? "not-started" : "in-progress";
   const progress = documents.length > 0 ? 100 : 0;
 
@@ -350,14 +382,8 @@ export const KnowledgeBaseCardConnected: React.FC<KnowledgeBaseCardConnectedProp
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Badge className={
-                            doc.status === "completed"
-                              ? "bg-green-500/20 text-green-600"
-                              : doc.status === "processing"
-                              ? "bg-yellow-500/20 text-yellow-600"
-                              : "bg-gray-500/20 text-gray-600"
-                          }>
-                            {doc.status === "completed" ? "✓ Traité" : doc.status === "processing" ? "En cours..." : "En attente"}
+                          <Badge className={getDocumentStatusBadge(doc.status).className}>
+                            {getDocumentStatusBadge(doc.status).label}
                           </Badge>
                           <Button
                             variant="ghost"
