@@ -16,7 +16,10 @@ BACKGROUND_SOUND_URLS = {
     # - Low volume (subtle ambient sound)
     # - Publicly accessible HTTPS URL
 
-    "restaurant": "https://raw.githubusercontent.com/iantrepreneur/bank_audio/main/restaurant-1.mp3",  # Restaurant ambient sound
+    # IMPORTANT: GitHub Raw URLs don't work with Vapi/Daily.co!
+    # See AUDIO_CDN_SETUP.md for proper CDN setup instructions
+    # Using Pixabay temporarily until you upload restaurant-1.mp3 to a CDN
+    "restaurant": "https://cdn.pixabay.com/download/audio/2022/03/15/audio_c84c5b3f3f.mp3",  # TEMP - Replace with CDN URL
     "clinic": "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3",  # Hospital/clinic ambient
     "noisy": "https://cdn.pixabay.com/download/audio/2022/03/10/audio_4d8b2e1e46.mp3",  # Call center / busy office
     "home": "https://cdn.pixabay.com/download/audio/2021/08/04/audio_12b0c7443c.mp3",  # Home ambient with TV
