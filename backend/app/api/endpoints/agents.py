@@ -5,6 +5,7 @@ from loguru import logger
 
 from app.core.database import get_db
 from app.core.security import get_current_user_optional
+from app.core.background_sounds import get_background_sound_url
 from app.models.user import User
 from app.models.agent import Agent
 from app.schemas.agent import AgentCreate, AgentUpdate, AgentResponse
@@ -181,11 +182,10 @@ async def update_agent(
             # Handle background sound configuration
             if "background_sound" in update_data:
                 bg_sound = update_data["background_sound"]
-                # Vapi only supports "off" and "office"
-                if bg_sound in ["restaurant", "noisy", "home"]:
-                    vapi_updates["backgroundSound"] = "office"
-                else:
-                    vapi_updates["backgroundSound"] = bg_sound
+                # Use custom URLs for environments or Vapi built-in sounds
+                background_sound_url = get_background_sound_url(bg_sound)
+                vapi_updates["backgroundSound"] = background_sound_url
+                logger.info(f"Updating background sound: {bg_sound} -> {background_sound_url}")
 
             # Handle background denoising
             if "background_denoising_enabled" in update_data:
@@ -214,13 +214,21 @@ async def update_agent(
                             "windowSizeMs": 4000,
                             "baselinePercentile": 80
                         }
-                    elif bg_sound == "restaurant":
+                    elif bg_sound in ["restaurant", "cafe"]:
                         denoising_config["fourierDenoisingPlan"] = {
                             "enabled": True,
                             "mediaDetectionEnabled": True,
                             "baselineOffsetDb": -12,
                             "windowSizeMs": 3000,
                             "baselinePercentile": 85
+                        }
+                    elif bg_sound == "clinic":
+                        denoising_config["fourierDenoisingPlan"] = {
+                            "enabled": True,
+                            "mediaDetectionEnabled": True,
+                            "baselineOffsetDb": -18,  # Quiet environment
+                            "windowSizeMs": 3500,
+                            "baselinePercentile": 75
                         }
 
                     vapi_updates["backgroundSpeechDenoisingPlan"] = denoising_config

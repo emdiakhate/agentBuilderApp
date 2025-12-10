@@ -8,6 +8,7 @@ import mimetypes
 from loguru import logger
 
 from app.core.config import settings
+from app.core.background_sounds import get_background_sound_url
 
 
 class VapiService:
@@ -85,11 +86,11 @@ class VapiService:
                 payload["firstMessage"] = first_message
 
             # Add background sound configuration
-            # Vapi only supports "off" and "office", so map other values to "office"
-            if background_sound in ["restaurant", "noisy", "home"]:
-                payload["backgroundSound"] = "office"
-            else:
-                payload["backgroundSound"] = background_sound  # "off" or "office"
+            # Use custom URLs for environments (restaurant, clinic, etc.)
+            # or Vapi built-in sounds ("off", "office")
+            background_sound_url = get_background_sound_url(background_sound)
+            payload["backgroundSound"] = background_sound_url
+            logger.info(f"Background sound configured: {background_sound} -> {background_sound_url}")
 
             # Add background speech denoising if enabled
             if background_denoising_enabled:
@@ -116,13 +117,21 @@ class VapiService:
                         "windowSizeMs": 4000,
                         "baselinePercentile": 80
                     }
-                elif background_sound == "restaurant":
+                elif background_sound == "restaurant" or background_sound == "cafe":
                     denoising_config["fourierDenoisingPlan"] = {
                         "enabled": True,
                         "mediaDetectionEnabled": True,
                         "baselineOffsetDb": -12,
                         "windowSizeMs": 3000,
                         "baselinePercentile": 85
+                    }
+                elif background_sound == "clinic":
+                    denoising_config["fourierDenoisingPlan"] = {
+                        "enabled": True,
+                        "mediaDetectionEnabled": True,
+                        "baselineOffsetDb": -18,  # Quiet environment
+                        "windowSizeMs": 3500,
+                        "baselinePercentile": 75
                     }
 
                 payload["backgroundSpeechDenoisingPlan"] = denoising_config

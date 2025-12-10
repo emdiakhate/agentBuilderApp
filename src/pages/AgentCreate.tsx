@@ -455,6 +455,8 @@ const AgentCreate = () => {
                     <SelectItem value="off">🔇 Aucun - Pas de bruit de fond</SelectItem>
                     <SelectItem value="office">🏢 Bureau - Environnement de bureau calme</SelectItem>
                     <SelectItem value="restaurant">🍽️ Restaurant - Ambiance avec conversations</SelectItem>
+                    <SelectItem value="cafe">☕ Café - Ambiance café avec discussions</SelectItem>
+                    <SelectItem value="clinic">🏥 Clinique - Environnement médical</SelectItem>
                     <SelectItem value="noisy">📢 Bruyant - Centre d'appels, environnement très bruyant</SelectItem>
                     <SelectItem value="home">🏠 Domestique - Maison avec TV/musique</SelectItem>
                   </SelectContent>
@@ -488,6 +490,8 @@ const AgentCreate = () => {
                     💡 <strong>Recommandation</strong> : Pour un environnement {
                       formData.background_sound === "office" ? "de bureau" :
                       formData.background_sound === "restaurant" ? "de restaurant" :
+                      formData.background_sound === "cafe" ? "de café" :
+                      formData.background_sound === "clinic" ? "médical" :
                       formData.background_sound === "noisy" ? "bruyant" :
                       "domestique"
                     }, il est recommandé d'activer le débruitage intelligent pour une meilleure qualité audio.
