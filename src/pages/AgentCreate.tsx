@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { ArrowLeft, Bot, Loader2, Sparkles } from "lucide-react";
+import { ArrowLeft, Bot, Loader2, Sparkles, Cpu, Mic, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
 import { createAgent } from "@/services/agentService";
+import { CollapsibleSection } from "@/components/CollapsibleSection";
 
 const AgentCreate = () => {
   const navigate = useNavigate();
@@ -23,6 +24,7 @@ const AgentCreate = () => {
     llm_provider: "openai",
     model: "gpt-4o-mini",
     temperature: 0.7,
+    max_tokens: 1000,
     purpose: "",
     prompt: "",
     first_message: "",
@@ -112,6 +114,7 @@ const AgentCreate = () => {
         llm_provider: formData.llm_provider,
         model: formData.model,
         temperature: formData.temperature,
+        max_tokens: formData.max_tokens,
         purpose: formData.purpose || undefined,
         prompt: formData.prompt || undefined,
         first_message: formData.first_message || undefined,
@@ -342,6 +345,167 @@ const AgentCreate = () => {
               <p className="text-xs text-muted-foreground">
                 Choisissez si l'agent doit parler en premier ou attendre que l'utilisateur parle
               </p>
+            </div>
+
+            {/* Advanced Configuration Sections */}
+            <div className="space-y-4 pt-4">
+              <h3 className="text-lg font-semibold text-foreground">Configuration Avancée</h3>
+
+              {/* Model Section */}
+              <CollapsibleSection
+                title="Model"
+                icon={<Cpu className="h-5 w-5" />}
+                defaultOpen={false}
+              >
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="llm_provider">Provider</Label>
+                    <Select
+                      value={formData.llm_provider}
+                      onValueChange={(value) => handleSelectChange("llm_provider", value)}
+                    >
+                      <SelectTrigger id="llm_provider">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="openai">OpenAI</SelectItem>
+                        <SelectItem value="anthropic">Anthropic</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="model_advanced">Model</Label>
+                    <Select
+                      value={formData.model}
+                      onValueChange={(value) => handleSelectChange("model", value)}
+                    >
+                      <SelectTrigger id="model_advanced">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="gpt-4o">GPT-4o</SelectItem>
+                        <SelectItem value="gpt-4o-mini">GPT-4o Mini</SelectItem>
+                        <SelectItem value="gpt-4-turbo">GPT-4 Turbo</SelectItem>
+                        <SelectItem value="gpt-3.5-turbo">GPT-3.5 Turbo</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="temperature">
+                        Temperature: {formData.temperature}
+                      </Label>
+                      <Input
+                        id="temperature"
+                        name="temperature"
+                        type="range"
+                        min="0"
+                        max="2"
+                        step="0.1"
+                        value={formData.temperature}
+                        onChange={(e) => setFormData(prev => ({ ...prev, temperature: parseFloat(e.target.value) }))}
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Contrôle la créativité (0 = précis, 2 = créatif)
+                      </p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="max_tokens">Max Tokens</Label>
+                      <Input
+                        id="max_tokens"
+                        name="max_tokens"
+                        type="number"
+                        min="100"
+                        max="4000"
+                        step="100"
+                        value={formData.max_tokens}
+                        onChange={(e) => setFormData(prev => ({ ...prev, max_tokens: parseInt(e.target.value) }))}
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Longueur maximale de la réponse
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </CollapsibleSection>
+
+              {/* Voice Section */}
+              <CollapsibleSection
+                title="Voice"
+                icon={<Mic className="h-5 w-5" />}
+                defaultOpen={false}
+              >
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Provider</Label>
+                      <Select value="cartesia" disabled>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Cartesia" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="cartesia">Cartesia</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <p className="text-xs text-muted-foreground">
+                        Par défaut : Cartesia (meilleure qualité)
+                      </p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Voice</Label>
+                      <Select value="helpful-french-lady" disabled>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Helpful French Lady" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="helpful-french-lady">Helpful French Lady</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <p className="text-xs text-muted-foreground">
+                        Voix française par défaut
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Model</Label>
+                    <Select value="sonic-multilingual" disabled>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Sonic Multilingual (Sonic 2)" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="sonic-multilingual">Sonic Multilingual (Sonic 2)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-muted-foreground">
+                      Sonic 2 - Support multilingue pour le français
+                    </p>
+                  </div>
+                </div>
+              </CollapsibleSection>
+
+              {/* File Section */}
+              <CollapsibleSection
+                title="Files"
+                icon={<Upload className="h-5 w-5" />}
+                defaultOpen={false}
+              >
+                <div className="space-y-4">
+                  <div className="bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800/30 rounded-lg p-4">
+                    <p className="text-sm text-blue-800 dark:text-blue-200">
+                      💡 <strong>Astuce</strong> : Les documents peuvent être ajoutés après la création de l'agent dans l'onglet "Base de connaissances".
+                    </p>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Créez d'abord l'agent, puis uploadez des documents (PDF, DOCX, TXT) dans la section "Base de connaissances".
+                    Le prompt sera automatiquement mis à jour avec les noms des documents.
+                  </p>
+                </div>
+              </CollapsibleSection>
             </div>
 
             {/* Buttons */}

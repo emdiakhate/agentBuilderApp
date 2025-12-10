@@ -57,7 +57,11 @@ interface CreateAgentData {
   llm_provider?: string;
   model?: string;
   temperature?: number;
+  max_tokens?: number;
   purpose?: string;
+  prompt?: string;
+  first_message?: string;
+  first_message_mode?: string;
   language?: string;
   status?: string;
 }
