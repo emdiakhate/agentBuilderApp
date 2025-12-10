@@ -84,6 +84,11 @@ function mapBackendAgentToFrontend(agent: BackendAgent): AgentType {
     status: (agent.status || 'draft') as AgentStatus,
     createdAt: agent.created_at,
     updatedAt: agent.updated_at,
+
+    // Vapi Integration
+    vapi_assistant_id: agent.vapi_assistant_id,
+    vapi_knowledge_base_id: agent.vapi_knowledge_base_id,
+
     model: agent.model || undefined,
     voice: agent.voice || undefined,
     voiceProvider: agent.voice_provider || undefined,
