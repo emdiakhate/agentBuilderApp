@@ -124,6 +124,8 @@ const AgentCreate = () => {
         first_message_mode: formData.first_message_mode,
         language: formData.language,
         status: "active",
+        background_sound: formData.background_sound,
+        background_denoising_enabled: formData.background_denoising_enabled,
       });
 
       toast({
