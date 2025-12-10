@@ -48,7 +48,9 @@ Objectif : {agent_data.purpose or 'Aider les utilisateurs avec leurs questions'}
             voice_model="sonic-multilingual",  # Cartesia Sonic 2 - multilingual for French
             first_message=first_message,
             first_message_mode=agent_data.first_message_mode or "assistant-speaks-first",
-            system_prompt=system_prompt
+            system_prompt=system_prompt,
+            background_sound=agent_data.background_sound or "off",
+            background_denoising_enabled=agent_data.background_denoising_enabled or False
         )
 
         # Prepare agent data with defaults applied
@@ -175,6 +177,60 @@ async def update_agent(
                 vapi_updates["voice"] = voice_config
             if "first_message" in update_data:
                 vapi_updates["firstMessage"] = update_data["first_message"]
+
+            # Handle background sound configuration
+            if "background_sound" in update_data:
+                bg_sound = update_data["background_sound"]
+                # Vapi only supports "off" and "office"
+                if bg_sound in ["restaurant", "noisy", "home"]:
+                    vapi_updates["backgroundSound"] = "office"
+                else:
+                    vapi_updates["backgroundSound"] = bg_sound
+
+            # Handle background denoising
+            if "background_denoising_enabled" in update_data:
+                if update_data["background_denoising_enabled"]:
+                    bg_sound = update_data.get("background_sound", agent.background_sound)
+                    denoising_config = {
+                        "smartDenoisingPlan": {
+                            "enabled": True
+                        }
+                    }
+
+                    # Add Fourier denoising for noisy environments
+                    if bg_sound == "noisy":
+                        denoising_config["fourierDenoisingPlan"] = {
+                            "enabled": True,
+                            "mediaDetectionEnabled": True,
+                            "baselineOffsetDb": -10,
+                            "windowSizeMs": 2000,
+                            "baselinePercentile": 90
+                        }
+                    elif bg_sound == "home":
+                        denoising_config["fourierDenoisingPlan"] = {
+                            "enabled": True,
+                            "mediaDetectionEnabled": True,
+                            "baselineOffsetDb": -15,
+                            "windowSizeMs": 4000,
+                            "baselinePercentile": 80
+                        }
+                    elif bg_sound == "restaurant":
+                        denoising_config["fourierDenoisingPlan"] = {
+                            "enabled": True,
+                            "mediaDetectionEnabled": True,
+                            "baselineOffsetDb": -12,
+                            "windowSizeMs": 3000,
+                            "baselinePercentile": 85
+                        }
+
+                    vapi_updates["backgroundSpeechDenoisingPlan"] = denoising_config
+                else:
+                    # Disable denoising
+                    vapi_updates["backgroundSpeechDenoisingPlan"] = {
+                        "smartDenoisingPlan": {
+                            "enabled": False
+                        }
+                    }
 
             # Update Vapi if there are changes
             if vapi_updates:

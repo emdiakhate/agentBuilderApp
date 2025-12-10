@@ -64,6 +64,8 @@ interface CreateAgentData {
   first_message_mode?: string;
   language?: string;
   status?: string;
+  background_sound?: string;
+  background_denoising_enabled?: boolean;
 }
 
 interface UpdateAgentData extends Partial<CreateAgentData> {

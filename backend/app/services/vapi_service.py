@@ -31,6 +31,8 @@ class VapiService:
         first_message: Optional[str] = None,
         first_message_mode: str = "assistant-speaks-first",
         system_prompt: Optional[str] = None,
+        background_sound: str = "off",
+        background_denoising_enabled: bool = False,
         **kwargs
     ) -> Dict[str, Any]:
         """
@@ -61,6 +63,7 @@ class VapiService:
             if voice_provider == "cartesia":
                 voice_config["model"] = voice_model
 
+            # Build base payload
             payload = {
                 "name": name,
                 "model": {
@@ -80,6 +83,49 @@ class VapiService:
 
             if first_message:
                 payload["firstMessage"] = first_message
+
+            # Add background sound configuration
+            # Vapi only supports "off" and "office", so map other values to "office"
+            if background_sound in ["restaurant", "noisy", "home"]:
+                payload["backgroundSound"] = "office"
+            else:
+                payload["backgroundSound"] = background_sound  # "off" or "office"
+
+            # Add background speech denoising if enabled
+            if background_denoising_enabled:
+                denoising_config = {
+                    "smartDenoisingPlan": {
+                        "enabled": True
+                    }
+                }
+
+                # Add Fourier denoising for noisy environments
+                if background_sound == "noisy":
+                    denoising_config["fourierDenoisingPlan"] = {
+                        "enabled": True,
+                        "mediaDetectionEnabled": True,
+                        "baselineOffsetDb": -10,  # More aggressive filtering
+                        "windowSizeMs": 2000,      # Fast adaptation
+                        "baselinePercentile": 90   # Focus on clear speech
+                    }
+                elif background_sound == "home":
+                    denoising_config["fourierDenoisingPlan"] = {
+                        "enabled": True,
+                        "mediaDetectionEnabled": True,  # Essential for TV/music
+                        "baselineOffsetDb": -15,
+                        "windowSizeMs": 4000,
+                        "baselinePercentile": 80
+                    }
+                elif background_sound == "restaurant":
+                    denoising_config["fourierDenoisingPlan"] = {
+                        "enabled": True,
+                        "mediaDetectionEnabled": True,
+                        "baselineOffsetDb": -12,
+                        "windowSizeMs": 3000,
+                        "baselinePercentile": 85
+                    }
+
+                payload["backgroundSpeechDenoisingPlan"] = denoising_config
 
             async with httpx.AsyncClient() as client:
                 response = await client.post(

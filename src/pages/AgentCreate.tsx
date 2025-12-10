@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { ArrowLeft, Bot, Loader2, Sparkles, Cpu, Mic, Upload } from "lucide-react";
+import { ArrowLeft, Bot, Loader2, Sparkles, Cpu, Mic, Upload, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/components/ui/use-toast";
 import { createAgent } from "@/services/agentService";
 import { CollapsibleSection } from "@/components/CollapsibleSection";
@@ -30,6 +31,8 @@ const AgentCreate = () => {
     first_message: "",
     first_message_mode: "assistant-speaks-first",
     language: "fr",
+    background_sound: "off",
+    background_denoising_enabled: false,
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -428,6 +431,68 @@ const AgentCreate = () => {
                     </p>
                   </div>
                 </div>
+          </CollapsibleSection>
+
+          {/* Additional Configuration Section */}
+          <CollapsibleSection
+            title="Configuration Additionnelle"
+            icon={<Settings className="h-5 w-5" />}
+            defaultOpen={false}
+          >
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="background_sound">Bruit de fond</Label>
+                <Select
+                  value={formData.background_sound}
+                  onValueChange={(value) => handleSelectChange("background_sound", value)}
+                >
+                  <SelectTrigger id="background_sound">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="off">🔇 Aucun - Pas de bruit de fond</SelectItem>
+                    <SelectItem value="office">🏢 Bureau - Environnement de bureau calme</SelectItem>
+                    <SelectItem value="restaurant">🍽️ Restaurant - Ambiance avec conversations</SelectItem>
+                    <SelectItem value="noisy">📢 Bruyant - Centre d'appels, environnement très bruyant</SelectItem>
+                    <SelectItem value="home">🏠 Domestique - Maison avec TV/musique</SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground">
+                  Ajoute un bruit de fond ambiant pour rendre les conversations plus naturelles. Le bruit est ajouté côté agent.
+                </p>
+              </div>
+
+              <div className="flex items-center justify-between space-x-2 rounded-lg border p-4">
+                <div className="flex-1 space-y-1">
+                  <Label htmlFor="background_denoising_enabled" className="cursor-pointer">
+                    Débruitage intelligent (Krisp)
+                  </Label>
+                  <p className="text-xs text-muted-foreground">
+                    Active le débruitage intelligent pour filtrer les bruits parasites de l'utilisateur
+                  </p>
+                </div>
+                <Switch
+                  id="background_denoising_enabled"
+                  checked={formData.background_denoising_enabled}
+                  onCheckedChange={(checked) =>
+                    setFormData(prev => ({ ...prev, background_denoising_enabled: checked }))
+                  }
+                />
+              </div>
+
+              {formData.background_sound !== "off" && (
+                <div className="bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800/30 rounded-lg p-4">
+                  <p className="text-sm text-blue-800 dark:text-blue-200">
+                    💡 <strong>Recommandation</strong> : Pour un environnement {
+                      formData.background_sound === "office" ? "de bureau" :
+                      formData.background_sound === "restaurant" ? "de restaurant" :
+                      formData.background_sound === "noisy" ? "bruyant" :
+                      "domestique"
+                    }, il est recommandé d'activer le débruitage intelligent pour une meilleure qualité audio.
+                  </p>
+                </div>
+              )}
+            </div>
           </CollapsibleSection>
 
           {/* File Section */}

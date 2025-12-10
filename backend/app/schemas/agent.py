@@ -34,6 +34,10 @@ class AgentCreate(AgentBase):
     custom_voice_id: Optional[str] = None
     voice_traits: Optional[List[Dict[str, Any]]] = None
 
+    # Background Sound Configuration
+    background_sound: Optional[str] = "off"
+    background_denoising_enabled: Optional[bool] = False
+
     # Channels
     channels: Optional[List[str]] = None
     channel_configs: Optional[Dict[str, Any]] = None
@@ -76,6 +80,10 @@ class AgentUpdate(BaseModel):
     voice_provider: Optional[str] = None
     custom_voice_id: Optional[str] = None
     voice_traits: Optional[List[Dict[str, Any]]] = None
+
+    # Background Sound Configuration
+    background_sound: Optional[str] = None
+    background_denoising_enabled: Optional[bool] = None
 
     # Channels
     channels: Optional[List[str]] = None
