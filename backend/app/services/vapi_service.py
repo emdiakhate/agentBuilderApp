@@ -25,7 +25,9 @@ class VapiService:
         self,
         name: str,
         model: str = "gpt-4o-mini",
-        voice: str = "jennifer-playht",
+        voice: str = "79a125e8-cd45-4c13-8a67-188112f4dd22",  # French conversational lady (Cartesia)
+        voice_provider: str = "cartesia",
+        voice_model: str = "sonic-english",
         first_message: Optional[str] = None,
         first_message_mode: str = "assistant-speaks-first",
         system_prompt: Optional[str] = None,
@@ -38,6 +40,8 @@ class VapiService:
             name: Assistant name
             model: LLM model to use
             voice: Voice ID to use
+            voice_provider: Voice provider (cartesia, playht, elevenlabs, etc.)
+            voice_model: Voice model to use (for Cartesia: sonic-english, sonic-multilingual)
             first_message: First message to say
             first_message_mode: Mode for first message ("assistant-speaks-first" or "assistant-waits")
             system_prompt: System prompt for the assistant
@@ -47,6 +51,16 @@ class VapiService:
             Created assistant data including assistant_id
         """
         try:
+            # Build voice configuration
+            voice_config = {
+                "provider": voice_provider,
+                "voiceId": voice
+            }
+
+            # Add model for Cartesia
+            if voice_provider == "cartesia":
+                voice_config["model"] = voice_model
+
             payload = {
                 "name": name,
                 "model": {
@@ -54,9 +68,11 @@ class VapiService:
                     "model": model,
                     "systemPrompt": system_prompt or f"You are {name}, a helpful AI assistant.",
                 },
-                "voice": {
-                    "provider": "playht",
-                    "voiceId": voice
+                "voice": voice_config,
+                "transcriber": {
+                    "provider": "deepgram",
+                    "model": "nova-2",
+                    "language": "fr"
                 },
                 "firstMessageMode": first_message_mode,
                 **kwargs

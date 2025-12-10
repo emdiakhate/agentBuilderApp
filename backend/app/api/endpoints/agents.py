@@ -36,10 +36,16 @@ Votre rôle : {agent_data.type or 'Assistant'}
 Objectif : {agent_data.purpose or 'Aider les utilisateurs avec leurs questions'}"""
 
         # Create Vapi assistant first
+        # Default to Cartesia voice with French conversational lady
+        voice_id = agent_data.voice or "79a125e8-cd45-4c13-8a67-188112f4dd22"
+        voice_provider = agent_data.voice_provider or "cartesia"
+
         vapi_assistant = await vapi_service.create_assistant(
             name=agent_data.name,
             model=agent_data.model or "gpt-4o-mini",
-            voice=agent_data.voice or "jennifer-playht",
+            voice=voice_id,
+            voice_provider=voice_provider,
+            voice_model="sonic-english",  # Cartesia Sonic 2
             first_message=first_message,
             first_message_mode=agent_data.first_message_mode or "assistant-speaks-first",
             system_prompt=system_prompt
@@ -142,11 +148,15 @@ async def update_agent(
                     "provider": "openai",
                     "model": update_data["model"]
                 }
-            if "voice" in update_data:
-                vapi_updates["voice"] = {
-                    "provider": "playht",
-                    "voiceId": update_data["voice"]
+            if "voice" in update_data or "voice_provider" in update_data:
+                voice_provider = update_data.get("voice_provider", "cartesia")
+                voice_config = {
+                    "provider": voice_provider,
+                    "voiceId": update_data.get("voice", "79a125e8-cd45-4c13-8a67-188112f4dd22")
                 }
+                if voice_provider == "cartesia":
+                    voice_config["model"] = "sonic-english"
+                vapi_updates["voice"] = voice_config
             if "prompt" in update_data:
                 vapi_updates["model"] = vapi_updates.get("model", {})
                 vapi_updates["model"]["systemPrompt"] = update_data["prompt"]

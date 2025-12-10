@@ -93,7 +93,10 @@ export const CallInterface: React.FC<CallInterfaceProps> = ({
     },
     onCallEnd: () => {
       console.log("Vapi call ended");
-      handleCallEnd();
+      toast({
+        title: "Appel terminé",
+        description: `Durée: ${formatDuration(callDuration)}`,
+      });
     },
     onSpeechStart: () => {
       console.log("Assistant speaking...");
