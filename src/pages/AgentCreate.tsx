@@ -162,45 +162,45 @@ const AgentCreate = () => {
         </div>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Informations de l'Agent</CardTitle>
-          <CardDescription>
-            Remplissez les informations de base pour créer votre agent
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Nom de l'agent */}
-            <div className="space-y-2">
-              <Label htmlFor="name">
-                Nom de l'agent <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                id="name"
-                name="name"
-                placeholder="Ex: Assistant Support Client"
-                value={formData.name}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Configuration Sections */}
+        <div className="space-y-4">
+          {/* Model Section - Contains all main fields */}
+          <CollapsibleSection
+            title="Model"
+            icon={<Cpu className="h-5 w-5" />}
+            defaultOpen={true}
+          >
+            <div className="space-y-4">
+              {/* Nom de l'agent */}
+              <div className="space-y-2">
+                <Label htmlFor="name">
+                  Nom de l'agent <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="name"
+                  name="name"
+                  placeholder="Ex: Assistant Support Client"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
 
-            {/* Description */}
-            <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
-                name="description"
-                placeholder="Décrivez brièvement le rôle de cet agent..."
-                value={formData.description}
-                onChange={handleInputChange}
-                rows={3}
-              />
-            </div>
+              {/* Description */}
+              <div className="space-y-2">
+                <Label htmlFor="description">Description</Label>
+                <Textarea
+                  id="description"
+                  name="description"
+                  placeholder="Décrivez brièvement le rôle de cet agent..."
+                  value={formData.description}
+                  onChange={handleInputChange}
+                  rows={3}
+                />
+              </div>
 
-            {/* Type et Modèle */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Type d'agent */}
               <div className="space-y-2">
                 <Label htmlFor="type">Type d'agent</Label>
                 <Select
@@ -220,143 +220,83 @@ const AgentCreate = () => {
                 </Select>
               </div>
 
+              {/* System Prompt with Generate Button */}
               <div className="space-y-2">
-                <Label htmlFor="model">Modèle LLM</Label>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="prompt">System Prompt</Label>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleGeneratePrompt}
+                    disabled={isGeneratingPrompt || !formData.name.trim()}
+                    className="gap-2"
+                  >
+                    {isGeneratingPrompt ? (
+                      <>
+                        <Loader2 className="h-3 w-3 animate-spin" />
+                        Génération...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="h-3 w-3" />
+                        Générer avec IA
+                      </>
+                    )}
+                  </Button>
+                </div>
+                <Textarea
+                  id="prompt"
+                  name="prompt"
+                  placeholder="Le system prompt définit le comportement de l'agent... (Utilisez le bouton Générer)"
+                  value={formData.prompt}
+                  onChange={handleInputChange}
+                  rows={4}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Instructions système qui définissent le comportement et le rôle de l'agent
+                </p>
+              </div>
+
+              {/* First Message */}
+              <div className="space-y-2">
+                <Label htmlFor="first_message">Premier Message</Label>
+                <Textarea
+                  id="first_message"
+                  name="first_message"
+                  placeholder="Bonjour ! Je suis votre assistant. Comment puis-je vous aider ?"
+                  value={formData.first_message}
+                  onChange={handleInputChange}
+                  rows={2}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Le premier message que l'agent dira lors d'un appel
+                </p>
+              </div>
+
+              {/* First Message Mode */}
+              <div className="space-y-2">
+                <Label htmlFor="first_message_mode">Mode Premier Message</Label>
                 <Select
-                  value={formData.model}
-                  onValueChange={(value) => handleSelectChange("model", value)}
+                  value={formData.first_message_mode}
+                  onValueChange={(value) => handleSelectChange("first_message_mode", value)}
                 >
-                  <SelectTrigger id="model">
+                  <SelectTrigger id="first_message_mode">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="gpt-4o">GPT-4o (Plus performant)</SelectItem>
-                    <SelectItem value="gpt-4o-mini">GPT-4o Mini (Rapide)</SelectItem>
-                    <SelectItem value="gpt-4-turbo">GPT-4 Turbo</SelectItem>
-                    <SelectItem value="gpt-3.5-turbo">GPT-3.5 Turbo (Économique)</SelectItem>
+                    <SelectItem value="assistant-speaks-first">L'assistant parle en premier</SelectItem>
+                    <SelectItem value="assistant-waits">L'assistant attend</SelectItem>
                   </SelectContent>
                 </Select>
+                <p className="text-xs text-muted-foreground">
+                  Choisissez si l'agent doit parler en premier ou attendre que l'utilisateur parle
+                </p>
               </div>
-            </div>
 
-            {/* Langue */}
-            <div className="space-y-2">
-              <Label htmlFor="language">Langue</Label>
-              <Select
-                value={formData.language}
-                onValueChange={(value) => handleSelectChange("language", value)}
-              >
-                <SelectTrigger id="language">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="fr">Français</SelectItem>
-                  <SelectItem value="en">English</SelectItem>
-                  <SelectItem value="es">Español</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+              <div className="border-t pt-4 mt-4">
+                <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-4">Configuration du modèle</h4>
 
-            {/* Purpose */}
-            <div className="space-y-2">
-              <Label htmlFor="purpose">Objectif principal</Label>
-              <Textarea
-                id="purpose"
-                name="purpose"
-                placeholder="Quel est l'objectif principal de cet agent ?"
-                value={formData.purpose}
-                onChange={handleInputChange}
-                rows={3}
-              />
-              <p className="text-xs text-muted-foreground">
-                Décrivez ce que l'agent doit accomplir (ex: répondre aux questions, générer des leads, etc.)
-              </p>
-            </div>
-
-            {/* System Prompt with Generate Button */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="prompt">System Prompt</Label>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={handleGeneratePrompt}
-                  disabled={isGeneratingPrompt || !formData.name.trim()}
-                  className="gap-2"
-                >
-                  {isGeneratingPrompt ? (
-                    <>
-                      <Loader2 className="h-3 w-3 animate-spin" />
-                      Génération...
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="h-3 w-3" />
-                      Générer avec IA
-                    </>
-                  )}
-                </Button>
-              </div>
-              <Textarea
-                id="prompt"
-                name="prompt"
-                placeholder="Le system prompt définit le comportement de l'agent... (Utilisez le bouton Générer)"
-                value={formData.prompt}
-                onChange={handleInputChange}
-                rows={4}
-              />
-              <p className="text-xs text-muted-foreground">
-                Instructions système qui définissent le comportement et le rôle de l'agent
-              </p>
-            </div>
-
-            {/* First Message */}
-            <div className="space-y-2">
-              <Label htmlFor="first_message">Premier Message</Label>
-              <Textarea
-                id="first_message"
-                name="first_message"
-                placeholder="Bonjour ! Je suis votre assistant. Comment puis-je vous aider ?"
-                value={formData.first_message}
-                onChange={handleInputChange}
-                rows={2}
-              />
-              <p className="text-xs text-muted-foreground">
-                Le premier message que l'agent dira lors d'un appel
-              </p>
-            </div>
-
-            {/* First Message Mode */}
-            <div className="space-y-2">
-              <Label htmlFor="first_message_mode">Mode Premier Message</Label>
-              <Select
-                value={formData.first_message_mode}
-                onValueChange={(value) => handleSelectChange("first_message_mode", value)}
-              >
-                <SelectTrigger id="first_message_mode">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="assistant-speaks-first">L'assistant parle en premier</SelectItem>
-                  <SelectItem value="assistant-waits">L'assistant attend</SelectItem>
-                </SelectContent>
-              </Select>
-              <p className="text-xs text-muted-foreground">
-                Choisissez si l'agent doit parler en premier ou attendre que l'utilisateur parle
-              </p>
-            </div>
-
-            {/* Advanced Configuration Sections */}
-            <div className="space-y-4 pt-4">
-              <h3 className="text-lg font-semibold text-foreground">Configuration Avancée</h3>
-
-              {/* Model Section */}
-              <CollapsibleSection
-                title="Model"
-                icon={<Cpu className="h-5 w-5" />}
-                defaultOpen={false}
-              >
                 <div className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="llm_provider">Provider</Label>
@@ -430,15 +370,17 @@ const AgentCreate = () => {
                     </div>
                   </div>
                 </div>
-              </CollapsibleSection>
+              </div>
+            </div>
+          </CollapsibleSection>
 
-              {/* Voice Section */}
-              <CollapsibleSection
-                title="Voice"
-                icon={<Mic className="h-5 w-5" />}
-                defaultOpen={false}
-              >
-                <div className="space-y-4">
+          {/* Voice Section */}
+          <CollapsibleSection
+            title="Voice"
+            icon={<Mic className="h-5 w-5" />}
+            defaultOpen={false}
+          >
+            <div className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label>Provider</Label>
@@ -486,59 +428,57 @@ const AgentCreate = () => {
                     </p>
                   </div>
                 </div>
-              </CollapsibleSection>
+          </CollapsibleSection>
 
-              {/* File Section */}
-              <CollapsibleSection
-                title="Files"
-                icon={<Upload className="h-5 w-5" />}
-                defaultOpen={false}
-              >
-                <div className="space-y-4">
-                  <div className="bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800/30 rounded-lg p-4">
-                    <p className="text-sm text-blue-800 dark:text-blue-200">
-                      💡 <strong>Astuce</strong> : Les documents peuvent être ajoutés après la création de l'agent dans l'onglet "Base de connaissances".
-                    </p>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    Créez d'abord l'agent, puis uploadez des documents (PDF, DOCX, TXT) dans la section "Base de connaissances".
-                    Le prompt sera automatiquement mis à jour avec les noms des documents.
-                  </p>
-                </div>
-              </CollapsibleSection>
+          {/* File Section */}
+          <CollapsibleSection
+            title="Files"
+            icon={<Upload className="h-5 w-5" />}
+            defaultOpen={false}
+          >
+            <div className="space-y-4">
+              <div className="bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800/30 rounded-lg p-4">
+                <p className="text-sm text-blue-800 dark:text-blue-200">
+                  💡 <strong>Astuce</strong> : Les documents peuvent être ajoutés après la création de l'agent dans l'onglet "Base de connaissances".
+                </p>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Créez d'abord l'agent, puis uploadez des documents (PDF, DOCX, TXT) dans la section "Base de connaissances".
+                Le prompt sera automatiquement mis à jour avec les noms des documents.
+              </p>
             </div>
+          </CollapsibleSection>
+        </div>
 
-            {/* Buttons */}
-            <div className="flex justify-end gap-3 pt-6">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => navigate("/agents")}
-                disabled={isSubmitting}
-              >
-                Annuler
-              </Button>
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-                className="gap-2"
-              >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    Création en cours...
-                  </>
-                ) : (
-                  <>
-                    <Bot className="h-4 w-4" />
-                    Créer l'Agent
-                  </>
-                )}
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+        {/* Buttons */}
+        <div className="flex justify-end gap-3 pt-6">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => navigate("/agents")}
+            disabled={isSubmitting}
+          >
+            Annuler
+          </Button>
+          <Button
+            type="submit"
+            disabled={isSubmitting}
+            className="gap-2"
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Création en cours...
+              </>
+            ) : (
+              <>
+                <Bot className="h-4 w-4" />
+                Créer l'Agent
+              </>
+            )}
+          </Button>
+        </div>
+      </form>
     </div>
   );
 };

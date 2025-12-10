@@ -150,11 +150,20 @@ async def update_agent(
             # Map fields to Vapi format
             if "name" in update_data:
                 vapi_updates["name"] = update_data["name"]
-            if "model" in update_data:
+            if "model" in update_data or "llm_provider" in update_data or "prompt" in update_data:
+                # Always build complete model object if any model field is being updated
+                # Get current values from agent or update_data
+                provider = update_data.get("llm_provider", agent.llm_provider or "openai")
+                model_name = update_data.get("model", agent.model or "gpt-4o-mini")
+
                 vapi_updates["model"] = {
-                    "provider": "openai",
-                    "model": update_data["model"]
+                    "provider": provider,
+                    "model": model_name
                 }
+
+                # Add systemPrompt if prompt is being updated
+                if "prompt" in update_data:
+                    vapi_updates["model"]["systemPrompt"] = update_data["prompt"]
             if "voice" in update_data or "voice_provider" in update_data:
                 voice_provider = update_data.get("voice_provider", "cartesia")
                 voice_config = {
@@ -164,9 +173,6 @@ async def update_agent(
                 if voice_provider == "cartesia":
                     voice_config["model"] = "sonic-multilingual"  # Sonic 2 multilingual for French
                 vapi_updates["voice"] = voice_config
-            if "prompt" in update_data:
-                vapi_updates["model"] = vapi_updates.get("model", {})
-                vapi_updates["model"]["systemPrompt"] = update_data["prompt"]
             if "first_message" in update_data:
                 vapi_updates["firstMessage"] = update_data["first_message"]
 
