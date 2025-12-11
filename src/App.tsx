@@ -12,6 +12,8 @@ import AgentDetails from "./pages/AgentDetails";
 import AgentCreate from "./pages/AgentCreate";
 import Analytics from "./pages/Analytics";
 import Settings from "./pages/Settings";
+import Tools from "./pages/Tools";
+import Workflows from "./pages/Workflows";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient({
@@ -42,6 +44,8 @@ const App = () => (
               <Route path="/agents" element={<AgentsDashboard />} />
               <Route path="/agents/create" element={<AgentCreate />} />
               <Route path="/agents/:agentId" element={<AgentDetails />} />
+              <Route path="/tools" element={<Tools />} />
+              <Route path="/workflows" element={<Workflows />} />
               <Route path="/analytics" element={<Analytics />} />
               <Route path="/settings" element={<Settings />} />
             </Route>
