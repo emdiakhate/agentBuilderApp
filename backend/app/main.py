@@ -4,7 +4,7 @@ from loguru import logger
 
 from app.core.config import settings
 from app.core.database import init_db
-from app.api.endpoints import auth, agents, vapi, chat, generate
+from app.api.endpoints import auth, agents, vapi, chat, generate, templates
 
 # Create FastAPI app
 app = FastAPI(
@@ -29,6 +29,7 @@ app.include_router(agents.router, prefix="/api/agents", tags=["Agents"])
 app.include_router(vapi.router, prefix="/api/vapi", tags=["Vapi Integration"])
 app.include_router(chat.router, prefix="/api/chat", tags=["Chat"])
 app.include_router(generate.router, prefix="/api/generate", tags=["AI Generation"])
+app.include_router(templates.router, prefix="/api/templates", tags=["Templates"])
 
 
 @app.on_event("startup")

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { ArrowLeft, Bot, Loader2, Sparkles, Cpu, Mic, Upload, Settings } from "lucide-react";
+import { ArrowLeft, Bot, Loader2, Sparkles, Cpu, Mic, Upload, Settings, Layout } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -11,12 +11,16 @@ import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/components/ui/use-toast";
 import { createAgent } from "@/services/agentService";
 import { CollapsibleSection } from "@/components/CollapsibleSection";
+import { TemplateSelector } from "@/components/TemplateSelector";
+import { AgentTemplate, fetchTemplateDetail, createAgentFromTemplate } from "@/services/templateService";
 
 const AgentCreate = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGeneratingPrompt, setIsGeneratingPrompt] = useState(false);
+  const [templateSelectorOpen, setTemplateSelectorOpen] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState<AgentTemplate | null>(null);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -42,6 +46,50 @@ const AgentCreate = () => {
 
   const handleSelectChange = (name: string, value: string) => {
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleTemplateSelect = async (template: AgentTemplate) => {
+    setSelectedTemplate(template);
+
+    // If blank template, just reset form
+    if (template.id === "blank") {
+      return;
+    }
+
+    try {
+      // Fetch detailed template configuration
+      const templateDetail = await fetchTemplateDetail(template.id);
+
+      // Pre-fill form with template configuration
+      setFormData({
+        name: templateDetail.config.name,
+        description: template.description,
+        type: templateDetail.config.type,
+        llm_provider: templateDetail.config.llm_provider,
+        model: templateDetail.config.model,
+        temperature: templateDetail.config.temperature,
+        max_tokens: templateDetail.config.max_tokens,
+        purpose: template.description,
+        prompt: templateDetail.config.prompt,
+        first_message: templateDetail.config.first_message,
+        first_message_mode: templateDetail.config.first_message_mode,
+        language: templateDetail.config.language.split('-')[0], // Convert 'fr-FR' to 'fr'
+        background_sound: templateDetail.config.background_sound || "off",
+        background_denoising_enabled: templateDetail.config.background_denoising_enabled || false,
+      });
+
+      toast({
+        title: "✅ Template appliqué !",
+        description: `Le template "${template.name}" a été chargé. Vous pouvez le personnaliser avant de créer l'agent.`,
+      });
+    } catch (error) {
+      console.error("Error loading template:", error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de charger le template",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleGeneratePrompt = async () => {
@@ -159,13 +207,72 @@ const AgentCreate = () => {
         </Link>
       </div>
 
-      <div className="flex items-center space-x-3 mb-6">
-        <Bot className="h-8 w-8 text-primary" />
-        <div>
-          <h1 className="text-3xl font-semibold text-foreground">Créer un Nouvel Agent</h1>
-          <p className="text-muted-foreground mt-1">Configurez votre agent IA en quelques clics</p>
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center space-x-3">
+          <Bot className="h-8 w-8 text-primary" />
+          <div>
+            <h1 className="text-3xl font-semibold text-foreground">Créer un Nouvel Agent</h1>
+            <p className="text-muted-foreground mt-1">Configurez votre agent IA en quelques clics</p>
+          </div>
         </div>
+        <Button
+          variant="outline"
+          onClick={() => setTemplateSelectorOpen(true)}
+          className="gap-2"
+        >
+          <Layout className="h-4 w-4" />
+          Choisir un Template
+        </Button>
       </div>
+
+      {selectedTemplate && selectedTemplate.id !== "blank" && (
+        <Card className="mb-6 bg-primary/5 border-primary/20">
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-primary/10">
+                  <Layout className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium">Template appliqué</p>
+                  <p className="text-sm text-muted-foreground">{selectedTemplate.name}</p>
+                </div>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setSelectedTemplate(null);
+                  setFormData({
+                    name: "",
+                    description: "",
+                    type: "customer_support",
+                    llm_provider: "openai",
+                    model: "gpt-4o-mini",
+                    temperature: 0.7,
+                    max_tokens: 1000,
+                    purpose: "",
+                    prompt: "",
+                    first_message: "",
+                    first_message_mode: "assistant-speaks-first",
+                    language: "fr",
+                    background_sound: "off",
+                    background_denoising_enabled: false,
+                  });
+                }}
+              >
+                Réinitialiser
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      <TemplateSelector
+        open={templateSelectorOpen}
+        onClose={() => setTemplateSelectorOpen(false)}
+        onSelectTemplate={handleTemplateSelect}
+      />
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Configuration Sections */}
