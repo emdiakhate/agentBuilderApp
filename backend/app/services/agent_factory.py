@@ -8,7 +8,7 @@ import logging
 from app.core.agent_templates import get_template, AGENT_TEMPLATES
 from app.services.vapi_service import VapiService
 from app.models.agent import Agent
-from app.database import get_db
+from app.core.database import get_db
 
 logger = logging.getLogger(__name__)
 
