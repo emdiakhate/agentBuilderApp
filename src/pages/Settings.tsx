@@ -1,69 +1,14 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Settings as SettingsIcon, User, Bell, Shield, Palette, Calendar, ExternalLink } from "lucide-react";
+import { User, Bell, Shield, Palette, Plug } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/hooks/useTheme";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { checkGoogleCalendarStatus, connectGoogleCalendar, disconnectGoogleCalendar } from "@/services/toolService";
-import { useToast } from "@/hooks/use-toast";
-import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Settings = () => {
   const { theme, setTheme } = useTheme();
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
-
-  // Check for OAuth callback success/error
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const oauthSuccess = params.get("oauth_success");
-    const oauthError = params.get("oauth_error");
-
-    if (oauthSuccess === "google_calendar") {
-      toast({
-        title: "Connexion réussie",
-        description: "Google Calendar a été connecté avec succès.",
-      });
-      // Clean up URL
-      window.history.replaceState({}, "", window.location.pathname);
-      // Refresh status
-      queryClient.invalidateQueries({ queryKey: ["googleCalendarStatus"] });
-    } else if (oauthError) {
-      toast({
-        title: "Erreur de connexion",
-        description: `Erreur lors de la connexion à Google Calendar: ${oauthError}`,
-        variant: "destructive",
-      });
-      window.history.replaceState({}, "", window.location.pathname);
-    }
-  }, [toast, queryClient]);
-
-  // Fetch Google Calendar connection status
-  const { data: calendarStatus, isLoading: statusLoading } = useQuery({
-    queryKey: ["googleCalendarStatus"],
-    queryFn: checkGoogleCalendarStatus,
-    retry: false,
-  });
-
-  // Disconnect mutation
-  const disconnectMutation = useMutation({
-    mutationFn: disconnectGoogleCalendar,
-    onSuccess: () => {
-      toast({
-        title: "Déconnexion réussie",
-        description: "Google Calendar a été déconnecté.",
-      });
-      queryClient.invalidateQueries({ queryKey: ["googleCalendarStatus"] });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Erreur",
-        description: error.message || "Erreur lors de la déconnexion",
-        variant: "destructive",
-      });
-    },
-  });
+  const navigate = useNavigate();
 
   return (
     <div className="space-y-6">
@@ -106,68 +51,22 @@ const Settings = () => {
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
-            <ExternalLink className="h-5 w-5" />
+            <Plug className="h-5 w-5" />
             <CardTitle>Intégrations</CardTitle>
           </div>
           <CardDescription>
-            Connectez vos services externes pour enrichir vos agents
+            Connectez vos services externes via Vapi
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Google Calendar Integration */}
-          <div className="flex items-start justify-between p-4 border rounded-lg">
-            <div className="flex items-start gap-3">
-              <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/20">
-                <Calendar className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-              </div>
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <h3 className="font-medium">Google Calendar</h3>
-                  {statusLoading ? (
-                    <span className="text-xs text-muted-foreground">Chargement...</span>
-                  ) : calendarStatus?.connected ? (
-                    <span className="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400">
-                      Connecté
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
-                      Non connecté
-                    </span>
-                  )}
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  Permettez à vos agents de gérer les rendez-vous et vérifier les disponibilités
-                </p>
-                {calendarStatus?.connected && calendarStatus?.expires_at && (
-                  <p className="text-xs text-muted-foreground">
-                    {calendarStatus.is_expired ? (
-                      <span className="text-orange-600 dark:text-orange-400">Token expiré - Reconnexion requise</span>
-                    ) : (
-                      <span>Expire le {new Date(calendarStatus.expires_at).toLocaleDateString()}</span>
-                    )}
-                  </p>
-                )}
-              </div>
-            </div>
-            <div>
-              {calendarStatus?.connected ? (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => disconnectMutation.mutate()}
-                  disabled={disconnectMutation.isPending}
-                >
-                  {disconnectMutation.isPending ? "Déconnexion..." : "Déconnecter"}
-                </Button>
-              ) : (
-                <Button
-                  size="sm"
-                  onClick={connectGoogleCalendar}
-                >
-                  Connecter
-                </Button>
-              )}
-            </div>
+        <CardContent>
+          <div className="flex flex-col items-center justify-center py-8">
+            <Plug className="h-12 w-12 text-muted-foreground mb-4" />
+            <p className="text-sm text-muted-foreground text-center mb-4">
+              Connectez Google Calendar, Google Sheets et d'autres services
+            </p>
+            <Button onClick={() => navigate("/integrations")}>
+              Voir les intégrations
+            </Button>
           </div>
         </CardContent>
       </Card>

@@ -1,4 +1,4 @@
-import { Home, Bot, BarChart3, Settings, User, Wrench, GitBranch } from "lucide-react";
+import { Home, Bot, BarChart3, Settings, User, Plug } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import {
   Sidebar,
@@ -27,14 +27,9 @@ const menuItems = [
     icon: Bot,
   },
   {
-    title: "Outils",
-    url: "/tools",
-    icon: Wrench,
-  },
-  {
-    title: "Workflows",
-    url: "/workflows",
-    icon: GitBranch,
+    title: "Intégrations",
+    url: "/integrations",
+    icon: Plug,
   },
   {
     title: "Analytics",
