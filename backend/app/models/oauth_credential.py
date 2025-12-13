@@ -28,7 +28,7 @@ class OAuthCredential(Base):
 
     # Scopes and metadata
     scopes = Column(JSON, nullable=True)  # List of granted scopes
-    metadata = Column(JSON, nullable=True)  # Additional service-specific data
+    service_metadata = Column(JSON, nullable=True)  # Additional service-specific data
 
     # Status
     is_active = Column(Boolean, default=True)
