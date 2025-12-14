@@ -204,7 +204,10 @@ const AgentsDashboard: React.FC = () => {
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-3">
                         <Avatar className="h-12 w-12">
-                          <AvatarImage src={agent.avatar} alt={agent.name} />
+                          <AvatarImage
+                            src={agent.avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${agent.id}`}
+                            alt={agent.name}
+                          />
                           <AvatarFallback className="bg-blue-100 text-blue-600 font-semibold">
                             {agent.name.charAt(0)}
                           </AvatarFallback>

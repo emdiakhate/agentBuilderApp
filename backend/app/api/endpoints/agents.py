@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from loguru import logger
+from pydantic import BaseModel
 
 from app.core.database import get_db
 from app.core.security import get_current_user_optional
@@ -12,6 +13,11 @@ from app.schemas.agent import AgentCreate, AgentUpdate, AgentResponse
 from app.services.vapi_service import vapi_service
 
 router = APIRouter()
+
+
+class AvatarUpdate(BaseModel):
+    """Schema for updating agent avatar"""
+    avatar_url: str
 
 
 @router.post("", response_model=AgentResponse, status_code=status.HTTP_201_CREATED)
@@ -314,4 +320,42 @@ async def delete_agent(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to delete agent: {str(e)}"
+        )
+
+
+@router.patch("/{agent_id}/avatar", response_model=AgentResponse)
+async def update_agent_avatar(
+    agent_id: str,
+    avatar_data: AvatarUpdate,
+    current_user: User = Depends(get_current_user_optional),
+    db: Session = Depends(get_db)
+):
+    """Update agent avatar image"""
+
+    agent = db.query(Agent).filter(
+        Agent.id == agent_id,
+        Agent.user_id == current_user.id
+    ).first()
+
+    if not agent:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Agent not found"
+        )
+
+    try:
+        # Update avatar
+        agent.avatar = avatar_data.avatar_url
+        db.commit()
+        db.refresh(agent)
+
+        logger.info(f"Agent avatar updated: {agent_id}")
+        return agent
+
+    except Exception as e:
+        logger.error(f"Error updating agent avatar: {e}")
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to update agent avatar: {str(e)}"
         )

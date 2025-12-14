@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, Bot, Trash2, AlertCircle, Loader2, History, Cpu, Calendar, Mic, Volume2, MessageSquare, Plus, Play, Pause, Phone, Copy, PhoneOutgoing, PhoneIncoming, Mail, Send, MoreVertical, Archive, UserMinus, PenSquare, Cog } from "lucide-react";
+import { ArrowLeft, Bot, Trash2, AlertCircle, Loader2, History, Cpu, Calendar, Mic, Volume2, MessageSquare, Plus, Play, Pause, Phone, Copy, PhoneOutgoing, PhoneIncoming, Mail, Send, MoreVertical, Archive, UserMinus, PenSquare, Cog, Camera } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -31,6 +31,7 @@ import { CallInterface } from "@/components/CallInterface";
 import { Rocket } from "lucide-react";
 import { TestAgentSidebar } from "@/components/TestAgentSidebar";
 import { GoogleCalendarToolModal } from "@/components/GoogleCalendarToolModal";
+import { AvatarUploadModal } from "@/components/AvatarUploadModal";
 
 const SAMPLE_TEXT = "Hello, I'm an AI assistant and I'm here to help you with your questions.";
 
@@ -195,7 +196,8 @@ const AgentDetails = () => {
   const [selectedPersona, setSelectedPersona] = useState<any>(null);
   const [isTestAgentSidebarOpen, setIsTestAgentSidebarOpen] = useState(false);
   const [isGoogleCalendarModalOpen, setIsGoogleCalendarModalOpen] = useState(false);
-  
+  const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
+
   useEffect(() => {
     if (agent) {
       setIsActive(agent.status === "active");
@@ -524,7 +526,40 @@ const AgentDetails = () => {
       });
     }
   };
-  
+
+  const handleAvatarUpdate = async (avatarUrl: string) => {
+    if (!agentId) return;
+
+    try {
+      const response = await fetch(`http://localhost:8000/api/agents/${agentId}/avatar`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ avatar_url: avatarUrl }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update avatar");
+      }
+
+      toast({
+        title: "Avatar mis à jour",
+        description: "La photo de profil de l'agent a été mise à jour avec succès.",
+      });
+
+      // Reload the page to show the new avatar
+      window.location.reload();
+    } catch (error) {
+      console.error("Error updating avatar:", error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de mettre à jour l'avatar. Veuillez réessayer.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleAgentUpdate = (updatedAgent: AgentType) => {
     setIsActive(updatedAgent.status === "active");
     if (updatedAgent.name !== agent?.name) {
@@ -587,13 +622,23 @@ const AgentDetails = () => {
       <Card className="mb-6 overflow-hidden">
         <CardHeader className="pb-3">
           <div className="grid grid-cols-1 md:grid-cols-[auto_1fr_auto] gap-4 items-start">
-            <div className="relative">
+            <div className="relative group">
               <Avatar className="h-16 w-16 border-2 border-agent-primary/30">
-                <AvatarImage src={`https://api.dicebear.com/7.x/bottts/svg?seed=${agent.id}`} alt={agent.name} />
+                <AvatarImage
+                  src={agent.avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${agent.id}`}
+                  alt={agent.name}
+                />
                 <AvatarFallback className="bg-agent-primary/20 text-agent-primary">
                   <Bot className="h-8 w-8" />
                 </AvatarFallback>
               </Avatar>
+              <button
+                onClick={() => setIsAvatarModalOpen(true)}
+                className="absolute bottom-0 right-0 h-6 w-6 rounded-full bg-blue-600 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-blue-700"
+                title="Changer la photo"
+              >
+                <Camera className="h-3 w-3" />
+              </button>
             </div>
             
             <div>
@@ -779,6 +824,15 @@ const AgentDetails = () => {
         onOpenChange={setIsGoogleCalendarModalOpen}
         agentId={agentId || ""}
         agentName={agent?.name || "Agent"}
+      />
+
+      <AvatarUploadModal
+        open={isAvatarModalOpen}
+        onOpenChange={setIsAvatarModalOpen}
+        currentAvatar={agent?.avatar}
+        agentName={agent?.name || "Agent"}
+        agentId={agentId || ""}
+        onAvatarUpdate={handleAvatarUpdate}
       />
     </div>;
 };
