@@ -32,10 +32,28 @@ GOOGLE_CALENDAR_SCOPES = [
 ]
 
 
+async def get_current_user_optional(request: Request, db: Session = Depends(get_db)) -> Optional[User]:
+    """Get current user or return dev user for development"""
+    try:
+        # Try to get authenticated user
+        from app.api.endpoints.auth import get_current_user
+        user = await get_current_user(request)
+        return user
+    except:
+        # In development, use dev user as fallback
+        if settings.ENVIRONMENT == "development":
+            dev_user = db.query(User).filter(User.email == "dev@example.com").first()
+            if dev_user:
+                logger.info("Using dev user for OAuth (no authentication)")
+                return dev_user
+        return None
+
+
 @router.get("/google-calendar/connect")
 async def connect_google_calendar(
     request: Request,
-    current_user: User = Depends(get_current_user)
+    db: Session = Depends(get_db),
+    current_user: Optional[User] = Depends(get_current_user_optional)
 ):
     """
     Initiate Google Calendar OAuth flow
@@ -43,6 +61,8 @@ async def connect_google_calendar(
     This endpoint redirects the user to Google's OAuth consent screen
     """
     try:
+        if not current_user:
+            raise HTTPException(status_code=401, detail="Authentication required")
         # TODO: Configure Google OAuth credentials in settings
         # For now, return instructions
         instructions = {
@@ -117,7 +137,7 @@ async def google_calendar_callback(
         # Check for errors
         if error:
             logger.error(f"Google OAuth error: {error}")
-            return RedirectResponse(url=f"{settings.FRONTEND_URL}/settings?oauth_error={error}")
+            return RedirectResponse(url=f"{settings.FRONTEND_URL}/integrations?oauth_error={error}")
 
         if not code:
             raise ValueError("No authorization code received")
@@ -190,26 +210,29 @@ async def google_calendar_callback(
 
         logger.info(f"Successfully connected Google Calendar for user {user.id}")
 
-        # Redirect to frontend settings page with success message
+        # Redirect to frontend integrations page with success message
         return RedirectResponse(
-            url=f"{settings.FRONTEND_URL}/settings?oauth_success=google_calendar"
+            url=f"{settings.FRONTEND_URL}/integrations?oauth_success=google-calendar"
         )
 
     except Exception as e:
         db.rollback()
         logger.error(f"Error in Google Calendar OAuth callback: {str(e)}")
         return RedirectResponse(
-            url=f"{settings.FRONTEND_URL}/settings?oauth_error={str(e)}"
+            url=f"{settings.FRONTEND_URL}/integrations?oauth_error={str(e)}"
         )
 
 
 @router.delete("/google-calendar/disconnect")
 async def disconnect_google_calendar(
+    request: Request,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: Optional[User] = Depends(get_current_user_optional)
 ):
     """Disconnect Google Calendar"""
     try:
+        if not current_user:
+            raise HTTPException(status_code=401, detail="Authentication required")
         credential = db.query(OAuthCredential).filter(
             OAuthCredential.user_id == current_user.id,
             OAuthCredential.service == "google_calendar"
@@ -236,11 +259,14 @@ async def disconnect_google_calendar(
 
 @router.get("/google-calendar/status")
 async def google_calendar_status(
+    request: Request,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: Optional[User] = Depends(get_current_user_optional)
 ):
     """Check Google Calendar connection status"""
     try:
+        if not current_user:
+            return {"connected": False, "message": "Not authenticated"}
         credential = db.query(OAuthCredential).filter(
             OAuthCredential.user_id == current_user.id,
             OAuthCredential.service == "google_calendar",
