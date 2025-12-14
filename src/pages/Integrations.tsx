@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Search, ChevronDown, ChevronUp, ExternalLink, Check } from "lucide-react";
@@ -37,6 +37,24 @@ const Integrations = () => {
   );
   const [selectedIntegration, setSelectedIntegration] = useState<Integration | null>(null);
   const [connectedServices, setConnectedServices] = useState<Set<string>>(new Set());
+
+  // Vérifier si l'utilisateur revient d'un flux OAuth
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const success = params.get("oauth_success");
+    const error = params.get("oauth_error");
+
+    if (success) {
+      // Marquer le service comme connecté
+      setConnectedServices(prev => new Set([...prev, success]));
+      // Nettoyer l'URL
+      window.history.replaceState({}, "", window.location.pathname);
+      // TODO: Afficher un toast de succès
+    } else if (error) {
+      // TODO: Afficher un toast d'erreur
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+  }, []);
 
   const categories: IntegrationCategory[] = [
     {
@@ -244,8 +262,17 @@ const Integrations = () => {
 
   const handleConnect = () => {
     if (selectedIntegration) {
-      // Ouvrir le dashboard Vapi principal
-      window.open('https://dashboard.vapi.ai', '_blank');
+      // Pour les intégrations OAuth (Google Calendar, Google Sheets), rediriger vers notre propre flux OAuth
+      if (selectedIntegration.id === 'google-calendar') {
+        window.location.href = 'http://localhost:8000/api/oauth/google-calendar/connect';
+      } else if (selectedIntegration.id === 'google-sheets') {
+        window.location.href = 'http://localhost:8000/api/oauth/google-sheets/connect';
+      } else {
+        // Pour les autres intégrations, ouvrir la documentation
+        if (selectedIntegration.docsUrl) {
+          window.open(selectedIntegration.docsUrl, '_blank');
+        }
+      }
       setSelectedIntegration(null);
     }
   };
@@ -413,46 +440,16 @@ const Integrations = () => {
           </DialogHeader>
 
           <div className="py-4">
-            {selectedIntegration?.requiresAuth ? (
+            {selectedIntegration?.requiresAuth && ['google-calendar', 'google-sheets'].includes(selectedIntegration.id) ? (
               <div className="space-y-4">
                 <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
                   <h4 className="font-semibold text-sm mb-2 text-blue-900 dark:text-blue-100 flex items-center gap-2">
-                    <ExternalLink className="h-4 w-4" />
-                    Configuration via Dashboard Vapi
+                    <Check className="h-4 w-4" />
+                    Connexion sécurisée
                   </h4>
                   <p className="text-sm text-blue-700 dark:text-blue-300">
-                    La connexion à {selectedIntegration.name} se fait directement depuis votre dashboard Vapi.
+                    Nous allons vous connecter à {selectedIntegration.name}. Une fenêtre pop-up va s'ouvrir, veuillez vous assurer que votre navigateur ne bloque pas les pop-ups.
                   </p>
-                </div>
-
-                <div className="space-y-3">
-                  <h4 className="font-semibold text-sm">Étapes pour connecter {selectedIntegration.name} :</h4>
-                  <ol className="text-sm text-muted-foreground space-y-2 ml-4">
-                    <li className="flex gap-2">
-                      <span className="font-semibold text-primary">1.</span>
-                      <span>Cliquez sur "Ouvrir Dashboard Vapi" ci-dessous</span>
-                    </li>
-                    <li className="flex gap-2">
-                      <span className="font-semibold text-primary">2.</span>
-                      <span>Connectez-vous à votre compte Vapi</span>
-                    </li>
-                    <li className="flex gap-2">
-                      <span className="font-semibold text-primary">3.</span>
-                      <span>Dans le menu latéral, cliquez sur "Integrations"</span>
-                    </li>
-                    <li className="flex gap-2">
-                      <span className="font-semibold text-primary">4.</span>
-                      <span>Recherchez "{selectedIntegration.name}" et cliquez sur "Connect"</span>
-                    </li>
-                    <li className="flex gap-2">
-                      <span className="font-semibold text-primary">5.</span>
-                      <span>Autorisez l'accès {selectedIntegration.id === 'google-calendar' ? 'à votre Google Calendar' : selectedIntegration.id === 'google-sheets' ? 'à vos Google Sheets' : 'au service'}</span>
-                    </li>
-                    <li className="flex gap-2">
-                      <span className="font-semibold text-primary">6.</span>
-                      <span>Utilisez l'intégration dans vos agents via les "Tools"</span>
-                    </li>
-                  </ol>
                 </div>
 
                 <div className="space-y-2 bg-gray-50 dark:bg-gray-900 rounded-lg p-3">
@@ -490,62 +487,37 @@ const Integrations = () => {
                         </li>
                       </>
                     )}
-                    {selectedIntegration.id === 'make' && (
-                      <>
-                        <li className="flex items-center gap-2">
-                          <Check className="h-3 w-3 text-green-600" />
-                          Créer des workflows automatisés complexes
-                        </li>
-                        <li className="flex items-center gap-2">
-                          <Check className="h-3 w-3 text-green-600" />
-                          Connecter plusieurs services entre eux
-                        </li>
-                        <li className="flex items-center gap-2">
-                          <Check className="h-3 w-3 text-green-600" />
-                          Déclencher des actions personnalisées
-                        </li>
-                      </>
-                    )}
-                    {!['google-calendar', 'google-sheets', 'make'].includes(selectedIntegration.id) && (
-                      <>
-                        <li className="flex items-center gap-2">
-                          <Check className="h-3 w-3 text-green-600" />
-                          Enrichir vos agents avec des fonctionnalités avancées
-                        </li>
-                        <li className="flex items-center gap-2">
-                          <Check className="h-3 w-3 text-green-600" />
-                          Automatiser vos workflows métier
-                        </li>
-                      </>
-                    )}
                   </ul>
+                </div>
+
+                <div className="bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3">
+                  <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                    <strong>Note :</strong> Vous serez redirigé vers Google pour autoriser l'accès à votre {selectedIntegration.id === 'google-calendar' ? 'calendrier' : 'feuilles de calcul'}. Vos données restent sécurisées et vous pouvez révoquer l'accès à tout moment.
+                  </p>
+                </div>
+              </div>
+            ) : selectedIntegration?.requiresAuth ? (
+              <div className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  Cette intégration nécessite une configuration manuelle.
+                </p>
+                <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                  <h4 className="font-semibold text-sm mb-2">Information :</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Consultez la documentation pour configurer cette intégration avec vos agents.
+                  </p>
                 </div>
               </div>
             ) : (
               <div className="space-y-4">
                 <p className="text-sm text-muted-foreground">
-                  Cette intégration nécessite une configuration via le dashboard Vapi.
+                  Cette intégration se configure directement dans vos agents.
                 </p>
                 <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
-                  <h4 className="font-semibold text-sm mb-2">Étapes de configuration :</h4>
-                  <ol className="text-sm text-muted-foreground space-y-2">
-                    <li className="flex gap-2">
-                      <span className="font-semibold text-primary">1.</span>
-                      <span>Accédez au dashboard Vapi</span>
-                    </li>
-                    <li className="flex gap-2">
-                      <span className="font-semibold text-primary">2.</span>
-                      <span>Allez dans la section correspondante</span>
-                    </li>
-                    <li className="flex gap-2">
-                      <span className="font-semibold text-primary">3.</span>
-                      <span>Configurez vos paramètres API</span>
-                    </li>
-                    <li className="flex gap-2">
-                      <span className="font-semibold text-primary">4.</span>
-                      <span>Utilisez l'intégration dans vos agents</span>
-                    </li>
-                  </ol>
+                  <h4 className="font-semibold text-sm mb-2">Information :</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Consultez la documentation pour plus de détails sur l'utilisation de cette intégration.
+                  </p>
                 </div>
               </div>
             )}
@@ -567,8 +539,17 @@ const Integrations = () => {
               </Button>
             )}
             <Button onClick={handleConnect} className="gap-2">
-              <ExternalLink className="h-4 w-4" />
-              Ouvrir Dashboard Vapi
+              {selectedIntegration?.requiresAuth && ['google-calendar', 'google-sheets'].includes(selectedIntegration.id) ? (
+                <>
+                  <Check className="h-4 w-4" />
+                  Autoriser l'accès
+                </>
+              ) : (
+                <>
+                  <ExternalLink className="h-4 w-4" />
+                  Voir la documentation
+                </>
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>
