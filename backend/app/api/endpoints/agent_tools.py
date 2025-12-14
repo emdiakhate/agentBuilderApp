@@ -71,9 +71,11 @@ async def create_google_calendar_tools(
     try:
         created_tools = []
 
-        # Create calendar event tool (native Vapi tool - no name/description needed)
+        # Create calendar event tool (with name and description for activation)
         event_tool_payload = {
-            "type": "google.calendar.event.create"
+            "type": "google.calendar.event.create",
+            "name": "scheduleAppointment",
+            "description": "Use this tool to schedule appointments and create calendar events. Notes: - All appointments are 30 mins."
         }
 
         event_response = await vapi_service._make_request(
@@ -84,9 +86,11 @@ async def create_google_calendar_tools(
         created_tools.append(event_response)
         logger.info(f"Created Google Calendar event tool: {event_response.get('id')}")
 
-        # Create availability check tool (native Vapi tool - no name/description needed)
+        # Create availability check tool (with name and description for activation)
         availability_tool_payload = {
-            "type": "google.calendar.availability.check"
+            "type": "google.calendar.availability.check",
+            "name": "checkAvailability",
+            "description": "Use this tool to check calendar availability."
         }
 
         availability_response = await vapi_service._make_request(
@@ -147,28 +151,36 @@ async def add_tools_to_agent(
         # Get current assistant configuration
         assistant_config = await vapi_service.get_assistant(vapi_assistant_id)
 
-        # Get current tools
+        # Get current tools and toolIds
         current_tools = assistant_config.get("model", {}).get("tools", [])
+        current_tool_ids = assistant_config.get("model", {}).get("toolIds", [])
 
         # For each tool ID, fetch the tool to get its type
         new_tools = []
+        new_tool_ids = []
+
         for tool_id in request.tool_ids:
             try:
                 tool = await vapi_service.get_tool(tool_id)
                 tool_type = tool.get("type")
 
-                # For native Google Calendar tools, use type with name and description
+                # Add to toolIds array (for referencing)
+                new_tool_ids.append(tool_id)
+
+                # For native Google Calendar tools, use type with name and description to activate
                 if tool_type == "google.calendar.event.create":
                     new_tools.append({
                         "type": tool_type,
                         "name": "scheduleAppointment",
-                        "description": "Use this tool to schedule appointments and create calendar events. Notes: - All appointments are 30 mins."
+                        "description": "Use this tool to schedule appointments and create calendar events. Notes: - All appointments are 30 mins.",
+                        "enabled": True
                     })
                 elif tool_type == "google.calendar.availability.check":
                     new_tools.append({
                         "type": tool_type,
                         "name": "checkAvailability",
-                        "description": "Use this tool to check calendar availability."
+                        "description": "Use this tool to check calendar availability.",
+                        "enabled": True
                     })
                 else:
                     # For custom tools, use toolId
@@ -176,14 +188,17 @@ async def add_tools_to_agent(
             except Exception as e:
                 logger.error(f"Error fetching tool {tool_id}: {str(e)}")
                 # Fallback to toolId if we can't fetch the tool
+                new_tool_ids.append(tool_id)
                 new_tools.append({"toolId": tool_id})
 
         updated_tools = current_tools + new_tools
+        updated_tool_ids = current_tool_ids + new_tool_ids
 
-        # Build update payload
+        # Build update payload with both toolIds (for reference) and tools (for activation)
         update_payload = {
             "model": {
                 **assistant_config.get("model", {}),
+                "toolIds": updated_tool_ids,
                 "tools": updated_tools
             }
         }
