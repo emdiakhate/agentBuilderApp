@@ -28,5 +28,5 @@ def get_db():
 
 def init_db():
     """Initialize database tables"""
-    from app.models import user, agent, document, conversation
+    from app.models import user, agent, document, conversation, oauth_credential
     Base.metadata.create_all(bind=engine)
