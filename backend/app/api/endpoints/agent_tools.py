@@ -157,9 +157,19 @@ async def add_tools_to_agent(
                 tool = await vapi_service.get_tool(tool_id)
                 tool_type = tool.get("type")
 
-                # For native Google Calendar tools, use type directly
-                if tool_type in ["google.calendar.event.create", "google.calendar.availability.check"]:
-                    new_tools.append({"type": tool_type})
+                # For native Google Calendar tools, use type with name and description
+                if tool_type == "google.calendar.event.create":
+                    new_tools.append({
+                        "type": tool_type,
+                        "name": "scheduleAppointment",
+                        "description": "Use this tool to schedule appointments and create calendar events. Notes: - All appointments are 30 mins."
+                    })
+                elif tool_type == "google.calendar.availability.check":
+                    new_tools.append({
+                        "type": tool_type,
+                        "name": "checkAvailability",
+                        "description": "Use this tool to check calendar availability."
+                    })
                 else:
                     # For custom tools, use toolId
                     new_tools.append({"toolId": tool_id})
