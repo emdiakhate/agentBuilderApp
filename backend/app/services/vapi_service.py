@@ -22,6 +22,52 @@ class VapiService:
             "Content-Type": "application/json"
         }
 
+    def client(self):
+        """Get an HTTP client for making requests"""
+        return httpx.AsyncClient()
+
+    async def _make_request(
+        self,
+        method: str,
+        endpoint: str,
+        payload: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        """
+        Make a request to Vapi API
+
+        Args:
+            method: HTTP method (GET, POST, PATCH, DELETE)
+            endpoint: API endpoint (e.g., "/tool")
+            payload: Request payload for POST/PATCH
+
+        Returns:
+            Response JSON
+        """
+        try:
+            async with httpx.AsyncClient() as client:
+                url = f"{self.base_url}{endpoint}"
+
+                if method.upper() == "GET":
+                    response = await client.get(url, headers=self.headers, timeout=30.0)
+                elif method.upper() == "POST":
+                    response = await client.post(url, headers=self.headers, json=payload, timeout=30.0)
+                elif method.upper() == "PATCH":
+                    response = await client.patch(url, headers=self.headers, json=payload, timeout=30.0)
+                elif method.upper() == "DELETE":
+                    response = await client.delete(url, headers=self.headers, timeout=30.0)
+                else:
+                    raise ValueError(f"Unsupported HTTP method: {method}")
+
+                response.raise_for_status()
+                return response.json()
+
+        except httpx.HTTPStatusError as e:
+            logger.error(f"Vapi API error: {e.response.status_code} - {e.response.text}")
+            raise
+        except Exception as e:
+            logger.error(f"Error making Vapi request: {e}")
+            raise
+
     async def create_assistant(
         self,
         name: str,

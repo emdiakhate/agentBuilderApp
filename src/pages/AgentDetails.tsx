@@ -30,6 +30,7 @@ import { UserPersonasSidebar } from "@/components/UserPersonasSidebar";
 import { CallInterface } from "@/components/CallInterface";
 import { Rocket } from "lucide-react";
 import { TestAgentSidebar } from "@/components/TestAgentSidebar";
+import { GoogleCalendarToolModal } from "@/components/GoogleCalendarToolModal";
 
 const SAMPLE_TEXT = "Hello, I'm an AI assistant and I'm here to help you with your questions.";
 
@@ -193,6 +194,7 @@ const AgentDetails = () => {
   const [isPersonasSidebarOpen, setIsPersonasSidebarOpen] = useState(false);
   const [selectedPersona, setSelectedPersona] = useState<any>(null);
   const [isTestAgentSidebarOpen, setIsTestAgentSidebarOpen] = useState(false);
+  const [isGoogleCalendarModalOpen, setIsGoogleCalendarModalOpen] = useState(false);
   
   useEffect(() => {
     if (agent) {
@@ -614,16 +616,26 @@ const AgentDetails = () => {
             <div className="flex items-center justify-end space-x-3">
               <AgentToggle isActive={isActive} onToggle={handleStatusToggle} />
               
-              <Button 
-                variant="outline" 
-                size="sm" 
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={handleOpenTestAgentSidebar}
                 className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
               >
                 <Rocket className="h-4 w-4" />
                 Test Agent
               </Button>
-              
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsGoogleCalendarModalOpen(true)}
+                className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
+              >
+                <Calendar className="h-4 w-4" />
+                Add Google Calendar
+              </Button>
+
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" className="hover:bg-secondary">
@@ -760,6 +772,13 @@ const AgentDetails = () => {
             description: "You can now chat with your agent."
           });
         }}
+      />
+
+      <GoogleCalendarToolModal
+        open={isGoogleCalendarModalOpen}
+        onOpenChange={setIsGoogleCalendarModalOpen}
+        agentId={agentId || ""}
+        agentName={agent?.name || "Agent"}
       />
     </div>;
 };
