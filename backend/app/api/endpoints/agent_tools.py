@@ -150,8 +150,24 @@ async def add_tools_to_agent(
         # Get current tools
         current_tools = assistant_config.get("model", {}).get("tools", [])
 
-        # Add new tools
-        new_tools = [{"toolId": tool_id} for tool_id in request.tool_ids]
+        # For each tool ID, fetch the tool to get its type
+        new_tools = []
+        for tool_id in request.tool_ids:
+            try:
+                tool = await vapi_service.get_tool(tool_id)
+                tool_type = tool.get("type")
+
+                # For native Google Calendar tools, use type directly
+                if tool_type in ["google.calendar.event.create", "google.calendar.availability.check"]:
+                    new_tools.append({"type": tool_type})
+                else:
+                    # For custom tools, use toolId
+                    new_tools.append({"toolId": tool_id})
+            except Exception as e:
+                logger.error(f"Error fetching tool {tool_id}: {str(e)}")
+                # Fallback to toolId if we can't fetch the tool
+                new_tools.append({"toolId": tool_id})
+
         updated_tools = current_tools + new_tools
 
         # Build update payload
