@@ -590,6 +590,108 @@ class VapiService:
             logger.error(f"Error getting tool: {e}")
             raise
 
+    async def create_function_tool(
+        self,
+        name: str,
+        description: str,
+        server_url: str,
+        parameters: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """
+        Create a Function Tool for external API calls
+
+        Args:
+            name: Tool function name
+            description: What the tool does
+            server_url: URL of your server endpoint
+            parameters: JSON schema for function parameters
+
+        Returns:
+            Created tool data including tool ID
+        """
+        try:
+            payload = {
+                "type": "function",
+                "async": False,
+                "function": {
+                    "name": name,
+                    "description": description,
+                    "parameters": parameters
+                },
+                "server": {
+                    "url": server_url
+                }
+            }
+
+            async with httpx.AsyncClient() as client:
+                response = await client.post(
+                    f"{self.base_url}/tool",
+                    headers=self.headers,
+                    json=payload,
+                    timeout=30.0
+                )
+                response.raise_for_status()
+                result = response.json()
+
+            logger.info(f"Created function tool: {result.get('id')}")
+            return result
+
+        except httpx.HTTPStatusError as e:
+            logger.error(f"Error creating function tool: {e.response.status_code} - {e.response.text}")
+            raise
+        except Exception as e:
+            logger.error(f"Error creating function tool: {e}")
+            raise
+
+    async def create_google_calendar_tool(self, server_base_url: str) -> Dict[str, Any]:
+        """
+        Create a Google Calendar tool for booking appointments
+
+        Args:
+            server_base_url: Base URL of your server (e.g., https://yourdomain.com)
+
+        Returns:
+            Created tool data
+        """
+        parameters = {
+            "type": "object",
+            "properties": {
+                "client_name": {
+                    "type": "string",
+                    "description": "Nom complet du client"
+                },
+                "date": {
+                    "type": "string",
+                    "description": "Date du rendez-vous au format YYYY-MM-DD (exemple: 2024-12-25)"
+                },
+                "time": {
+                    "type": "string",
+                    "description": "Heure du rendez-vous au format HH:MM (exemple: 14:30)"
+                },
+                "duration": {
+                    "type": "integer",
+                    "description": "Durée du rendez-vous en minutes (par défaut: 60)",
+                    "default": 60
+                },
+                "service_type": {
+                    "type": "string",
+                    "description": "Type de service ou consultation (optionnel)"
+                },
+                "notes": {
+                    "type": "string",
+                    "description": "Notes supplémentaires (optionnel)"
+                }
+            },
+            "required": ["client_name", "date", "time"]
+        }
+
+        return await self.create_function_tool(
+            name="book_appointment",
+            description="Créer un rendez-vous dans Google Calendar. Utiliser cette fonction quand le client souhaite prendre un rendez-vous. Demander toujours le nom complet, la date et l'heure avant d'appeler cette fonction.",
+            server_url=f"{server_base_url}/api/tool-webhooks/google-calendar/create-event",
+            parameters=parameters
+        )
+
 
 # Global instance
 vapi_service = VapiService()
