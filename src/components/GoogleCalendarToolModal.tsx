@@ -235,23 +235,34 @@ export function GoogleCalendarToolModal({
         {/* Step 2: Creating tools */}
         {step === 2 && (
           <div className="space-y-4">
-            <Alert>
-              <Loader2 className="h-4 w-4 animate-spin" />
-              <AlertDescription>
-                Création des outils Google Calendar dans Vapi...
-              </AlertDescription>
-            </Alert>
+            {!createToolsMutation.isPending ? (
+              <>
+                <Alert>
+                  <Calendar className="h-4 w-4" />
+                  <AlertDescription>
+                    Prêt à créer les outils Google Calendar dans Vapi
+                  </AlertDescription>
+                </Alert>
 
-            <div className="space-y-2">
-              <p className="text-sm font-medium">Outils en cours de création :</p>
-              <ul className="list-disc list-inside text-sm text-muted-foreground">
-                {AVAILABLE_TOOLS.filter((t) =>
-                  selectedTools.includes(t.type)
-                ).map((tool) => (
-                  <li key={tool.type}>{tool.name}</li>
-                ))}
-              </ul>
-            </div>
+                <div className="space-y-2">
+                  <p className="text-sm font-medium">Outils à créer :</p>
+                  <ul className="list-disc list-inside text-sm text-muted-foreground">
+                    {AVAILABLE_TOOLS.filter((t) =>
+                      selectedTools.includes(t.type)
+                    ).map((tool) => (
+                      <li key={tool.type}>{tool.name}</li>
+                    ))}
+                  </ul>
+                </div>
+              </>
+            ) : (
+              <Alert>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <AlertDescription>
+                  Création des outils Google Calendar dans Vapi...
+                </AlertDescription>
+              </Alert>
+            )}
           </div>
         )}
 
