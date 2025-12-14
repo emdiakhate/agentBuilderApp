@@ -187,7 +187,7 @@ async def google_calendar_callback(
             # Update existing credential
             existing_cred.access_token = credentials.token
             existing_cred.refresh_token = credentials.refresh_token
-            existing_cred.token_type = credentials.token_type
+            existing_cred.token_type = "Bearer"  # OAuth 2.0 always uses Bearer tokens
             existing_cred.expires_at = credentials.expiry
             existing_cred.scopes = GOOGLE_CALENDAR_SCOPES
             existing_cred.is_active = True
@@ -199,7 +199,7 @@ async def google_calendar_callback(
                 service="google_calendar",
                 access_token=credentials.token,
                 refresh_token=credentials.refresh_token,
-                token_type=credentials.token_type or "Bearer",
+                token_type="Bearer",  # OAuth 2.0 always uses Bearer tokens
                 expires_at=credentials.expiry,
                 scopes=GOOGLE_CALENDAR_SCOPES,
                 is_active=True
