@@ -71,11 +71,9 @@ async def create_google_calendar_tools(
     try:
         created_tools = []
 
-        # Create calendar event tool
+        # Create calendar event tool (native Vapi tool - no name/description needed)
         event_tool_payload = {
-            "type": "google.calendar.event.create",
-            "name": "scheduleAppointment",
-            "description": "Use this tool to schedule appointments and create calendar events. Notes: - All appointments are 30 mins."
+            "type": "google.calendar.event.create"
         }
 
         event_response = await vapi_service._make_request(
@@ -86,11 +84,9 @@ async def create_google_calendar_tools(
         created_tools.append(event_response)
         logger.info(f"Created Google Calendar event tool: {event_response.get('id')}")
 
-        # Create availability check tool
+        # Create availability check tool (native Vapi tool - no name/description needed)
         availability_tool_payload = {
-            "type": "google.calendar.availability.check",
-            "name": "checkAvailability",
-            "description": "Use this tool to check calendar availability."
+            "type": "google.calendar.availability.check"
         }
 
         availability_response = await vapi_service._make_request(
