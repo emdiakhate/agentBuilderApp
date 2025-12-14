@@ -329,9 +329,12 @@ async def remove_tool_from_agent(
         # Get current assistant configuration
         assistant_config = await vapi_service.get_assistant(vapi_assistant_id)
 
-        # Remove the tool
+        # Remove the tool (handle both custom tools with toolId and native tools with type)
         current_tools = assistant_config.get("model", {}).get("tools", [])
-        updated_tools = [t for t in current_tools if t.get("toolId") != tool_id]
+        updated_tools = [
+            t for t in current_tools
+            if t.get("toolId") != tool_id and t.get("type") != tool_id
+        ]
 
         # Update assistant in Vapi
         updated_assistant = await vapi_service.update_assistant(
