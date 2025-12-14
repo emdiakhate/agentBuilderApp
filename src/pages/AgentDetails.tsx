@@ -248,7 +248,7 @@ const AgentDetails = () => {
         });
       } catch (error) {
         toast({
-          title: "Failed to update model",
+          title: "Échec de mise à jour du modèle",
           description: "There was an error updating the agent model.",
           variant: "destructive"
         });
@@ -350,7 +350,7 @@ const AgentDetails = () => {
         setIsVoiceDialogOpen(false);
       } catch (error) {
         toast({
-          title: "Failed to update voice settings",
+          title: "Échec de mise à jour des paramètres vocaux",
           description: "There was an error updating the voice settings.",
           variant: "destructive"
         });
@@ -416,7 +416,7 @@ const AgentDetails = () => {
       });
     } catch (error) {
       toast({
-        title: "Failed to update channel",
+        title: "Échec de mise à jour du canal",
         description: "There was an error updating the channel configuration.",
         variant: "destructive"
       });
@@ -510,8 +510,8 @@ const AgentDetails = () => {
   
   const handleEditClick = () => {
     toast({
-      title: "Edit Mode",
-      description: "You can now edit your agent's details."
+      title: "Mode Édition",
+      description: "Vous pouvez maintenant modifier les détails de votre agent."
     });
     // In a real app, you might navigate to an edit page or enable edit mode
   };
@@ -601,7 +601,7 @@ const AgentDetails = () => {
           </AlertDescription>
         </Alert>
         
-        <Button onClick={() => navigate("/agents")}>Return to Dashboard</Button>
+        <Button onClick={() => navigate("/agents")}>Retour au Tableau de Bord</Button>
       </div>;
   }
   
@@ -615,7 +615,7 @@ const AgentDetails = () => {
       <div className="mb-6">
         <Link to="/agents" className="flex items-center text-gray-500 hover:text-agent-primary transition-colors duration-200">
           <ArrowLeft className="h-4 w-4 mr-2" />
-          <span className="text-sm font-medium">Back to Agents</span>
+          <span className="text-sm font-medium">Retour aux Agents</span>
         </Link>
       </div>
       
@@ -668,7 +668,7 @@ const AgentDetails = () => {
                 className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
               >
                 <Rocket className="h-4 w-4" />
-                Test Agent
+                Tester l'Agent
               </Button>
 
               <Button
@@ -678,7 +678,7 @@ const AgentDetails = () => {
                 className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
               >
                 <Calendar className="h-4 w-4" />
-                Add Google Calendar
+                Ajouter Google Calendar
               </Button>
 
               <DropdownMenu>
