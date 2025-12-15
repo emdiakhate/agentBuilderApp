@@ -13,7 +13,6 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
 import { VoiceTrait, AgentType } from "@/types/agent";
 import { useAgentDetails } from "@/hooks/useAgentDetails";
-import { AgentSetupStepper } from "@/components/AgentSetupStepper";
 import { AgentToggle } from "@/components/AgentToggle";
 import { AgentChannels } from "@/components/AgentChannels";
 import { AgentStats } from "@/components/AgentStats";
@@ -189,7 +188,7 @@ const AgentDetails = () => {
   const [currentlyPlaying, setCurrentlyPlaying] = useState<string | null>(null);
   const [selectedVoiceTraits, setSelectedVoiceTraits] = useState<VoiceTrait[]>([]);
   const [selectedVoiceId, setSelectedVoiceId] = useState<string>("");
-  const [activeTab, setActiveTab] = useState("setup");
+  const [activeTab, setActiveTab] = useState("settings");
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isCallTooltipOpen, setIsCallTooltipOpen] = useState(false);
   const [customCallNumber, setCustomCallNumber] = useState<string>("");
@@ -801,11 +800,11 @@ const AgentDetails = () => {
       </div>
 
       <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="mt-8">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="setup" className="text-sm">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="settings" className="text-sm">
             <span className="flex items-center gap-2">
               <Cog className="h-4 w-4" />
-              Configuration
+              Paramètres
             </span>
           </TabsTrigger>
           <TabsTrigger value="analytics" className="text-sm">
@@ -814,25 +813,15 @@ const AgentDetails = () => {
               Analyse
             </span>
           </TabsTrigger>
-          <TabsTrigger value="settings" className="text-sm">
-            <span className="flex items-center gap-2">
-              <Cpu className="h-4 w-4" />
-              Paramètres
-            </span>
-          </TabsTrigger>
         </TabsList>
 
         <div className="mt-6">
-          <TabsContent value="setup" className="space-y-6">
-            <AgentSetupStepper agent={agent} />
+          <TabsContent value="settings" className="space-y-6">
+            <AgentConfigSettings agent={agent} onAgentUpdate={handleAgentUpdate} />
           </TabsContent>
 
           <TabsContent value="analytics" className="space-y-6">
             <AgentAnalyticsTab agent={agent} />
-          </TabsContent>
-
-          <TabsContent value="settings" className="space-y-6">
-            <AgentConfigSettings agent={agent} onAgentUpdate={handleAgentUpdate} />
           </TabsContent>
         </div>
       </Tabs>

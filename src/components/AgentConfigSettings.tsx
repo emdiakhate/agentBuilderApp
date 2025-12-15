@@ -8,9 +8,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { AgentType, VoiceTrait } from '@/types/agent';
 import { updateAgent } from '@/services/agentService';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { 
-  Bot, Copy, Target, User, FileText, Code, Building, Briefcase, 
-  Headphones, ShoppingCart, Wrench, CircuitBoard, GraduationCap, Plane, 
+import {
+  Bot, Copy, Target, User, FileText, Code, Building, Briefcase,
+  Headphones, ShoppingCart, Wrench, CircuitBoard, GraduationCap, Plane,
   Factory, ShieldCheck, Phone, Home, Plus, MessageSquare,
   HeartPulse, Landmark, Wallet, BarChart4, Calendar, Mic, Brain, Play, Volume2, ChevronDown
 } from 'lucide-react';
@@ -23,6 +23,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/components/ui/use-toast";
 import { isEqual } from 'lodash';
 import VoiceSelectionModal from './VoiceSelectionModal';
+import { KnowledgeBaseCardConnected } from './KnowledgeBaseCardConnected';
 
 const VOICE_PROVIDERS = {
   "Eleven Labs": {
@@ -480,6 +481,9 @@ const AgentConfigSettings: React.FC<AgentConfigSettingsProps> = ({ agent, onAgen
           </div>
         </CardContent>
       </Card>
+
+      {/* Base de connaissances */}
+      <KnowledgeBaseCardConnected agent={agent} />
 
       <Card>
         <CardHeader>
