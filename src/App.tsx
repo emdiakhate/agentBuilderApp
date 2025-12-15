@@ -11,6 +11,7 @@ import AgentsDashboard from "./pages/AgentsDashboard";
 import AgentDetails from "./pages/AgentDetails";
 import AgentCreate from "./pages/AgentCreate";
 import Analytics from "./pages/Analytics";
+import VoiceLibrary from "./pages/VoiceLibrary";
 import Settings from "./pages/Settings";
 import Integrations from "./pages/Integrations";
 import NotFound from "./pages/NotFound";
@@ -43,6 +44,7 @@ const App = () => (
               <Route path="/agents" element={<AgentsDashboard />} />
               <Route path="/agents/create" element={<AgentCreate />} />
               <Route path="/agents/:agentId" element={<AgentDetails />} />
+              <Route path="/voice-library" element={<VoiceLibrary />} />
               <Route path="/integrations" element={<Integrations />} />
               <Route path="/analytics" element={<Analytics />} />
               <Route path="/settings" element={<Settings />} />

@@ -1,4 +1,4 @@
-import { Home, Bot, BarChart3, Settings, User, Plug } from "lucide-react";
+import { Home, Bot, Mic, BarChart3, Settings, User, Plug } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import {
   Sidebar,
@@ -25,6 +25,11 @@ const menuItems = [
     title: "Mes Agents",
     url: "/agents",
     icon: Bot,
+  },
+  {
+    title: "Bibliothèque de Voix",
+    url: "/voice-library",
+    icon: Mic,
   },
   {
     title: "Intégrations",
