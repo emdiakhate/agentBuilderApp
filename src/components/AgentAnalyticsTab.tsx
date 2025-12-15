@@ -2,12 +2,31 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { TrendingUp, TrendingDown, Download, Loader2 } from 'lucide-react';
-import { Badge } from "@/components/ui/badge";
+import { Download, Loader2, Calendar } from 'lucide-react';
 import { useToast } from "@/components/ui/use-toast";
+import {
+  BarChart,
+  Bar,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Legend
+} from 'recharts';
 
 interface AgentAnalyticsTabProps {
   agent: any;
+}
+
+interface TimeSeriesData {
+  date: string;
+  calls: number;
+  minutes: number;
+  cost: number;
+  avg_cost: number;
 }
 
 interface AnalyticsData {
@@ -19,6 +38,8 @@ interface AnalyticsData {
   successful_calls: number;
   success_rate: number;
   end_reasons: { [key: string]: number };
+  time_series: TimeSeriesData[];
+  avg_duration_by_assistant: { [key: string]: number };
   calls: any[];
 }
 
@@ -27,7 +48,6 @@ export const AgentAnalyticsTab: React.FC<AgentAnalyticsTabProps> = ({ agent }) =
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [dateRange, setDateRange] = useState('30days');
-  const [selectedChannel, setSelectedChannel] = useState('all');
 
   useEffect(() => {
     fetchAnalytics();
@@ -71,11 +91,11 @@ export const AgentAnalyticsTab: React.FC<AgentAnalyticsTabProps> = ({ agent }) =
       console.error('Error fetching analytics:', error);
       toast({
         title: "Erreur",
-        description: "Impossible de charger les analytics. Les données mockées sont affichées.",
+        description: "Impossible de charger les analytics.",
         variant: "destructive",
       });
 
-      // Fallback to mock data
+      // Fallback to empty data
       setAnalytics({
         total_calls: 0,
         total_minutes: 0,
@@ -85,6 +105,8 @@ export const AgentAnalyticsTab: React.FC<AgentAnalyticsTabProps> = ({ agent }) =
         successful_calls: 0,
         success_rate: 0,
         end_reasons: {},
+        time_series: [],
+        avg_duration_by_assistant: {},
         calls: []
       });
     } finally {
@@ -99,6 +121,15 @@ export const AgentAnalyticsTab: React.FC<AgentAnalyticsTabProps> = ({ agent }) =
     });
   };
 
+  // Format end reasons for bar chart
+  const endReasonsData = Object.entries(analytics?.end_reasons || {}).map(([reason, count]) => ({
+    reason: reason.replace(/-/g, ' '),
+    'customer-ended-call': reason === 'customer-ended-call' ? count : 0,
+    'silence-timed-out': reason === 'silence-timed-out' ? count : 0,
+    'assistant-ended-call': reason === 'assistant-ended-call' ? count : 0,
+    'other': !['customer-ended-call', 'silence-timed-out', 'assistant-ended-call'].includes(reason) ? count : 0,
+  }));
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -112,132 +143,187 @@ export const AgentAnalyticsTab: React.FC<AgentAnalyticsTabProps> = ({ agent }) =
       {/* Header avec filtres */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">Métriques</h2>
+          <h3 className="text-lg font-semibold">Métriques de Performance</h3>
           <p className="text-sm text-muted-foreground">
-            Visualisez les performances de votre agent et les statistiques d'utilisation
+            Statistiques d'utilisation de {agent.name}
           </p>
         </div>
-        <Button variant="outline" size="sm" onClick={handleExport}>
-          <Download className="h-4 w-4 mr-2" />
-          Exporter
-        </Button>
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 px-3 py-2 border rounded-md">
+            <Calendar className="h-4 w-4 text-muted-foreground" />
+            <Select value={dateRange} onValueChange={setDateRange}>
+              <SelectTrigger className="w-[160px] border-0 h-auto p-0">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="7days">7 derniers jours</SelectItem>
+                <SelectItem value="30days">30 derniers jours</SelectItem>
+                <SelectItem value="90days">90 derniers jours</SelectItem>
+                <SelectItem value="1year">1 an</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <Button variant="outline" size="sm" onClick={handleExport}>
+            <Download className="h-4 w-4 mr-2" />
+            Exporter
+          </Button>
+        </div>
       </div>
 
-      {/* Filtres */}
-      <div className="flex gap-3">
-        <Select value={dateRange} onValueChange={setDateRange}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Période" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="7days">7 derniers jours</SelectItem>
-            <SelectItem value="30days">30 derniers jours</SelectItem>
-            <SelectItem value="90days">90 derniers jours</SelectItem>
-            <SelectItem value="1year">1 an</SelectItem>
-          </SelectContent>
-        </Select>
-
-        <Select value={selectedChannel} onValueChange={setSelectedChannel}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Canaux" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Tous les canaux</SelectItem>
-            <SelectItem value="voice">Voix</SelectItem>
-            <SelectItem value="chat">Chat</SelectItem>
-            <SelectItem value="email">Email</SelectItem>
-            <SelectItem value="social">Social</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      {/* Métriques principales de Vapi */}
+      {/* Métriques principales avec graphiques */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-gradient-to-br from-green-50 to-white dark:from-green-950/20 dark:to-gray-900">
+        {/* Total Call Minutes */}
+        <Card className="bg-[#1a2e2a] border-none">
           <CardHeader className="pb-2">
-            <CardDescription className="text-xs">Total des Minutes d'Appel</CardDescription>
+            <CardDescription className="text-gray-400 text-xs">Total des Minutes d'Appel</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-green-700 dark:text-green-400">
+            <div className="text-3xl font-bold text-white mb-3">
               {analytics?.total_minutes.toFixed(2) || '0.00'}
             </div>
-            <div className="flex items-center gap-2 mt-2">
-              <div className="h-12 w-full bg-green-100 dark:bg-green-900/30 rounded">
-                <svg className="w-full h-full" viewBox="0 0 100 50" preserveAspectRatio="none">
-                  <path d="M 0 40 Q 10 35 20 38 T 40 30 T 60 25 T 80 28 T 100 20" fill="none" stroke="#16a34a" strokeWidth="2" />
-                </svg>
-              </div>
-            </div>
+            <ResponsiveContainer width="100%" height={50}>
+              <AreaChart data={analytics?.time_series || []}>
+                <defs>
+                  <linearGradient id="colorMinutesAgent" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <Area
+                  type="monotone"
+                  dataKey="minutes"
+                  stroke="#10b981"
+                  strokeWidth={2}
+                  fill="url(#colorMinutesAgent)"
+                  dot={false}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-orange-50 to-white dark:from-orange-950/20 dark:to-gray-900">
+        {/* Number of Calls */}
+        <Card className="bg-[#2a2419] border-none">
           <CardHeader className="pb-2">
-            <CardDescription className="text-xs">Nombre d'Appels</CardDescription>
+            <CardDescription className="text-gray-400 text-xs">Nombre d'Appels</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-orange-700 dark:text-orange-400">
+            <div className="text-3xl font-bold text-white mb-3">
               {analytics?.total_calls || 0}
             </div>
-            <div className="flex items-center gap-2 mt-2">
-              <div className="h-12 w-full bg-orange-100 dark:bg-orange-900/30 rounded">
-                <svg className="w-full h-full" viewBox="0 0 100 50" preserveAspectRatio="none">
-                  <path d="M 0 45 L 20 42 L 40 38 L 60 30 L 80 25 L 100 15" fill="url(#orange-gradient)" />
-                  <defs>
-                    <linearGradient id="orange-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" stopColor="#ea580c" stopOpacity="0.6" />
-                      <stop offset="100%" stopColor="#ea580c" stopOpacity="0.1" />
-                    </linearGradient>
-                  </defs>
-                </svg>
-              </div>
-            </div>
+            <ResponsiveContainer width="100%" height={50}>
+              <AreaChart data={analytics?.time_series || []}>
+                <defs>
+                  <linearGradient id="colorCallsAgent" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <Area
+                  type="monotone"
+                  dataKey="calls"
+                  stroke="#f59e0b"
+                  strokeWidth={2}
+                  fill="url(#colorCallsAgent)"
+                  dot={false}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-purple-50 to-white dark:from-purple-950/20 dark:to-gray-900">
+        {/* Total Cost */}
+        <Card className="bg-[#1e1a2e] border-none">
           <CardHeader className="pb-2">
-            <CardDescription className="text-xs">Coût Total</CardDescription>
+            <CardDescription className="text-gray-400 text-xs">Coût Total</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-purple-700 dark:text-purple-400">
+            <div className="text-3xl font-bold text-white mb-3">
               ${analytics?.total_cost.toFixed(2) || '0.00'}
             </div>
-            <div className="flex items-center gap-2 mt-2">
-              <div className="h-12 w-full bg-purple-100 dark:bg-purple-900/30 rounded flex items-end">
-                {[60, 70, 55, 80, 65, 90, 75, 85].map((height, i) => (
-                  <div key={i} className="flex-1 mx-0.5">
-                    <div className="bg-purple-500 rounded-t" style={{ height: `${height}%` }}></div>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <ResponsiveContainer width="100%" height={50}>
+              <AreaChart data={analytics?.time_series || []}>
+                <defs>
+                  <linearGradient id="colorCostAgent" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.5} />
+                    <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <Area
+                  type="monotone"
+                  dataKey="cost"
+                  stroke="#8b5cf6"
+                  strokeWidth={2}
+                  fill="url(#colorCostAgent)"
+                  dot={false}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-blue-50 to-white dark:from-blue-950/20 dark:to-gray-900">
+        {/* Average Cost per Call */}
+        <Card className="bg-[#1a232e] border-none">
           <CardHeader className="pb-2">
-            <CardDescription className="text-xs">Coût Moyen par Appel</CardDescription>
+            <CardDescription className="text-gray-400 text-xs">Coût Moyen par Appel</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-blue-700 dark:text-blue-400">
+            <div className="text-3xl font-bold text-white mb-3">
               ${analytics?.avg_cost_per_call.toFixed(4) || '0.0000'}
             </div>
-            <div className="flex items-center gap-2 mt-2">
-              <div className="h-12 w-full bg-blue-100 dark:bg-blue-900/30 rounded">
-                <svg className="w-full h-full" viewBox="0 0 100 50" preserveAspectRatio="none">
-                  <path d="M 0 25 Q 25 20 50 22 T 100 15" fill="none" stroke="#2563eb" strokeWidth="2" />
-                  {[0, 25, 50, 75, 100].map((x, i) => (
-                    <circle key={i} cx={x} cy={25 - i * 2} r="2" fill="#2563eb" />
-                  ))}
-                </svg>
-              </div>
-            </div>
+            <ResponsiveContainer width="100%" height={50}>
+              <AreaChart data={analytics?.time_series || []}>
+                <defs>
+                  <linearGradient id="colorAvgCostAgent" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <Area
+                  type="monotone"
+                  dataKey="avg_cost"
+                  stroke="#3b82f6"
+                  strokeWidth={2}
+                  fill="url(#colorAvgCostAgent)"
+                  dot={false}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
           </CardContent>
         </Card>
       </div>
 
-      {/* Analyse des Appels */}
+      {/* Call Success Card */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Taux de Réussite des Appels</CardTitle>
+          <CardDescription>
+            Pourcentage d'appels terminés avec succès
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="flex items-baseline gap-4">
+              <div className="text-5xl font-bold text-green-700 dark:text-green-400">
+                {analytics?.success_rate.toFixed(1) || '0.0'}%
+              </div>
+              <div className="text-sm text-muted-foreground">
+                {analytics?.successful_calls || 0} appels réussis sur {analytics?.total_calls || 0} total
+              </div>
+            </div>
+
+            {/* Progress bar */}
+            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4">
+              <div
+                className="bg-green-600 h-4 rounded-full transition-all duration-500"
+                style={{ width: `${analytics?.success_rate || 0}%` }}
+              ></div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Call Analysis */}
       <Card>
         <CardHeader>
           <CardTitle>Analyse des Appels</CardTitle>
@@ -246,83 +332,88 @@ export const AgentAnalyticsTab: React.FC<AgentAnalyticsTabProps> = ({ agent }) =
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Raison de Fin d'Appel */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Reason Call Ended */}
             <div className="space-y-4">
               <h4 className="text-sm font-medium">Raison de Fin d'Appel</h4>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={endReasonsData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                  <XAxis
+                    dataKey="reason"
+                    tick={{ fill: '#9ca3af', fontSize: 11 }}
+                    angle={-45}
+                    textAnchor="end"
+                    height={80}
+                  />
+                  <YAxis tick={{ fill: '#9ca3af' }} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: '#1f2937',
+                      border: '1px solid #374151',
+                      borderRadius: '6px',
+                      color: '#fff'
+                    }}
+                  />
+                  <Legend wrapperStyle={{ paddingTop: '20px' }} />
+                  <Bar dataKey="customer-ended-call" stackId="a" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="silence-timed-out" stackId="a" fill="#06b6d4" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="assistant-ended-call" stackId="a" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="other" stackId="a" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+
+              {/* Legend List */}
               <div className="space-y-2">
                 {Object.entries(analytics?.end_reasons || {}).map(([reason, count], idx) => (
-                  <div key={idx} className="flex items-center justify-between">
+                  <div key={idx} className="flex items-center justify-between text-sm">
                     <div className="flex items-center gap-2">
                       <div className={`w-3 h-3 rounded ${
                         reason === 'customer-ended-call' ? 'bg-blue-500' :
                         reason === 'silence-timed-out' ? 'bg-cyan-500' :
                         reason === 'assistant-ended-call' ? 'bg-purple-500' :
-                        'bg-gray-500'
+                        'bg-orange-500'
                       }`}></div>
-                      <span className="text-sm">{reason}</span>
+                      <span>{reason}</span>
                     </div>
-                    <span className="text-sm font-medium">{count}</span>
+                    <span className="font-medium">{count}</span>
                   </div>
                 ))}
                 {Object.keys(analytics?.end_reasons || {}).length === 0 && (
                   <p className="text-sm text-muted-foreground">Aucune donnée disponible</p>
                 )}
               </div>
-
-              <div className="h-64 bg-gray-50 dark:bg-gray-900 rounded-lg flex items-end gap-2 p-4">
-                {Object.entries(analytics?.end_reasons || {}).map(([reason, count], idx) => {
-                  const total = Object.values(analytics?.end_reasons || {}).reduce((a: number, b: number) => a + b, 0);
-                  const height = total > 0 ? (count / total) * 100 : 0;
-                  const colors = ['bg-blue-500', 'bg-cyan-500', 'bg-purple-500', 'bg-pink-500', 'bg-orange-500'];
-
-                  return (
-                    <div key={idx} className="flex-1 flex flex-col items-center gap-2">
-                      <div className={`w-full ${colors[idx % colors.length]} rounded-t`} style={{ height: `${height}%` }}></div>
-                      <span className="text-xs text-muted-foreground rotate-45 origin-top-left whitespace-nowrap">
-                        {reason.substring(0, 10)}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
             </div>
 
-            {/* Durée Moyenne par Assistant */}
+            {/* Duration Stats */}
             <div className="space-y-4">
-              <h4 className="text-sm font-medium">Durée Moyenne des Appels</h4>
-              <div className="text-4xl font-bold text-gray-900 dark:text-white">
-                {analytics?.avg_duration_minutes.toFixed(2) || '0.00'} min
-              </div>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-sm">
-                  <span>Appels Réussis</span>
-                  <span className="font-medium">{analytics?.successful_calls || 0}</span>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span>Taux de Réussite</span>
-                  <span className="font-medium">{analytics?.success_rate.toFixed(1) || '0.0'}%</span>
-                </div>
-              </div>
-
-              <div className="h-64 bg-gray-50 dark:bg-gray-900 rounded-lg flex items-end gap-1 p-4">
-                {analytics?.calls.slice(0, 20).map((call, idx) => {
-                  const duration = call.duration || 0;
-                  const maxDuration = Math.max(...analytics.calls.map((c: any) => c.duration || 0));
-                  const height = maxDuration > 0 ? (duration / maxDuration) * 100 : 0;
-                  const colors = ['bg-teal-500', 'bg-pink-500', 'bg-orange-500', 'bg-red-500'];
-
-                  return (
-                    <div key={idx} className="flex-1">
-                      <div className={`w-full ${colors[idx % colors.length]} rounded-t`} style={{ height: `${height}%` }}></div>
-                    </div>
-                  );
-                })}
-                {!analytics?.calls || analytics.calls.length === 0 && (
-                  <div className="w-full h-full flex items-center justify-center text-sm text-muted-foreground">
-                    Aucun appel enregistré
+              <h4 className="text-sm font-medium">Statistiques de Durée</h4>
+              <div className="space-y-6">
+                <div>
+                  <p className="text-sm text-muted-foreground mb-2">Durée Moyenne des Appels</p>
+                  <div className="text-4xl font-bold text-gray-900 dark:text-white">
+                    {analytics?.avg_duration_minutes.toFixed(2) || '0.00'} min
                   </div>
-                )}
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                    <span className="text-sm">Total des Minutes</span>
+                    <span className="font-bold">{analytics?.total_minutes.toFixed(2) || '0.00'}</span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                    <span className="text-sm">Appels Réussis</span>
+                    <span className="font-bold">{analytics?.successful_calls || 0}</span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                    <span className="text-sm">Taux de Réussite</span>
+                    <span className="font-bold text-green-600">{analytics?.success_rate.toFixed(1) || '0.0'}%</span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                    <span className="text-sm">Coût Total</span>
+                    <span className="font-bold">${analytics?.total_cost.toFixed(2) || '0.00'}</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
