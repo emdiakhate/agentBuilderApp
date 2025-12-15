@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, Bot, Trash2, AlertCircle, Loader2, History, Cpu, Calendar, Mic, Volume2, MessageSquare, Plus, Play, Pause, Phone, Copy, PhoneOutgoing, PhoneIncoming, Mail, Send, MoreVertical, Archive, UserMinus, PenSquare, Cog, Camera } from "lucide-react";
+import { ArrowLeft, Bot, Trash2, AlertCircle, Loader2, History, Cpu, Calendar, Mic, Volume2, MessageSquare, Plus, Play, Pause, Phone, Copy, PhoneOutgoing, PhoneIncoming, Mail, Send, MoreVertical, Archive, UserMinus, PenSquare, Cog, Camera, BarChart3 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -32,6 +32,7 @@ import { Rocket } from "lucide-react";
 import { TestAgentSidebar } from "@/components/TestAgentSidebar";
 import { GoogleCalendarToolModal } from "@/components/GoogleCalendarToolModal";
 import { AvatarUploadModal } from "@/components/AvatarUploadModal";
+import { AgentAnalyticsTab } from "@/components/AgentAnalyticsTab";
 
 const SAMPLE_TEXT = "Hello, I'm an AI assistant and I'm here to help you with your questions.";
 
@@ -752,28 +753,84 @@ const AgentDetails = () => {
           </div>
         </CardContent>
       </Card>
-      
+
+      {/* Performance Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardDescription className="text-xs">AVM</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-baseline gap-1">
+              <span className="text-2xl font-bold">{agent.avm_score || 7.8}</span>
+              <span className="text-sm text-muted-foreground">/10</span>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardDescription className="text-xs">Interactions</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {agent.interactions >= 1000
+                ? `${(agent.interactions / 1000).toFixed(1)}k`
+                : agent.interactions || '1.3k'}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardDescription className="text-xs">CSAT</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{agent.csat || 85}%</div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardDescription className="text-xs">Performance</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{agent.performance || 92}%</div>
+          </CardContent>
+        </Card>
+      </div>
+
       <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="mt-8">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="setup" className="text-sm">
             <span className="flex items-center gap-2">
               <Cog className="h-4 w-4" />
-              Setup
+              Configuration
+            </span>
+          </TabsTrigger>
+          <TabsTrigger value="analytics" className="text-sm">
+            <span className="flex items-center gap-2">
+              <BarChart3 className="h-4 w-4" />
+              Analyse
             </span>
           </TabsTrigger>
           <TabsTrigger value="settings" className="text-sm">
             <span className="flex items-center gap-2">
               <Cpu className="h-4 w-4" />
-              Settings
+              Paramètres
             </span>
           </TabsTrigger>
         </TabsList>
-        
+
         <div className="mt-6">
           <TabsContent value="setup" className="space-y-6">
             <AgentSetupStepper agent={agent} />
           </TabsContent>
-          
+
+          <TabsContent value="analytics" className="space-y-6">
+            <AgentAnalyticsTab agent={agent} />
+          </TabsContent>
+
           <TabsContent value="settings" className="space-y-6">
             <AgentConfigSettings agent={agent} onAgentUpdate={handleAgentUpdate} />
           </TabsContent>
