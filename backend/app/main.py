@@ -4,7 +4,7 @@ from loguru import logger
 
 from app.core.config import settings
 from app.core.database import init_db
-from app.api.endpoints import auth, agents, vapi, chat, generate, templates, tools, vapi_webhooks, oauth, tool_webhooks, agent_tools
+from app.api.endpoints import auth, agents, vapi, chat, generate, templates, tools, vapi_webhooks, oauth, tool_webhooks, agent_tools, analytics
 
 # Create FastAPI app
 app = FastAPI(
@@ -35,6 +35,7 @@ app.include_router(vapi_webhooks.router, prefix="/api/webhooks", tags=["Webhooks
 app.include_router(oauth.router, prefix="/api/oauth", tags=["OAuth"])
 app.include_router(tool_webhooks.router, prefix="/api/tool-webhooks", tags=["Tool Webhooks"])
 app.include_router(agent_tools.router, prefix="/api/agent-tools", tags=["Agent Tools"])
+app.include_router(analytics.router, prefix="/api/analytics", tags=["Analytics"])
 
 
 @app.on_event("startup")

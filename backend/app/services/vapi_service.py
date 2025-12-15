@@ -738,6 +738,114 @@ class VapiService:
             parameters=parameters
         )
 
+    async def get_calls(
+        self,
+        assistant_id: Optional[str] = None,
+        limit: int = 100,
+        created_at_gt: Optional[str] = None,
+        created_at_lt: Optional[str] = None
+    ) -> List[Dict[str, Any]]:
+        """
+        Get calls from Vapi with optional filtering
+
+        Args:
+            assistant_id: Filter by assistant ID
+            limit: Number of calls to retrieve (max 100)
+            created_at_gt: Filter calls created after this date (ISO 8601)
+            created_at_lt: Filter calls created before this date (ISO 8601)
+
+        Returns:
+            List of call data
+        """
+        params = {"limit": limit}
+
+        if assistant_id:
+            params["assistantId"] = assistant_id
+        if created_at_gt:
+            params["createdAtGt"] = created_at_gt
+        if created_at_lt:
+            params["createdAtLt"] = created_at_lt
+
+        try:
+            async with httpx.AsyncClient() as client:
+                response = await client.get(
+                    f"{self.base_url}/call",
+                    headers=self.headers,
+                    params=params,
+                    timeout=30.0
+                )
+                response.raise_for_status()
+                return response.json()
+        except Exception as e:
+            logger.error(f"Error fetching calls: {e}")
+            return []
+
+    async def get_analytics(
+        self,
+        assistant_id: Optional[str] = None,
+        start_date: Optional[str] = None,
+        end_date: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """
+        Get analytics data for calls
+
+        Args:
+            assistant_id: Filter by assistant ID
+            start_date: Start date for analytics (ISO 8601)
+            end_date: End date for analytics (ISO 8601)
+
+        Returns:
+            Analytics data including metrics
+        """
+        calls = await self.get_calls(
+            assistant_id=assistant_id,
+            created_at_gt=start_date,
+            created_at_lt=end_date,
+            limit=100
+        )
+
+        # Calculate metrics from calls
+        total_calls = len(calls)
+        total_minutes = 0
+        total_cost = 0
+        successful_calls = 0
+        end_reasons = {}
+
+        for call in calls:
+            # Duration in seconds to minutes
+            duration = call.get("duration", 0)
+            if duration:
+                total_minutes += duration / 60
+
+            # Cost
+            cost = call.get("cost", 0)
+            if cost:
+                total_cost += cost
+
+            # Status
+            status = call.get("status")
+            if status == "ended":
+                successful_calls += 1
+
+            # End reason
+            end_reason = call.get("endedReason", "unknown")
+            end_reasons[end_reason] = end_reasons.get(end_reason, 0) + 1
+
+        avg_cost_per_call = total_cost / total_calls if total_calls > 0 else 0
+        avg_duration = total_minutes / total_calls if total_calls > 0 else 0
+
+        return {
+            "total_calls": total_calls,
+            "total_minutes": round(total_minutes, 2),
+            "total_cost": round(total_cost, 2),
+            "avg_cost_per_call": round(avg_cost_per_call, 4),
+            "avg_duration_minutes": round(avg_duration, 2),
+            "successful_calls": successful_calls,
+            "success_rate": round((successful_calls / total_calls * 100), 2) if total_calls > 0 else 0,
+            "end_reasons": end_reasons,
+            "calls": calls
+        }
+
 
 # Global instance
 vapi_service = VapiService()
