@@ -795,8 +795,11 @@ class VapiService:
             end_date: End date for analytics (ISO 8601)
 
         Returns:
-            Analytics data including metrics
+            Analytics data including metrics and time series data
         """
+        from datetime import datetime
+        from collections import defaultdict
+
         calls = await self.get_calls(
             assistant_id=assistant_id,
             created_at_gt=start_date,
@@ -810,6 +813,18 @@ class VapiService:
         total_cost = 0
         successful_calls = 0
         end_reasons = {}
+
+        # Time series data grouped by date
+        daily_data = defaultdict(lambda: {
+            "date": "",
+            "calls": 0,
+            "minutes": 0,
+            "cost": 0,
+            "avg_cost": 0
+        })
+
+        # Duration by assistant
+        assistant_durations = defaultdict(lambda: {"total_minutes": 0, "count": 0})
 
         for call in calls:
             # Duration in seconds to minutes
@@ -831,6 +846,42 @@ class VapiService:
             end_reason = call.get("endedReason", "unknown")
             end_reasons[end_reason] = end_reasons.get(end_reason, 0) + 1
 
+            # Group by date for time series
+            created_at = call.get("createdAt")
+            if created_at:
+                # Parse ISO date and extract date only
+                date_str = created_at.split("T")[0]  # Get YYYY-MM-DD
+                daily_data[date_str]["date"] = date_str
+                daily_data[date_str]["calls"] += 1
+                daily_data[date_str]["minutes"] += duration / 60 if duration else 0
+                daily_data[date_str]["cost"] += cost if cost else 0
+
+            # Track duration by assistant
+            assistant_id_from_call = call.get("assistantId")
+            if assistant_id_from_call and duration:
+                assistant_durations[assistant_id_from_call]["total_minutes"] += duration / 60
+                assistant_durations[assistant_id_from_call]["count"] += 1
+
+        # Calculate average cost per call for each day
+        for date_key in daily_data:
+            if daily_data[date_key]["calls"] > 0:
+                daily_data[date_key]["avg_cost"] = round(
+                    daily_data[date_key]["cost"] / daily_data[date_key]["calls"], 4
+                )
+            daily_data[date_key]["minutes"] = round(daily_data[date_key]["minutes"], 2)
+            daily_data[date_key]["cost"] = round(daily_data[date_key]["cost"], 2)
+
+        # Convert to sorted list
+        time_series = sorted(daily_data.values(), key=lambda x: x["date"])
+
+        # Calculate average duration by assistant
+        avg_duration_by_assistant = {}
+        for assistant_id_key, data in assistant_durations.items():
+            if data["count"] > 0:
+                avg_duration_by_assistant[assistant_id_key] = round(
+                    data["total_minutes"] / data["count"], 2
+                )
+
         avg_cost_per_call = total_cost / total_calls if total_calls > 0 else 0
         avg_duration = total_minutes / total_calls if total_calls > 0 else 0
 
@@ -843,6 +894,8 @@ class VapiService:
             "successful_calls": successful_calls,
             "success_rate": round((successful_calls / total_calls * 100), 2) if total_calls > 0 else 0,
             "end_reasons": end_reasons,
+            "time_series": time_series,
+            "avg_duration_by_assistant": avg_duration_by_assistant,
             "calls": calls
         }
 

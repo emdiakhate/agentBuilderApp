@@ -119,6 +119,8 @@ async def get_all_agents_analytics(
             start_date = start.isoformat()
 
         # Aggregate analytics from all agents
+        from collections import defaultdict
+
         total_metrics = {
             "total_calls": 0,
             "total_minutes": 0.0,
@@ -127,6 +129,18 @@ async def get_all_agents_analytics(
             "end_reasons": {},
             "agents": []
         }
+
+        # Time series aggregation
+        daily_aggregates = defaultdict(lambda: {
+            "date": "",
+            "calls": 0,
+            "minutes": 0,
+            "cost": 0,
+            "avg_cost": 0
+        })
+
+        # Duration by assistant aggregation
+        all_assistant_durations = {}
 
         for agent in agents:
             analytics = await vapi_service.get_analytics(
@@ -145,6 +159,18 @@ async def get_all_agents_analytics(
             for reason, count in analytics.get("end_reasons", {}).items():
                 total_metrics["end_reasons"][reason] = total_metrics["end_reasons"].get(reason, 0) + count
 
+            # Merge time series data
+            for day_data in analytics.get("time_series", []):
+                date_key = day_data["date"]
+                daily_aggregates[date_key]["date"] = date_key
+                daily_aggregates[date_key]["calls"] += day_data.get("calls", 0)
+                daily_aggregates[date_key]["minutes"] += day_data.get("minutes", 0)
+                daily_aggregates[date_key]["cost"] += day_data.get("cost", 0)
+
+            # Merge assistant duration data (use agent name instead of assistant ID)
+            for assistant_id, avg_duration in analytics.get("avg_duration_by_assistant", {}).items():
+                all_assistant_durations[agent.name] = avg_duration
+
             # Add agent-specific data
             total_metrics["agents"].append({
                 "id": agent.id,
@@ -152,6 +178,19 @@ async def get_all_agents_analytics(
                 "vapi_assistant_id": agent.vapi_assistant_id,
                 "analytics": analytics
             })
+
+        # Calculate average cost per day
+        for date_key in daily_aggregates:
+            if daily_aggregates[date_key]["calls"] > 0:
+                daily_aggregates[date_key]["avg_cost"] = round(
+                    daily_aggregates[date_key]["cost"] / daily_aggregates[date_key]["calls"], 4
+                )
+            daily_aggregates[date_key]["minutes"] = round(daily_aggregates[date_key]["minutes"], 2)
+            daily_aggregates[date_key]["cost"] = round(daily_aggregates[date_key]["cost"], 2)
+
+        # Convert to sorted list
+        total_metrics["time_series"] = sorted(daily_aggregates.values(), key=lambda x: x["date"])
+        total_metrics["avg_duration_by_assistant"] = all_assistant_durations
 
         # Calculate averages
         if total_metrics["total_calls"] > 0:
