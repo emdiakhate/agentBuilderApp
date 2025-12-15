@@ -899,6 +899,117 @@ class VapiService:
             "calls": calls
         }
 
+    async def get_voices(self) -> List[Dict[str, Any]]:
+        """
+        Get all available voices from Vapi
+
+        Returns:
+            List of available voices with their details
+        """
+        try:
+            async with httpx.AsyncClient() as client:
+                response = await client.get(
+                    f"{self.base_url}/voice",
+                    headers=self.headers,
+                    timeout=30.0
+                )
+                response.raise_for_status()
+                voices = response.json()
+
+                logger.info(f"Retrieved {len(voices)} voices from Vapi")
+                return voices
+
+        except Exception as e:
+            logger.error(f"Error fetching voices: {e}")
+            return []
+
+    async def clone_voice(
+        self,
+        name: str,
+        description: Optional[str],
+        audio_files: List[Any]
+    ) -> Dict[str, Any]:
+        """
+        Clone a voice using ElevenLabs via Vapi
+
+        Args:
+            name: Name for the cloned voice
+            description: Description of the voice
+            audio_files: List of audio file uploads
+
+        Returns:
+            Cloned voice information
+        """
+        try:
+            # Prepare multipart form data
+            files = []
+            file_contents = []
+
+            for i, audio_file in enumerate(audio_files):
+                content = await audio_file.read()
+                file_contents.append(content)
+                files.append(
+                    ("files", (audio_file.filename, content, audio_file.content_type))
+                )
+
+            # Create form data
+            data = {
+                "name": name,
+            }
+
+            if description:
+                data["description"] = description
+
+            # Call Vapi voice cloning endpoint (which uses ElevenLabs)
+            async with httpx.AsyncClient(timeout=120.0) as client:
+                response = await client.post(
+                    f"{self.base_url}/voice/clone",
+                    headers={"Authorization": f"Bearer {self.api_key}"},
+                    data=data,
+                    files=files
+                )
+                response.raise_for_status()
+                result = response.json()
+
+                logger.info(f"Voice cloned successfully: {result.get('id')}")
+                return {
+                    "success": True,
+                    "voice": result
+                }
+
+        except httpx.HTTPStatusError as e:
+            logger.error(f"Vapi voice cloning error: {e.response.status_code} - {e.response.text}")
+            raise Exception(f"Voice cloning failed: {e.response.text}")
+        except Exception as e:
+            logger.error(f"Error cloning voice: {e}")
+            raise
+
+    async def delete_voice(self, voice_id: str) -> Dict[str, Any]:
+        """
+        Delete a voice from Vapi
+
+        Args:
+            voice_id: ID of the voice to delete
+
+        Returns:
+            Success response
+        """
+        try:
+            async with httpx.AsyncClient() as client:
+                response = await client.delete(
+                    f"{self.base_url}/voice/{voice_id}",
+                    headers=self.headers,
+                    timeout=30.0
+                )
+                response.raise_for_status()
+
+                logger.info(f"Voice deleted: {voice_id}")
+                return {"success": True}
+
+        except Exception as e:
+            logger.error(f"Error deleting voice: {e}")
+            raise
+
 
 # Global instance
 vapi_service = VapiService()
