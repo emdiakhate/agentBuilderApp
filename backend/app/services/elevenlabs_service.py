@@ -50,7 +50,6 @@ class ElevenLabsService:
                 "age": 30,
                 "description": "Calm, young adult female voice",
                 "use_case": "narration, general",
-                "previewUrl": "https://storage.googleapis.com/eleven-public-prod/premade/voices/21m00Tcm4TlvDq8ikWAM/cb4e7c50-b509-44c7-904c-f6c1d274cf4c.mp3",
                 "category": "premade"
             },
             {
@@ -63,7 +62,6 @@ class ElevenLabsService:
                 "age": 40,
                 "description": "Confident, middle-aged male voice",
                 "use_case": "video games, narration",
-                "previewUrl": "https://storage.googleapis.com/eleven-public-prod/premade/voices/2EiwWnXFnvU5JabPnv8n/65d80f52-703f-4cae-a91d-75d4e200ed02.mp3",
                 "category": "premade"
             },
             {
@@ -76,7 +74,6 @@ class ElevenLabsService:
                 "age": 25,
                 "description": "Energetic, young female voice",
                 "use_case": "narration, video games",
-                "previewUrl": "https://storage.googleapis.com/eleven-public-prod/premade/voices/AZnzlk1XvdvUeBnXmlld/09a7c114-e095-43ff-8c50-82b7c1a1a5fd.mp3",
                 "category": "premade"
             },
             {
@@ -89,7 +86,6 @@ class ElevenLabsService:
                 "age": 35,
                 "description": "Conversational, young male voice",
                 "use_case": "conversational, video games",
-                "previewUrl": "https://storage.googleapis.com/eleven-public-prod/premade/voices/CYw3kZ02Hs0563khs1Fj/5072c5a6-9bde-4e02-ada1-98cf1f8c5a25.mp3",
                 "category": "premade"
             },
             {
@@ -102,7 +98,6 @@ class ElevenLabsService:
                 "age": 30,
                 "description": "Energetic, Irish male voice",
                 "use_case": "video games, animation",
-                "previewUrl": "https://storage.googleapis.com/eleven-public-prod/premade/voices/D38z5RcWu1voky8WS1ja/9c5f7ba8-d15a-4c92-88a0-d2d045d86ce5.mp3",
                 "category": "premade"
             },
             {
@@ -115,7 +110,6 @@ class ElevenLabsService:
                 "age": 28,
                 "description": "Soft, young female voice",
                 "use_case": "news, narration",
-                "previewUrl": "https://storage.googleapis.com/eleven-public-prod/premade/voices/EXAVITQu4vr4xnSDxMaL/a916c37d-6e97-4e21-82cf-8c09bc4a3f3a.mp3",
                 "category": "premade"
             },
             {
@@ -128,7 +122,6 @@ class ElevenLabsService:
                 "age": 35,
                 "description": "Well-rounded, young male voice",
                 "use_case": "narration, general",
-                "previewUrl": "https://storage.googleapis.com/eleven-public-prod/premade/voices/ErXwobaYiN019PkySvjV/38a39653-a35f-4d4f-901e-0e0967c8b4c4.mp3",
                 "category": "premade"
             },
             {
@@ -141,7 +134,6 @@ class ElevenLabsService:
                 "age": 45,
                 "description": "Mature, calm male voice",
                 "use_case": "meditation, narration",
-                "previewUrl": "https://storage.googleapis.com/eleven-public-prod/premade/voices/GBv7mTt0atIp3Br8iCZE/be8e50e5-3fd3-44d3-ae56-54dc8ec75c2a.mp3",
                 "category": "premade"
             },
             {
@@ -154,7 +146,6 @@ class ElevenLabsService:
                 "age": 32,
                 "description": "Casual, Australian male voice",
                 "use_case": "conversational, casual",
-                "previewUrl": "https://storage.googleapis.com/eleven-public-prod/premade/voices/IKne3meq5aSn9XLyUdCD/38a07e0f-d5be-46be-b0c4-c8835e27b3ec.mp3",
                 "category": "premade"
             },
             {
@@ -167,7 +158,6 @@ class ElevenLabsService:
                 "age": 50,
                 "description": "Warm, British narrator voice",
                 "use_case": "narration, audiobooks",
-                "previewUrl": "https://storage.googleapis.com/eleven-public-prod/premade/voices/JBFqnCBsd6RMkjVDRZzb/e6206d1c-6a0b-4858-aea6-deb58a37157c.mp3",
                 "category": "premade"
             },
             {
@@ -180,7 +170,6 @@ class ElevenLabsService:
                 "age": 28,
                 "description": "Intense, energetic male voice",
                 "use_case": "video games, action",
-                "previewUrl": "https://storage.googleapis.com/eleven-public-prod/premade/voices/N2lVS1w4EtoT3dr4eOWO/7cbb801c-e954-43e3-a08c-416c7231e129.mp3",
                 "category": "premade"
             },
             {
@@ -193,7 +182,6 @@ class ElevenLabsService:
                 "age": 30,
                 "description": "Neutral, articulate male voice",
                 "use_case": "narration, general",
-                "previewUrl": "https://storage.googleapis.com/eleven-public-prod/premade/voices/TX3LPaxmHKxFdv7VOQHJ/2fe8daaf-a48b-49a9-9a56-cebb41d1f0ea.mp3",
                 "category": "premade"
             },
             {
@@ -206,7 +194,6 @@ class ElevenLabsService:
                 "age": 30,
                 "description": "Seductive, Swedish female voice",
                 "use_case": "characters, video games",
-                "previewUrl": "https://storage.googleapis.com/eleven-public-prod/premade/voices/XB0fDUnXU5powFXDhCwa/942356dc-f10d-4d89-bb0f-1461e7e9371d.mp3",
                 "category": "premade"
             },
             {
@@ -219,7 +206,6 @@ class ElevenLabsService:
                 "age": 25,
                 "description": "Confident, British female voice",
                 "use_case": "news, narration",
-                "previewUrl": "https://storage.googleapis.com/eleven-public-prod/premade/voices/Xb7hH8MSUJpSbSDYk0k2/fb9fcab3-cacf-4fd5-91b4-81e3d5197e3c.mp3",
                 "category": "premade"
             },
             {
@@ -232,7 +218,6 @@ class ElevenLabsService:
                 "age": 40,
                 "description": "Warm, mature female voice",
                 "use_case": "audiobooks, narration",
-                "previewUrl": "https://storage.googleapis.com/eleven-public-prod/premade/voices/XrExE9yKIg1WjnnlVkGX/aebee950-7c70-49d7-993f-0d0087cd6b4a.mp3",
                 "category": "premade"
             },
             {
@@ -245,7 +230,6 @@ class ElevenLabsService:
                 "age": 45,
                 "description": "Deep, authoritative British voice",
                 "use_case": "narration, audiobooks",
-                "previewUrl": "https://storage.googleapis.com/eleven-public-prod/premade/voices/onwK4e9ZLuTAKqWW03F9/4ea3de07-1bbf-437f-bf3f-f3bb0c375911.mp3",
                 "category": "premade"
             },
             {
@@ -258,7 +242,6 @@ class ElevenLabsService:
                 "age": 35,
                 "description": "Deep, American male voice",
                 "use_case": "narration, general",
-                "previewUrl": "https://storage.googleapis.com/eleven-public-prod/premade/voices/pNInz6obpgDQGcFmaJgB/8caf8671-fa46-42ae-948e-5e8996c0652b.mp3",
                 "category": "premade"
             }
         ]
