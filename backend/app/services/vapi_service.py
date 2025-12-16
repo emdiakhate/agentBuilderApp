@@ -946,6 +946,74 @@ class VapiService:
             logger.error(f"Error fetching voices: {e}")
             return []
 
+    async def generate_voice_preview(
+        self,
+        voice_id: str,
+        provider: str
+    ) -> bytes:
+        """
+        Generate an audio preview for a voice using Vapi TTS
+
+        Args:
+            voice_id: ID of the voice
+            provider: Voice provider (11labs, cartesia, playht)
+
+        Returns:
+            Audio data as bytes
+        """
+        try:
+            # Prepare sample text based on language/provider
+            sample_texts = {
+                "fr": "Bonjour, je suis un assistant vocal intelligent. Comment puis-je vous aider aujourd'hui?",
+                "en": "Hello, I'm an intelligent voice assistant. How can I help you today?"
+            }
+
+            # Determine language from voice_id
+            # For French voices, use French text
+            french_voice_ids = [
+                "65b25c5d-ff07-4687-a04c-da2f43ef6fa9",
+                "f785d5cf-6549-47a6-9f1c-00d2d892197a",
+                "421b3369-f63f-4b03-8980-37a44df1d4e8"
+            ]
+
+            text = sample_texts["fr"] if voice_id in french_voice_ids else sample_texts["en"]
+
+            # Build voice configuration based on provider
+            voice_config = {
+                "provider": provider,
+                "voiceId": voice_id
+            }
+
+            if provider == "cartesia":
+                voice_config["model"] = "sonic-multilingual"
+
+            # Payload for Vapi TTS
+            payload = {
+                "text": text,
+                "voice": voice_config
+            }
+
+            # Call Vapi TTS endpoint
+            async with httpx.AsyncClient(timeout=60.0) as client:
+                response = await client.post(
+                    "https://api.vapi.ai/tts",
+                    headers=self.headers,
+                    json=payload
+                )
+                response.raise_for_status()
+
+                # Return audio data
+                audio_data = response.content
+                logger.info(f"Generated preview for voice {voice_id} ({provider}): {len(audio_data)} bytes")
+                return audio_data
+
+        except httpx.HTTPStatusError as e:
+            logger.error(f"Vapi TTS error: {e.response.status_code} - {e.response.text}")
+            raise Exception(f"Failed to generate preview: {e.response.text}")
+        except Exception as e:
+            logger.error(f"Error generating voice preview: {e}")
+            raise
+
     async def clone_voice(
         self,
         name: str,

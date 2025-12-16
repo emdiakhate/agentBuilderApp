@@ -2,7 +2,7 @@
 Voice Library endpoints for managing Vapi voices
 """
 
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, Response
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from loguru import logger
@@ -50,6 +50,43 @@ async def get_voices(
         raise HTTPException(
             status_code=500,
             detail=f"Failed to retrieve voices: {str(e)}"
+        )
+
+
+@router.get("/voices/{voice_id}/preview")
+async def get_voice_preview(
+    voice_id: str,
+    provider: str,
+    current_user: User = Depends(get_current_user_optional),
+    db: Session = Depends(get_db)
+):
+    """
+    Generate an audio preview for a specific voice
+
+    Args:
+        voice_id: ID of the voice
+        provider: Voice provider (11labs, cartesia, playht)
+
+    Returns:
+        Audio preview
+    """
+    try:
+        # Generate a preview using Vapi text-to-speech
+        audio_data = await vapi_service.generate_voice_preview(voice_id, provider)
+
+        return Response(
+            content=audio_data,
+            media_type="audio/mpeg",
+            headers={
+                "Content-Disposition": f"inline; filename=preview_{voice_id}.mp3"
+            }
+        )
+
+    except Exception as e:
+        logger.error(f"Error generating voice preview: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to generate preview: {str(e)}"
         )
 
 

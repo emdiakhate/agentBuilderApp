@@ -102,22 +102,26 @@ const VoiceLibrary: React.FC = () => {
       return;
     }
 
-    // If no preview URL, try to generate one
-    if (!voice.previewUrl) {
-      toast({
-        title: "Aperçu non disponible",
-        description: "Cette voix n'a pas d'aperçu audio.",
-      });
-      return;
-    }
-
     try {
-      const audio = new Audio(voice.previewUrl);
+      // Generate preview URL from our backend
+      const previewUrl = `http://localhost:8000/api/voice-library/voices/${voice.id}/preview?provider=${voice.provider}`;
+
+      const audio = new Audio(previewUrl);
       setAudioPlayer(audio);
       setPlayingVoiceId(voice.id);
 
       audio.play();
       audio.onended = () => {
+        setPlayingVoiceId(null);
+        setAudioPlayer(null);
+      };
+
+      audio.onerror = () => {
+        toast({
+          title: "Erreur",
+          description: "Impossible de générer l'aperçu audio.",
+          variant: "destructive",
+        });
         setPlayingVoiceId(null);
         setAudioPlayer(null);
       };
