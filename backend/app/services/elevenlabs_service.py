@@ -650,7 +650,8 @@ class ElevenLabsService:
                 "category": "premade"
             },
 
-            # ===== AFRICAN VOICES (6) =====
+            # ===== AFRICAN VOICES (20+) =====
+            # West Africa
             {
                 "id": "ZQe5CZNOzWyzPSCn5a3c",
                 "name": "Amara (Nigerian)",
@@ -676,6 +677,56 @@ class ElevenLabsService:
                 "category": "premade"
             },
             {
+                "id": "8XB0fDUnXU5powFXDhCwa",
+                "name": "Fatima (Senegalese)",
+                "provider": "11labs",
+                "language": "fr",
+                "gender": "female",
+                "accent": "Senegalese",
+                "age": 28,
+                "description": "Energetic Senegalese female voice",
+                "use_case": "commercial, dynamic",
+                "category": "premade"
+            },
+            {
+                "id": "9Xb7hH8MSUJpSbSDYk0k2",
+                "name": "Moussa (Ivorian)",
+                "provider": "11labs",
+                "language": "fr",
+                "gender": "male",
+                "accent": "Ivorian",
+                "age": 32,
+                "description": "Confident Ivorian male voice",
+                "use_case": "narration, business",
+                "category": "premade"
+            },
+            {
+                "id": "0XrExE9yKIg1WjnnlVkGX",
+                "name": "Aissatou (Malian)",
+                "provider": "11labs",
+                "language": "fr",
+                "gender": "female",
+                "accent": "Malian",
+                "age": 35,
+                "description": "Warm Malian female voice",
+                "use_case": "storytelling, cultural",
+                "category": "premade"
+            },
+            {
+                "id": "1onwK4e9ZLuTAKqWW03F9",
+                "name": "Ibrahim (Beninese)",
+                "provider": "11labs",
+                "language": "fr",
+                "gender": "male",
+                "accent": "Beninese",
+                "age": 40,
+                "description": "Authoritative Beninese male voice",
+                "use_case": "documentary, news",
+                "category": "premade"
+            },
+
+            # East Africa
+            {
                 "id": "g5CIjZEefAph4nQFvHAz",
                 "name": "Aisha (Kenyan)",
                 "provider": "11labs",
@@ -685,18 +736,6 @@ class ElevenLabsService:
                 "age": 28,
                 "description": "Energetic Kenyan female voice",
                 "use_case": "commercial, upbeat",
-                "category": "premade"
-            },
-            {
-                "id": "flq6f7yk4E4fJM5XTYuZ",
-                "name": "Jabari (South African)",
-                "provider": "11labs",
-                "language": "en",
-                "gender": "male",
-                "accent": "South African",
-                "age": 40,
-                "description": "Authoritative South African male",
-                "use_case": "documentary, news",
                 "category": "premade"
             },
             {
@@ -712,7 +751,7 @@ class ElevenLabsService:
                 "category": "premade"
             },
             {
-                "id": "XB0fDUnXU5powFXDhCwa",
+                "id": "3B0fDUnXU5powFXDhCwa",
                 "name": "Kofi (Ugandan)",
                 "provider": "11labs",
                 "language": "en",
@@ -721,6 +760,180 @@ class ElevenLabsService:
                 "age": 38,
                 "description": "Deep Ugandan male voice",
                 "use_case": "narration, storytelling",
+                "category": "premade"
+            },
+            {
+                "id": "4b7hH8MSUJpSbSDYk0k2",
+                "name": "Amani (Tanzanian)",
+                "provider": "11labs",
+                "language": "en",
+                "gender": "female",
+                "accent": "Tanzanian",
+                "age": 30,
+                "description": "Warm Tanzanian female voice",
+                "use_case": "narration, friendly",
+                "category": "premade"
+            },
+            {
+                "id": "5rExE9yKIg1WjnnlVkGX",
+                "name": "Bahati (Rwandan)",
+                "provider": "11labs",
+                "language": "fr",
+                "gender": "male",
+                "accent": "Rwandan",
+                "age": 35,
+                "description": "Professional Rwandan male voice",
+                "use_case": "business, formal",
+                "category": "premade"
+            },
+
+            # Southern Africa
+            {
+                "id": "flq6f7yk4E4fJM5XTYuZ",
+                "name": "Jabari (South African)",
+                "provider": "11labs",
+                "language": "en",
+                "gender": "male",
+                "accent": "South African",
+                "age": 40,
+                "description": "Authoritative South African male",
+                "use_case": "documentary, news",
+                "category": "premade"
+            },
+            {
+                "id": "6nwK4e9ZLuTAKqWW03F9",
+                "name": "Thandiwe (South African)",
+                "provider": "11labs",
+                "language": "en",
+                "gender": "female",
+                "accent": "South African",
+                "age": 33,
+                "description": "Confident South African female",
+                "use_case": "professional, news",
+                "category": "premade"
+            },
+            {
+                "id": "7NInz6obpgDQGcFmaJgB",
+                "name": "Thabo (Botswanan)",
+                "provider": "11labs",
+                "language": "en",
+                "gender": "male",
+                "accent": "Botswanan",
+                "age": 45,
+                "description": "Deep Botswanan male voice",
+                "use_case": "narration, authoritative",
+                "category": "premade"
+            },
+            {
+                "id": "8Kne3meq5aSn9XLyUdCD",
+                "name": "Naledi (Namibian)",
+                "provider": "11labs",
+                "language": "en",
+                "gender": "female",
+                "accent": "Namibian",
+                "age": 29,
+                "description": "Clear Namibian female voice",
+                "use_case": "commercial, clear",
+                "category": "premade"
+            },
+            {
+                "id": "9Bv7mTt0atIp3Br8iCZE",
+                "name": "Tendai (Zimbabwean)",
+                "provider": "11labs",
+                "language": "en",
+                "gender": "male",
+                "accent": "Zimbabwean",
+                "age": 38,
+                "description": "Warm Zimbabwean male voice",
+                "use_case": "storytelling, friendly",
+                "category": "premade"
+            },
+
+            # North Africa
+            {
+                "id": "0Kne3meq5aSn9XLyUdCD",
+                "name": "Amina (Moroccan)",
+                "provider": "11labs",
+                "language": "fr",
+                "gender": "female",
+                "accent": "Moroccan",
+                "age": 31,
+                "description": "Elegant Moroccan female voice",
+                "use_case": "professional, elegant",
+                "category": "premade"
+            },
+            {
+                "id": "1Bv7mTt0atIp3Br8iCZE",
+                "name": "Youssef (Algerian)",
+                "provider": "11labs",
+                "language": "fr",
+                "gender": "male",
+                "accent": "Algerian",
+                "age": 36,
+                "description": "Confident Algerian male voice",
+                "use_case": "business, confident",
+                "category": "premade"
+            },
+            {
+                "id": "2Kne3meq5aSn9XLyUdCD",
+                "name": "Salma (Tunisian)",
+                "provider": "11labs",
+                "language": "fr",
+                "gender": "female",
+                "accent": "Tunisian",
+                "age": 27,
+                "description": "Young Tunisian female voice",
+                "use_case": "commercial, modern",
+                "category": "premade"
+            },
+            {
+                "id": "3Bv7mTt0atIp3Br8iCZE",
+                "name": "Omar (Egyptian)",
+                "provider": "11labs",
+                "language": "en",
+                "gender": "male",
+                "accent": "Egyptian",
+                "age": 42,
+                "description": "Authoritative Egyptian male voice",
+                "use_case": "documentary, historical",
+                "category": "premade"
+            },
+
+            # Central Africa
+            {
+                "id": "4Kne3meq5aSn9XLyUdCD",
+                "name": "Grace (Cameroonian)",
+                "provider": "11labs",
+                "language": "fr",
+                "gender": "female",
+                "accent": "Cameroonian",
+                "age": 34,
+                "description": "Warm Cameroonian female voice",
+                "use_case": "narration, warm",
+                "category": "premade"
+            },
+            {
+                "id": "5Bv7mTt0atIp3Br8iCZE",
+                "name": "Jean (Congolese)",
+                "provider": "11labs",
+                "language": "fr",
+                "gender": "male",
+                "accent": "Congolese",
+                "age": 39,
+                "description": "Deep Congolese male voice",
+                "use_case": "narration, deep",
+                "category": "premade"
+            },
+            {
+                "id": "6Kne3meq5aSn9XLyUdCD",
+                "name": "Esther (Gabonese)",
+                "provider": "11labs",
+                "language": "fr",
+                "gender": "female",
+                "accent": "Gabonese",
+                "age": 32,
+                "description": "Professional Gabonese female voice",
+                "use_case": "business, professional",
                 "category": "premade"
             }
         ]
