@@ -903,21 +903,44 @@ class VapiService:
         """
         Get all available voices from Vapi
 
+        Since Vapi doesn't expose a direct /voice endpoint, we return
+        a curated list of known voices from different providers
+
         Returns:
             List of available voices with their details
         """
         try:
-            async with httpx.AsyncClient() as client:
-                response = await client.get(
-                    f"{self.base_url}/voice",
-                    headers=self.headers,
-                    timeout=30.0
-                )
-                response.raise_for_status()
-                voices = response.json()
+            # Return a curated list of known Vapi-compatible voices
+            voices = [
+                # ElevenLabs voices
+                {"id": "21m00Tcm4TlvDq8ikWAM", "name": "Rachel", "provider": "11labs", "language": "en", "gender": "female", "accent": "American", "age": 30},
+                {"id": "AZnzlk1XvdvUeBnXmlld", "name": "Domi", "provider": "11labs", "language": "en", "gender": "female", "accent": "American", "age": 28},
+                {"id": "EXAVITQu4vr4xnSDxMaL", "name": "Bella", "provider": "11labs", "language": "en", "gender": "female", "accent": "American", "age": 25},
+                {"id": "ErXwobaYiN019PkySvjV", "name": "Antoni", "provider": "11labs", "language": "en", "gender": "male", "accent": "American", "age": 35},
+                {"id": "MF3mGyEYCl7XYWbV9V6O", "name": "Elli", "provider": "11labs", "language": "en", "gender": "female", "accent": "American", "age": 27},
+                {"id": "TxGEqnHWrfWFTfGW9XjX", "name": "Josh", "provider": "11labs", "language": "en", "gender": "male", "accent": "American", "age": 32},
+                {"id": "VR6AewLTigWG4xSOukaG", "name": "Arnold", "provider": "11labs", "language": "en", "gender": "male", "accent": "American", "age": 40},
+                {"id": "pNInz6obpgDQGcFmaJgB", "name": "Adam", "provider": "11labs", "language": "en", "gender": "male", "accent": "American", "age": 33},
+                {"id": "yoZ06aMxZJJ28mfd3POQ", "name": "Sam", "provider": "11labs", "language": "en", "gender": "male", "accent": "American", "age": 29},
+                # Cartesia voices (French)
+                {"id": "65b25c5d-ff07-4687-a04c-da2f43ef6fa9", "name": "Helpful French Lady", "provider": "cartesia", "language": "fr", "gender": "female", "accent": "French", "age": 32},
+                {"id": "f785d5cf-6549-47a6-9f1c-00d2d892197a", "name": "French Narrator Lady", "provider": "cartesia", "language": "fr", "gender": "female", "accent": "French", "age": 35},
+                {"id": "421b3369-f63f-4b03-8980-37a44df1d4e8", "name": "French Conversational Lady", "provider": "cartesia", "language": "fr", "gender": "female", "accent": "French", "age": 30},
+                # Cartesia voices (English)
+                {"id": "a0e99841-438c-4a64-b679-ae501e7d6091", "name": "Barbershop Man", "provider": "cartesia", "language": "en", "gender": "male", "accent": "American", "age": 35},
+                {"id": "79a125e8-cd45-4c13-8a67-188112f4dd22", "name": "British Lady", "provider": "cartesia", "language": "en", "gender": "female", "accent": "British", "age": 32},
+                {"id": "95856005-0332-41b0-935f-352e296aa0df", "name": "Child", "provider": "cartesia", "language": "en", "gender": "neutral", "accent": "American", "age": 10},
+                {"id": "87748186-23bb-4158-a1eb-332911b0b708", "name": "Friendly Reading Man", "provider": "cartesia", "language": "en", "gender": "male", "accent": "American", "age": 38},
+                {"id": "638efaaa-4d0c-442e-b701-3fae16aad012", "name": "Calm Lady", "provider": "cartesia", "language": "en", "gender": "female", "accent": "American", "age": 35},
+                {"id": "b7d50908-b17c-442d-ad8d-810c63997ed9", "name": "Helpful Woman", "provider": "cartesia", "language": "en", "gender": "female", "accent": "American", "age": 30},
+                # PlayHT voices
+                {"id": "s3://voice-cloning-zero-shot/d9ff78ba-d016-47f6-b0ef-dd630f59414e/female-cs/manifest.json", "name": "Jennifer", "provider": "playht", "language": "en", "gender": "female", "accent": "American", "age": 28},
+                {"id": "s3://voice-cloning-zero-shot/e040bd1b-f190-4bdb-83f0-75ef85b18f84/original/manifest.json", "name": "Melissa", "provider": "playht", "language": "en", "gender": "female", "accent": "American", "age": 30},
+                {"id": "s3://voice-cloning-zero-shot/bae2a670-8a0f-4f8f-84c8-e479a0d4e4e6/original/manifest.json", "name": "Will", "provider": "playht", "language": "en", "gender": "male", "accent": "American", "age": 35},
+            ]
 
-                logger.info(f"Retrieved {len(voices)} voices from Vapi")
-                return voices
+            logger.info(f"Returning {len(voices)} curated voices")
+            return voices
 
         except Exception as e:
             logger.error(f"Error fetching voices: {e}")
