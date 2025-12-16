@@ -103,8 +103,9 @@ const VoiceLibrary: React.FC = () => {
     }
 
     try {
-      // Generate preview URL from our backend
-      const previewUrl = `http://localhost:8000/api/voice-library/voices/${voice.id}/preview?provider=${voice.provider}`;
+      // Use direct preview URL if available, otherwise fall back to backend generation
+      const previewUrl = voice.previewUrl ||
+        `http://localhost:8000/api/voice-library/voices/${voice.id}/preview?provider=${voice.provider}`;
 
       const audio = new Audio(previewUrl);
       setAudioPlayer(audio);

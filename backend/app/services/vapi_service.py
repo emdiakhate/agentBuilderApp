@@ -910,18 +910,18 @@ class VapiService:
             List of available voices with their details
         """
         try:
-            # Return a curated list of known Vapi-compatible voices
+            # Return a curated list of known Vapi-compatible voices with preview URLs
             voices = [
-                # ElevenLabs voices
-                {"id": "21m00Tcm4TlvDq8ikWAM", "name": "Rachel", "provider": "11labs", "language": "en", "gender": "female", "accent": "American", "age": 30},
-                {"id": "AZnzlk1XvdvUeBnXmlld", "name": "Domi", "provider": "11labs", "language": "en", "gender": "female", "accent": "American", "age": 28},
-                {"id": "EXAVITQu4vr4xnSDxMaL", "name": "Bella", "provider": "11labs", "language": "en", "gender": "female", "accent": "American", "age": 25},
-                {"id": "ErXwobaYiN019PkySvjV", "name": "Antoni", "provider": "11labs", "language": "en", "gender": "male", "accent": "American", "age": 35},
-                {"id": "MF3mGyEYCl7XYWbV9V6O", "name": "Elli", "provider": "11labs", "language": "en", "gender": "female", "accent": "American", "age": 27},
-                {"id": "TxGEqnHWrfWFTfGW9XjX", "name": "Josh", "provider": "11labs", "language": "en", "gender": "male", "accent": "American", "age": 32},
-                {"id": "VR6AewLTigWG4xSOukaG", "name": "Arnold", "provider": "11labs", "language": "en", "gender": "male", "accent": "American", "age": 40},
-                {"id": "pNInz6obpgDQGcFmaJgB", "name": "Adam", "provider": "11labs", "language": "en", "gender": "male", "accent": "American", "age": 33},
-                {"id": "yoZ06aMxZJJ28mfd3POQ", "name": "Sam", "provider": "11labs", "language": "en", "gender": "male", "accent": "American", "age": 29},
+                # ElevenLabs voices with public preview URLs
+                {"id": "21m00Tcm4TlvDq8ikWAM", "name": "Rachel", "provider": "11labs", "language": "en", "gender": "female", "accent": "American", "age": 30, "previewUrl": "https://storage.googleapis.com/eleven-public-prod/premade/voices/21m00Tcm4TlvDq8ikWAM/cb4e7c50-b509-44c7-904c-f6c1d274cf4c.mp3"},
+                {"id": "AZnzlk1XvdvUeBnXmlld", "name": "Domi", "provider": "11labs", "language": "en", "gender": "female", "accent": "American", "age": 28, "previewUrl": "https://storage.googleapis.com/eleven-public-prod/premade/voices/AZnzlk1XvdvUeBnXmlld/35738308-1982-47a2-be14-6ca8bf4d1cbd.mp3"},
+                {"id": "EXAVITQu4vr4xnSDxMaL", "name": "Bella", "provider": "11labs", "language": "en", "gender": "female", "accent": "American", "age": 25, "previewUrl": "https://storage.googleapis.com/eleven-public-prod/premade/voices/EXAVITQu4vr4xnSDxMaL/04365bce-98cc-4e3d-99a4-5c3e8d2b1b0e.mp3"},
+                {"id": "ErXwobaYiN019PkySvjV", "name": "Antoni", "provider": "11labs", "language": "en", "gender": "male", "accent": "American", "age": 35, "previewUrl": "https://storage.googleapis.com/eleven-public-prod/premade/voices/ErXwobaYiN019PkySvjV/532e8e1b-1d73-4a94-948b-8cd47c2bb53e.mp3"},
+                {"id": "MF3mGyEYCl7XYWbV9V6O", "name": "Elli", "provider": "11labs", "language": "en", "gender": "female", "accent": "American", "age": 27, "previewUrl": "https://storage.googleapis.com/eleven-public-prod/premade/voices/MF3mGyEYCl7XYWbV9V6O/4b3937a3-9a5b-4d1e-be6b-f58174428e40.mp3"},
+                {"id": "TxGEqnHWrfWFTfGW9XjX", "name": "Josh", "provider": "11labs", "language": "en", "gender": "male", "accent": "American", "age": 32, "previewUrl": "https://storage.googleapis.com/eleven-public-prod/premade/voices/TxGEqnHWrfWFTfGW9XjX/87d75e68-dec0-42b1-a738-e2fa2d5832e6.mp3"},
+                {"id": "VR6AewLTigWG4xSOukaG", "name": "Arnold", "provider": "11labs", "language": "en", "gender": "male", "accent": "American", "age": 40, "previewUrl": "https://storage.googleapis.com/eleven-public-prod/premade/voices/VR6AewLTigWG4xSOukaG/66e83dc8-12b6-4872-9238-a04858a098b5.mp3"},
+                {"id": "pNInz6obpgDQGcFmaJgB", "name": "Adam", "provider": "11labs", "language": "en", "gender": "male", "accent": "American", "age": 33, "previewUrl": "https://storage.googleapis.com/eleven-public-prod/premade/voices/pNInz6obpgDQGcFmaJgB/102de6f2-22ed-43e0-a1f1-111fa75c5481.mp3"},
+                {"id": "yoZ06aMxZJJ28mfd3POQ", "name": "Sam", "provider": "11labs", "language": "en", "gender": "male", "accent": "American", "age": 29, "previewUrl": "https://storage.googleapis.com/eleven-public-prod/premade/voices/yoZ06aMxZJJ28mfd3POQ/6f5e0119-3b7a-4db1-a981-8ffdc45f564f.mp3"},
                 # Cartesia voices (French)
                 {"id": "65b25c5d-ff07-4687-a04c-da2f43ef6fa9", "name": "Helpful French Lady", "provider": "cartesia", "language": "fr", "gender": "female", "accent": "French", "age": 32},
                 {"id": "f785d5cf-6549-47a6-9f1c-00d2d892197a", "name": "French Narrator Lady", "provider": "cartesia", "language": "fr", "gender": "female", "accent": "French", "age": 35},
