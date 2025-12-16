@@ -248,6 +248,8 @@ const VoiceLibrary: React.FC = () => {
                 <SelectItem value="en">Anglais</SelectItem>
                 <SelectItem value="es">Espagnol</SelectItem>
                 <SelectItem value="de">Allemand</SelectItem>
+                <SelectItem value="pt">Portugais</SelectItem>
+                <SelectItem value="af">Africain</SelectItem>
               </SelectContent>
             </Select>
 
