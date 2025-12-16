@@ -19,6 +19,9 @@ interface Voice {
   accent?: string;
   previewUrl?: string;
   publicOwnerId?: string;
+  category?: string;
+  description?: string;
+  use_case?: string;
 }
 
 const VoiceLibrary: React.FC = () => {
@@ -29,6 +32,8 @@ const VoiceLibrary: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [providerFilter, setProviderFilter] = useState('all');
   const [languageFilter, setLanguageFilter] = useState('all');
+  const [genderFilter, setGenderFilter] = useState('all');
+  const [categoryFilter, setCategoryFilter] = useState('all');
   const [playingVoiceId, setPlayingVoiceId] = useState<string | null>(null);
   const [showCloneModal, setShowCloneModal] = useState(false);
   const [audioPlayer, setAudioPlayer] = useState<HTMLAudioElement | null>(null);
@@ -39,7 +44,7 @@ const VoiceLibrary: React.FC = () => {
 
   useEffect(() => {
     filterVoices();
-  }, [voices, searchQuery, providerFilter, languageFilter]);
+  }, [voices, searchQuery, providerFilter, languageFilter, genderFilter, categoryFilter]);
 
   const fetchVoices = async () => {
     setLoading(true);
@@ -71,7 +76,8 @@ const VoiceLibrary: React.FC = () => {
     // Search filter
     if (searchQuery) {
       filtered = filtered.filter(voice =>
-        voice.name.toLowerCase().includes(searchQuery.toLowerCase())
+        voice.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        voice.description?.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
@@ -85,6 +91,16 @@ const VoiceLibrary: React.FC = () => {
       filtered = filtered.filter(voice =>
         voice.language?.toLowerCase().startsWith(languageFilter.toLowerCase())
       );
+    }
+
+    // Gender filter
+    if (genderFilter !== 'all') {
+      filtered = filtered.filter(voice => voice.gender === genderFilter);
+    }
+
+    // Category filter
+    if (categoryFilter !== 'all') {
+      filtered = filtered.filter(voice => voice.category === categoryFilter);
     }
 
     setFilteredVoices(filtered);
@@ -103,9 +119,9 @@ const VoiceLibrary: React.FC = () => {
     }
 
     try {
-      // Use direct preview URL if available, otherwise fall back to backend generation
+      // Use direct preview URL if available, otherwise generate via backend
       const previewUrl = voice.previewUrl ||
-        `http://localhost:8000/api/voice-library/voices/${voice.id}/preview?provider=${voice.provider}`;
+        `http://localhost:8000/api/voice-library/voices/${voice.id}/preview`;
 
       const audio = new Audio(previewUrl);
       setAudioPlayer(audio);
@@ -117,10 +133,11 @@ const VoiceLibrary: React.FC = () => {
         setAudioPlayer(null);
       };
 
-      audio.onerror = () => {
+      audio.onerror = (error) => {
+        console.error('Audio playback error:', error);
         toast({
-          title: "Erreur",
-          description: "Impossible de générer l'aperçu audio.",
+          title: "Erreur de lecture",
+          description: "Impossible de lire l'aperçu audio. Vérifiez votre connexion.",
           variant: "destructive",
         });
         setPlayingVoiceId(null);
@@ -130,7 +147,7 @@ const VoiceLibrary: React.FC = () => {
       console.error('Error playing audio:', error);
       toast({
         title: "Erreur",
-        description: "Impossible de lire l'aperçu audio.",
+        description: "Impossible de charger l'aperçu audio.",
         variant: "destructive",
       });
       setPlayingVoiceId(null);
@@ -176,10 +193,6 @@ const VoiceLibrary: React.FC = () => {
     });
   };
 
-  // Get unique providers and languages for filters
-  const providers = Array.from(new Set(voices.map(v => v.provider)));
-  const languages = Array.from(new Set(voices.map(v => v.language).filter(Boolean)));
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -199,7 +212,7 @@ const VoiceLibrary: React.FC = () => {
       {/* Filters */}
       <Card>
         <CardContent className="pt-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
             {/* Search */}
             <div className="md:col-span-2">
               <div className="relative">
@@ -216,29 +229,51 @@ const VoiceLibrary: React.FC = () => {
             {/* Provider Filter */}
             <Select value={providerFilter} onValueChange={setProviderFilter}>
               <SelectTrigger>
-                <SelectValue placeholder="Tous les fournisseurs" />
+                <SelectValue placeholder="Fournisseur" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Tous les fournisseurs</SelectItem>
-                {providers.map(provider => (
-                  <SelectItem key={provider} value={provider}>
-                    {provider}
-                  </SelectItem>
-                ))}
+                <SelectItem value="all">Tous</SelectItem>
+                <SelectItem value="11labs">ElevenLabs</SelectItem>
               </SelectContent>
             </Select>
 
             {/* Language Filter */}
             <Select value={languageFilter} onValueChange={setLanguageFilter}>
               <SelectTrigger>
-                <SelectValue placeholder="Toutes les langues" />
+                <SelectValue placeholder="Langue" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Toutes les langues</SelectItem>
+                <SelectItem value="all">Toutes</SelectItem>
                 <SelectItem value="fr">Français</SelectItem>
                 <SelectItem value="en">Anglais</SelectItem>
                 <SelectItem value="es">Espagnol</SelectItem>
                 <SelectItem value="de">Allemand</SelectItem>
+              </SelectContent>
+            </Select>
+
+            {/* Gender Filter */}
+            <Select value={genderFilter} onValueChange={setGenderFilter}>
+              <SelectTrigger>
+                <SelectValue placeholder="Genre" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Tous</SelectItem>
+                <SelectItem value="male">Masculin</SelectItem>
+                <SelectItem value="female">Féminin</SelectItem>
+                <SelectItem value="neutral">Neutre</SelectItem>
+              </SelectContent>
+            </Select>
+
+            {/* Category Filter */}
+            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+              <SelectTrigger>
+                <SelectValue placeholder="Catégorie" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Toutes</SelectItem>
+                <SelectItem value="premade">Pré-faites</SelectItem>
+                <SelectItem value="cloned">Clonées</SelectItem>
+                <SelectItem value="professional">Professionnelles</SelectItem>
               </SelectContent>
             </Select>
           </div>

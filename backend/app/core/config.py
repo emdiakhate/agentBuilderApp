@@ -41,6 +41,9 @@ class Settings(BaseSettings):
     VAPI_API_KEY: str = ""
     VAPI_PUBLIC_KEY: str = ""
 
+    # ElevenLabs Integration
+    ELEVENLABS_API_KEY: str = ""
+
     # File Upload (for potential file validation before Vapi upload)
     MAX_UPLOAD_SIZE_MB: int = 10
     UPLOAD_DIR: str = "uploads"
