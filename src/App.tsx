@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider } from "@/hooks/useTheme";
 import AgentsLayout from "./layouts/AgentsLayout";
+import HomePage from "./pages/HomePage";
 import Dashboard from "./pages/Dashboard";
 import AgentsDashboard from "./pages/AgentsDashboard";
 import AgentDetails from "./pages/AgentDetails";
@@ -38,7 +39,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/" element={<HomePage />} />
             <Route element={<AgentsLayout />}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/agents" element={<AgentsDashboard />} />
