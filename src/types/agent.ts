@@ -33,6 +33,11 @@ export interface AgentType {
   status: AgentStatus;
   createdAt: string;
   updatedAt?: string;
+
+  // Vapi Integration
+  vapi_assistant_id?: string | null;
+  vapi_knowledge_base_id?: string | null;
+
   model?: string;
   voice?: string;
   voiceProvider?: string;

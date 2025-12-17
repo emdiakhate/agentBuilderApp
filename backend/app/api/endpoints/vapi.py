@@ -178,6 +178,9 @@ def normalize_vapi_file(vapi_file: Dict[str, Any]) -> Dict[str, Any]:
 
     Vapi file structure may include: id, name, createdAt, updatedAt, bytes, etc.
     Frontend expects: id, filename, original_filename, file_type, file_size, status, uploaded_at
+
+    Vapi statuses: uploaded, processing, ready, failed, pending
+    Default to 'ready' if no status provided (file exists = ready to use)
     """
     # Extract file extension from name
     name = vapi_file.get("name", "unknown")
@@ -189,7 +192,7 @@ def normalize_vapi_file(vapi_file: Dict[str, Any]) -> Dict[str, Any]:
         "original_filename": name,
         "file_type": file_ext.lower(),
         "file_size": vapi_file.get("bytes") or vapi_file.get("size", 0),
-        "status": vapi_file.get("status", "completed"),
+        "status": vapi_file.get("status", "ready"),  # Default to 'ready' (Vapi statuses: ready, processing, uploaded, failed, pending)
         "uploaded_at": vapi_file.get("createdAt") or vapi_file.get("created_at"),
         "num_chunks": vapi_file.get("numChunks") or vapi_file.get("num_chunks"),
     }

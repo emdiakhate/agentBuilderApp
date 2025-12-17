@@ -39,10 +39,22 @@ class Settings(BaseSettings):
 
     # Vapi.ai Integration
     VAPI_API_KEY: str = ""
+    VAPI_PUBLIC_KEY: str = ""
+
+    # ElevenLabs Integration
+    ELEVENLABS_API_KEY: str = ""
 
     # File Upload (for potential file validation before Vapi upload)
     MAX_UPLOAD_SIZE_MB: int = 10
     UPLOAD_DIR: str = "uploads"
+
+    # URLs
+    API_URL: str = "http://localhost:8000"
+    FRONTEND_URL: str = "http://localhost:5173"
+
+    # Google OAuth (for Calendar integration)
+    GOOGLE_CLIENT_ID: str = ""
+    GOOGLE_CLIENT_SECRET: str = ""
 
 
 # Global settings instance

@@ -57,9 +57,15 @@ interface CreateAgentData {
   llm_provider?: string;
   model?: string;
   temperature?: number;
+  max_tokens?: number;
   purpose?: string;
+  prompt?: string;
+  first_message?: string;
+  first_message_mode?: string;
   language?: string;
   status?: string;
+  background_sound?: string;
+  background_denoising_enabled?: boolean;
 }
 
 interface UpdateAgentData extends Partial<CreateAgentData> {
@@ -84,6 +90,11 @@ function mapBackendAgentToFrontend(agent: BackendAgent): AgentType {
     status: (agent.status || 'draft') as AgentStatus,
     createdAt: agent.created_at,
     updatedAt: agent.updated_at,
+
+    // Vapi Integration
+    vapi_assistant_id: agent.vapi_assistant_id,
+    vapi_knowledge_base_id: agent.vapi_knowledge_base_id,
+
     model: agent.model || undefined,
     voice: agent.voice || undefined,
     voiceProvider: agent.voice_provider || undefined,

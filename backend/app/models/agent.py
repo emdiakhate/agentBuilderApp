@@ -35,6 +35,10 @@ class Agent(Base):
     custom_voice_id = Column(String(255), nullable=True)
     voice_traits = Column(JSON, nullable=True)  # Array of traits
 
+    # Background Sound Configuration
+    background_sound = Column(String(50), default="off")  # off, office, restaurant, noisy, home
+    background_denoising_enabled = Column(Boolean, default=False)  # Krisp denoising
+
     # Agent Configuration
     purpose = Column(Text, nullable=True)
     prompt = Column(Text, nullable=True)  # System prompt

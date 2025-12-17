@@ -14,6 +14,7 @@ import { cn } from '@/lib/utils';
 const AgentsDashboard: React.FC = () => {
   const navigate = useNavigate();
   const [activeFilter, setActiveFilter] = useState('all-agents');
+  const [categoryFilter, setCategoryFilter] = useState('All Agents');
   const { agents, isLoading, error } = useAgents(activeFilter);
   const [callDialogOpen, setCallDialogOpen] = useState(false);
   const [selectedPersona, setSelectedPersona] = useState<any>(null);
@@ -106,6 +107,37 @@ const AgentsDashboard: React.FC = () => {
     }
   };
 
+  const categories = [
+    'All Agents',
+    'Business',
+    'Coach',
+    'Education',
+    'Health',
+    'Leisure',
+    'Specialist',
+    'Other',
+  ];
+
+  const getCategoryForType = (type: string): string => {
+    const typeMap: Record<string, string> = {
+      'Customer Service': 'Business',
+      'Sales & Marketing': 'Business',
+      'Customer Onboarding': 'Education',
+      'Technical Support': 'Specialist',
+      'Health Coach': 'Health',
+      'Personal Coach': 'Coach',
+      'Fitness Coach': 'Health',
+      'Life Coach': 'Coach',
+      'Education': 'Education',
+      'Entertainment': 'Leisure',
+    };
+    return typeMap[type] || 'Other';
+  };
+
+  const filteredAgents = categoryFilter === 'All Agents'
+    ? agents
+    : agents.filter(agent => getCategoryForType(agent.type) === categoryFilter);
+
   const stats = [
     {
       title: "Total des Agents",
@@ -175,7 +207,27 @@ const AgentsDashboard: React.FC = () => {
           ))}
         </div>
 
-        {/* Filtres */}
+        {/* Filtres par catégorie */}
+        <div className="flex flex-wrap gap-2">
+          {categories.map((category) => (
+            <Button
+              key={category}
+              variant={categoryFilter === category ? "default" : "outline"}
+              size="sm"
+              onClick={() => setCategoryFilter(category)}
+              className={cn(
+                "transition-all",
+                categoryFilter === category
+                  ? "bg-blue-600 text-white hover:bg-blue-700"
+                  : "hover:bg-gray-100"
+              )}
+            >
+              {category}
+            </Button>
+          ))}
+        </div>
+
+        {/* Filtres par statut */}
         <Tabs value={activeFilter} onValueChange={setActiveFilter} className="w-full">
           <TabsList className="grid w-full grid-cols-4 bg-gray-100 dark:bg-gray-800">
             <TabsTrigger value="all-agents" className="data-[state=active]:bg-white dark:data-[state=active]:bg-gray-700">
@@ -194,7 +246,7 @@ const AgentsDashboard: React.FC = () => {
 
           <TabsContent value={activeFilter} className="mt-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {agents.map((agent) => (
+              {filteredAgents.map((agent) => (
                 <Card 
                   key={agent.id} 
                   className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-200 cursor-pointer group"
@@ -204,7 +256,10 @@ const AgentsDashboard: React.FC = () => {
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-3">
                         <Avatar className="h-12 w-12">
-                          <AvatarImage src={agent.avatar} alt={agent.name} />
+                          <AvatarImage
+                            src={agent.avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${agent.id}`}
+                            alt={agent.name}
+                          />
                           <AvatarFallback className="bg-blue-100 text-blue-600 font-semibold">
                             {agent.name.charAt(0)}
                           </AvatarFallback>
@@ -277,22 +332,26 @@ const AgentsDashboard: React.FC = () => {
           </TabsContent>
         </Tabs>
 
-        {agents.length === 0 && (
+        {filteredAgents.length === 0 && (
           <div className="text-center py-12">
             <Bot className="mx-auto h-12 w-12 text-gray-400 mb-4" />
             <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
               Aucun agent trouvé
             </h3>
             <p className="text-gray-500 dark:text-gray-400 mb-4">
-              Commencez par créer votre premier agent IA.
+              {agents.length === 0
+                ? "Commencez par créer votre premier agent IA."
+                : `Aucun agent dans la catégorie "${categoryFilter}".`}
             </p>
-            <Button 
-              onClick={() => navigate('/agents/create')}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              Créer un Agent
-            </Button>
+            {agents.length === 0 && (
+              <Button
+                onClick={() => navigate('/agents/create')}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Créer un Agent
+              </Button>
+            )}
           </div>
         )}
       </div>

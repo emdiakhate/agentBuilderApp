@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
-import { uploadDocument, fetchAgentDocuments, deleteDocument } from "@/services/agentService";
+import { uploadDocument, fetchAgentDocuments, deleteDocument, updateAgent } from "@/services/agentService";
 
 interface Document {
   id: string;
@@ -26,9 +26,15 @@ interface Document {
 
 interface KnowledgeBaseCardConnectedProps {
   agentId: string;
+  currentPrompt?: string;
+  onPromptUpdate?: (newPrompt: string) => void;
 }
 
-export const KnowledgeBaseCardConnected: React.FC<KnowledgeBaseCardConnectedProps> = ({ agentId }) => {
+export const KnowledgeBaseCardConnected: React.FC<KnowledgeBaseCardConnectedProps> = ({
+  agentId,
+  currentPrompt = "",
+  onPromptUpdate
+}) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const [documents, setDocuments] = useState<Document[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -90,6 +96,16 @@ export const KnowledgeBaseCardConnected: React.FC<KnowledgeBaseCardConnectedProp
 
       // Reload documents
       await loadDocuments();
+
+      // Auto-update prompt with document names
+      try {
+        const updatedDocs = await fetchAgentDocuments(agentId);
+        if (updatedDocs.length > 0) {
+          await updatePromptWithDocuments(updatedDocs);
+        }
+      } catch (error) {
+        console.error("Error updating prompt:", error);
+      }
     } catch (error) {
       console.error("Error uploading files:", error);
       toast({
@@ -103,6 +119,49 @@ export const KnowledgeBaseCardConnected: React.FC<KnowledgeBaseCardConnectedProp
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
+    }
+  };
+
+  const updatePromptWithDocuments = async (docs: Document[]) => {
+    if (!docs || docs.length === 0) return;
+
+    // Extract document names
+    const documentNames = docs.map(doc => doc.original_filename || doc.filename).filter(Boolean);
+
+    if (documentNames.length === 0) return;
+
+    // Create document instruction
+    const documentInstruction = `\n\n[Documents disponibles]\nVotre mission est d'aider les utilisateurs en utilisant les fichiers suivants fournis pour répondre aux questions posées :\n${documentNames.map(name => `- ${name}`).join('\n')}\n\nUtilisez ces documents pour fournir des réponses précises et contextuelles.`;
+
+    // Check if prompt already contains document instructions
+    const hasDocumentSection = currentPrompt.includes('[Documents disponibles]');
+
+    let newPrompt = currentPrompt;
+    if (hasDocumentSection) {
+      // Replace existing document section
+      newPrompt = currentPrompt.replace(
+        /\[Documents disponibles\][\s\S]*?(?=\n\n|\n$|$)/,
+        documentInstruction.trim()
+      );
+    } else {
+      // Append document section
+      newPrompt = currentPrompt.trim() + documentInstruction;
+    }
+
+    // Update agent prompt
+    try {
+      await updateAgent(agentId, { prompt: newPrompt });
+
+      if (onPromptUpdate) {
+        onPromptUpdate(newPrompt);
+      }
+
+      toast({
+        title: "✅ Prompt mis à jour",
+        description: "Le prompt a été mis à jour avec les noms des documents",
+      });
+    } catch (error) {
+      console.error("Error updating agent prompt:", error);
     }
   };
 
@@ -144,6 +203,38 @@ export const KnowledgeBaseCardConnected: React.FC<KnowledgeBaseCardConnectedProp
     return date.toLocaleDateString("fr-FR");
   };
 
+  const getDocumentStatusBadge = (status: string) => {
+    // Vapi statuses: uploaded, processing, ready, failed, pending
+    switch (status?.toLowerCase()) {
+      case 'ready':
+      case 'uploaded':
+        return {
+          className: "bg-green-500/20 text-green-600",
+          label: "✓ Prêt"
+        };
+      case 'processing':
+        return {
+          className: "bg-yellow-500/20 text-yellow-600",
+          label: "⏳ En cours..."
+        };
+      case 'failed':
+        return {
+          className: "bg-red-500/20 text-red-600",
+          label: "✗ Échec"
+        };
+      case 'pending':
+        return {
+          className: "bg-blue-500/20 text-blue-600",
+          label: "⏸ En attente"
+        };
+      default:
+        return {
+          className: "bg-gray-500/20 text-gray-600",
+          label: "⚪ Inconnu"
+        };
+    }
+  };
+
   const status = documents.length === 0 ? "not-started" : "in-progress";
   const progress = documents.length > 0 ? 100 : 0;
 
@@ -155,13 +246,13 @@ export const KnowledgeBaseCardConnected: React.FC<KnowledgeBaseCardConnectedProp
             <div className="flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 w-8 h-8 text-gray-900 dark:text-white">
               1
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Knowledge Base</h3>
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Base de connaissances</h3>
             <Badge variant="outline" className={
               documents.length === 0
                 ? "bg-gray-500/20 text-gray-500 dark:text-gray-400 border-gray-500/30"
                 : "bg-green-500/20 text-green-500 dark:text-green-400 border-green-500/30"
             }>
-              {documents.length === 0 ? "Not Started" : `${documents.length} document(s)`}
+              {documents.length === 0 ? "Pas encore démarré" : `${documents.length} document(s)`}
             </Badge>
           </div>
           <div className="flex items-center gap-2">
@@ -218,7 +309,7 @@ export const KnowledgeBaseCardConnected: React.FC<KnowledgeBaseCardConnectedProp
                   ) : (
                     <>
                       <Upload className="h-4 w-4" />
-                      Upload Documents
+                      Uploader des documents
                     </>
                   )}
                 </Button>
@@ -291,14 +382,8 @@ export const KnowledgeBaseCardConnected: React.FC<KnowledgeBaseCardConnectedProp
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Badge className={
-                            doc.status === "completed"
-                              ? "bg-green-500/20 text-green-600"
-                              : doc.status === "processing"
-                              ? "bg-yellow-500/20 text-yellow-600"
-                              : "bg-gray-500/20 text-gray-600"
-                          }>
-                            {doc.status === "completed" ? "✓ Traité" : doc.status === "processing" ? "En cours..." : "En attente"}
+                          <Badge className={getDocumentStatusBadge(doc.status).className}>
+                            {getDocumentStatusBadge(doc.status).label}
                           </Badge>
                           <Button
                             variant="ghost"
