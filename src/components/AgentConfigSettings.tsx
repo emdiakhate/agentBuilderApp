@@ -23,6 +23,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/components/ui/use-toast";
 import { isEqual } from 'lodash';
 import VoiceSelectionModal from './VoiceSelectionModal';
+import { useAllElevenLabsVoices } from '@/hooks/useVoices';
 
 const VOICE_PROVIDERS = {
   "Eleven Labs": {
@@ -183,6 +184,7 @@ interface AgentConfigSettingsProps {
 
 const AgentConfigSettings: React.FC<AgentConfigSettingsProps> = ({ agent, onAgentUpdate, showSuccessToast }) => {
   const { toast } = useToast();
+  const { data: elevenLabsVoices } = useAllElevenLabsVoices();
   const [name, setName] = useState(agent.name);
   const [avatar, setAvatar] = useState(agent.avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${agent.id}`);
   const [purpose, setPurpose] = useState(agent.purpose || '');
@@ -286,6 +288,25 @@ const AgentConfigSettings: React.FC<AgentConfigSettingsProps> = ({ agent, onAgen
   };
 
   const getCurrentVoiceDetails = () => {
+    // First, check in Eleven Labs dynamic voices
+    if (elevenLabsVoices) {
+      const elevenLabsVoice = elevenLabsVoices.find(v => v.id === voice);
+      if (elevenLabsVoice) {
+        return {
+          id: elevenLabsVoice.id,
+          name: elevenLabsVoice.name,
+          provider: "Eleven Labs",
+          traits: [
+            { name: elevenLabsVoice.accent, color: "bg-primary/10 text-primary" },
+            { name: elevenLabsVoice.gender, color: "bg-secondary/20 text-fg" }
+          ].filter(t => t.name),
+          avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${elevenLabsVoice.id}`,
+          audioSample: elevenLabsVoice.preview_url
+        };
+      }
+    }
+
+    // Then check in legacy hardcoded voices
     for (const provider in VOICE_PROVIDERS) {
       for (const voiceName in VOICE_PROVIDERS[provider as keyof typeof VOICE_PROVIDERS]) {
         const voiceObj = VOICE_PROVIDERS[provider as keyof typeof VOICE_PROVIDERS][voiceName];
@@ -297,7 +318,7 @@ const AgentConfigSettings: React.FC<AgentConfigSettingsProps> = ({ agent, onAgen
         }
       }
     }
-    
+
     // Default to first voice if not found
     const firstProvider = Object.keys(VOICE_PROVIDERS)[0] as keyof typeof VOICE_PROVIDERS;
     const firstVoiceName = Object.keys(VOICE_PROVIDERS[firstProvider])[0];
