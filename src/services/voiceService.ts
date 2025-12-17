@@ -1,4 +1,4 @@
-import api from '@/lib/api';
+import { apiClient as api } from '@/lib/api';
 
 export interface VoiceData {
   id: string;
@@ -53,7 +53,7 @@ export const getVoices = async (filters?: VoiceFilters): Promise<VoiceData[]> =>
   const url = `/voice-library/voices${queryString ? `?${queryString}` : ''}`;
 
   const response = await api.get<VoicesResponse>(url);
-  return response.data.voices;
+  return response.voices;
 };
 
 /**
@@ -94,13 +94,9 @@ export const cloneVoice = async (
     formData.append('files', file);
   });
 
-  const response = await api.post<{ voice: VoiceData }>('/voice-library/voices/clone', formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  });
+  const response = await api.upload<{ voice: VoiceData }>('/voice-library/voices/clone', formData);
 
-  return response.data.voice;
+  return response.voice;
 };
 
 /**
@@ -110,5 +106,5 @@ export const cloneVoice = async (
  */
 export const deleteVoice = async (voiceId: string): Promise<boolean> => {
   const response = await api.delete<{ success: boolean }>(`/voice-library/voices/${voiceId}`);
-  return response.data.success;
+  return response.success;
 };
