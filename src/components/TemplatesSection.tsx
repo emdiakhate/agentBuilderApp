@@ -14,44 +14,61 @@ export interface AgentTemplate {
   category: string;
 }
 
-// Templates pré-configurés avec avatars africains 3D
-// TODO: Remplacer par vos images Freepik téléchargées dans public/templates/
+// Templates VAPI officiels
 export const AGENT_TEMPLATES: AgentTemplate[] = [
   {
-    id: 'template-1',
-    name: 'Kofi',
-    role: 'Agent de vente',
-    description: 'Spécialisé dans la vente et la prospection commerciale',
-    image: 'https://i.pravatar.cc/300?img=12', // Homme - Remplacer par: /templates/template-1.png
-    gradient: 'from-emerald-900/50 to-green-900/30',
-    category: 'Ventes'
-  },
-  {
-    id: 'template-2',
-    name: 'Amara',
-    role: 'Support client',
-    description: 'Assistance et support technique pour vos clients',
-    image: 'https://i.pravatar.cc/300?img=47', // Femme - Remplacer par: /templates/template-2.png
-    gradient: 'from-blue-900/50 to-indigo-900/30',
+    id: 'customer-support-specialist',
+    name: 'Customer Support Specialist',
+    role: 'Agent de Support Client',
+    description: 'Résolution de problèmes produits, réponses aux questions et expériences clients satisfaisantes avec connaissances techniques et empathie.',
+    image: 'https://i.pravatar.cc/300?img=12',
+    gradient: 'from-blue-900/50 to-cyan-900/30',
     category: 'Support'
   },
   {
-    id: 'template-3',
-    name: 'Malik',
-    role: 'Directeur commercial',
-    description: 'Gestion des relations clients et stratégies commerciales',
-    image: 'https://i.pravatar.cc/300?img=15', // Homme - Remplacer par: /templates/template-3.png
-    gradient: 'from-amber-900/50 to-orange-900/30',
-    category: 'Management'
+    id: 'lead-qualification-specialist',
+    name: 'Lead Qualification Specialist',
+    role: 'Spécialiste Qualification de Leads',
+    description: 'Identification de prospects qualifiés, compréhension des défis business et connexion avec les représentants commerciaux appropriés.',
+    image: 'https://i.pravatar.cc/300?img=28',
+    gradient: 'from-emerald-900/50 to-green-900/30',
+    category: 'Sales'
   },
   {
-    id: 'template-4',
-    name: 'Élisa',
-    role: 'Directrice opérationnelle',
-    description: 'Coordination et optimisation des opérations',
-    image: 'https://i.pravatar.cc/300?img=44', // Femme - Remplacer par: /templates/template-4.png
+    id: 'appointment-scheduler',
+    name: 'Appointment Scheduler',
+    role: 'Planificateur de Rendez-vous',
+    description: 'Réservation, confirmation, reprogrammation ou annulation efficace de rendez-vous avec informations claires sur les services.',
+    image: 'https://i.pravatar.cc/300?img=47',
+    gradient: 'from-purple-900/50 to-indigo-900/30',
+    category: 'Business'
+  },
+  {
+    id: 'info-collector',
+    name: 'Info Collector',
+    role: 'Collecteur d\'Informations',
+    description: 'Collecte méthodique d\'informations précises et complètes auprès des clients avec assurance qualité des données et conformité réglementaire.',
+    image: 'https://i.pravatar.cc/300?img=15',
+    gradient: 'from-amber-900/50 to-orange-900/30',
+    category: 'Business'
+  },
+  {
+    id: 'care-coordinator',
+    name: 'Care Coordinator',
+    role: 'Coordinateur de Soins',
+    description: 'Planification de rendez-vous médicaux, réponses aux questions de santé et coordination des services patients avec conformité HIPAA.',
+    image: 'https://i.pravatar.cc/300?img=44',
     gradient: 'from-rose-900/50 to-pink-900/30',
-    category: 'Opérations'
+    category: 'Health'
+  },
+  {
+    id: 'feedback-gatherer',
+    name: 'Feedback Gatherer',
+    role: 'Collecteur de Feedback',
+    description: 'Enquêtes engageantes, collecte de feedback clients et recherche de marché avec taux de complétion élevés.',
+    image: 'https://i.pravatar.cc/300?img=60',
+    gradient: 'from-teal-900/50 to-cyan-900/30',
+    category: 'Research'
   }
 ];
 
@@ -174,7 +191,7 @@ export const TemplatesSection: React.FC<TemplatesSectionProps> = ({ className })
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {AGENT_TEMPLATES.map((template, index) => (
           <TemplateCard key={template.id} template={template} index={index} />
         ))}

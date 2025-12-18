@@ -45,12 +45,25 @@ const AgentCreate = () => {
   // Pre-fill form if template was selected from HomePage
   useEffect(() => {
     if (homepageTemplate) {
+      // Map template ID to proper agent type
+      const getAgentType = (templateId: string): string => {
+        const typeMap: Record<string, string> = {
+          'customer-support-specialist': 'customer_support',
+          'lead-qualification-specialist': 'lead_qualification',
+          'appointment-scheduler': 'appointment_booking',
+          'info-collector': 'information_provider',
+          'care-coordinator': 'customer_support',
+          'feedback-gatherer': 'information_provider'
+        };
+        return typeMap[templateId] || 'customer_support';
+      };
+
       setFormData(prev => ({
         ...prev,
         name: homepageTemplate.name,
         avatar: homepageTemplate.image,
         description: homepageTemplate.description,
-        type: homepageTemplate.category.toLowerCase().replace('é', 'e'),
+        type: getAgentType(homepageTemplate.id),
         purpose: homepageTemplate.description,
       }));
 
