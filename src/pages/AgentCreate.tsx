@@ -30,6 +30,78 @@ const AgentCreate = () => {
     language: "fr",
   });
 
+  // Pre-fill form if template was selected from HomePage
+  useEffect(() => {
+    if (homepageTemplate) {
+      // Map template ID to proper agent type
+      const getAgentType = (templateId: string): string => {
+        const typeMap: Record<string, string> = {
+          'customer-support-specialist': 'customer_support',
+          'lead-qualification-specialist': 'lead_qualification',
+          'appointment-scheduler': 'appointment_booking',
+          'info-collector': 'information_provider',
+          'care-coordinator': 'customer_support',
+          'feedback-gatherer': 'information_provider'
+        };
+        return typeMap[templateId] || 'customer_support';
+      };
+
+      // Check if template has config property with all fields
+      if (homepageTemplate.config) {
+        // Map ALL template config fields to formData
+        setFormData(prev => ({
+          ...prev,
+          // Basic info
+          name: homepageTemplate.name,
+          avatar: homepageTemplate.image,
+          description: homepageTemplate.description,
+
+          // Agent type
+          type: homepageTemplate.config.type || getAgentType(homepageTemplate.id),
+
+          // LLM Configuration
+          llm_provider: homepageTemplate.config.llm_provider || prev.llm_provider,
+          model: homepageTemplate.config.model || prev.model,
+          temperature: homepageTemplate.config.temperature ?? prev.temperature,
+          max_tokens: homepageTemplate.config.max_tokens || prev.max_tokens,
+
+          // Purpose & System Prompt
+          purpose: homepageTemplate.config.purpose || homepageTemplate.description,
+          prompt: homepageTemplate.config.prompt || prev.prompt,
+
+          // First Message
+          first_message: homepageTemplate.config.first_message || prev.first_message,
+          first_message_mode: homepageTemplate.config.first_message_mode || prev.first_message_mode,
+
+          // Voice & Language
+          language: homepageTemplate.config.language || prev.language,
+          background_sound: homepageTemplate.config.background_sound || prev.background_sound,
+          background_denoising_enabled: homepageTemplate.config.background_denoising_enabled ?? prev.background_denoising_enabled,
+        }));
+      } else {
+        // Fallback for templates without config property
+        setFormData(prev => ({
+          ...prev,
+          name: homepageTemplate.name,
+          avatar: homepageTemplate.image,
+          description: homepageTemplate.description,
+          type: getAgentType(homepageTemplate.id),
+          purpose: homepageTemplate.description,
+        }));
+      }
+
+      // Show toast notification (safe with try-catch)
+      try {
+        toast({
+          title: "✨ Template chargé !",
+          description: `Le template "${homepageTemplate.name}" est prêt à être personnalisé. Tous les champs ont été pré-remplis.`,
+        });
+      } catch (error) {
+        console.log("Toast notification skipped");
+      }
+    }
+  }, [homepageTemplate]);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
