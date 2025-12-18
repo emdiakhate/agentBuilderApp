@@ -18,27 +18,27 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
-    <div className="border border-gray-200 dark:border-gray-800 rounded-lg overflow-hidden">
+    <div className="border border-white/10 rounded-lg overflow-hidden">
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900/50 hover:bg-gray-100 dark:hover:bg-gray-900/70 transition-colors"
+        className="w-full flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 transition-colors"
       >
         <div className="flex items-center gap-3">
-          {icon && <div className="text-gray-600 dark:text-gray-400">{icon}</div>}
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+          {icon && <div className="text-gray-400">{icon}</div>}
+          <h3 className="text-lg font-semibold text-white">
             {title}
           </h3>
         </div>
         {isOpen ? (
-          <ChevronUp className="h-5 w-5 text-gray-500" />
+          <ChevronUp className="h-5 w-5 text-gray-400" />
         ) : (
-          <ChevronDown className="h-5 w-5 text-gray-500" />
+          <ChevronDown className="h-5 w-5 text-gray-400" />
         )}
       </button>
 
       {isOpen && (
-        <div className="p-4 space-y-4 bg-white dark:bg-gray-950">
+        <div className="p-4 space-y-4 bg-transparent">
           {children}
         </div>
       )}
