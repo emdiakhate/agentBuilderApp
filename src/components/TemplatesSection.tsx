@@ -21,7 +21,7 @@ export const AGENT_TEMPLATES: AgentTemplate[] = [
     name: 'Kofi',
     role: 'Agent de vente',
     description: 'Spécialisé dans la vente et la prospection commerciale',
-    image: '/templates/template-1.png', // Avatar masculin tenue verte traditionnelle
+    image: 'blob:https://aistudio.google.com/ff0157ae-69e8-4502-95d2-427243a28487',
     gradient: 'from-emerald-900/50 to-green-900/30',
     category: 'Ventes'
   },
@@ -30,7 +30,7 @@ export const AGENT_TEMPLATES: AgentTemplate[] = [
     name: 'Amara',
     role: 'Support client',
     description: 'Assistance et support technique pour vos clients',
-    image: '/templates/template-2.png', // Avatar féminin tailleur professionnel
+    image: 'blob:https://aistudio.google.com/c49c9fd8-45bc-4e1b-9647-efa7112c2025',
     gradient: 'from-blue-900/50 to-indigo-900/30',
     category: 'Support'
   },
@@ -39,7 +39,7 @@ export const AGENT_TEMPLATES: AgentTemplate[] = [
     name: 'Malik',
     role: 'Directeur commercial',
     description: 'Gestion des relations clients et stratégies commerciales',
-    image: '/templates/template-3.png', // Avatar masculin costume bleu
+    image: 'blob:https://aistudio.google.com/e7f5f49e-54e4-4a9f-8ce7-8d6e0d18e1e9',
     gradient: 'from-amber-900/50 to-orange-900/30',
     category: 'Management'
   },
@@ -48,7 +48,7 @@ export const AGENT_TEMPLATES: AgentTemplate[] = [
     name: 'Élisa',
     role: 'Directrice opérationnelle',
     description: 'Coordination et optimisation des opérations',
-    image: '/templates/template-4.png', // Avatar féminin cheveux bouclés
+    image: 'blob:https://aistudio.google.com/fc4b25c9-45ca-4ad6-a8cb-31588ce401b3',
     gradient: 'from-rose-900/50 to-pink-900/30',
     category: 'Opérations'
   }
