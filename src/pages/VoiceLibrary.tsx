@@ -198,19 +198,19 @@ const VoiceLibrary: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold">Bibliothèque de Voix</h2>
-          <p className="text-muted-foreground mt-1">
+          <h2 className="text-3xl font-bold text-white">Bibliothèque de Voix</h2>
+          <p className="text-gray-400 mt-1">
             Gérez et personnalisez vos voix pour vos agents
           </p>
         </div>
-        <Button onClick={() => setShowCloneModal(true)} className="gap-2">
+        <Button onClick={() => setShowCloneModal(true)} className="gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white">
           <Plus className="h-4 w-4" />
           Cloner une Voix
         </Button>
       </div>
 
       {/* Filters */}
-      <Card>
+      <Card className="bg-white/5 border-white/10">
         <CardContent className="pt-6">
           <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
             {/* Search */}
@@ -221,7 +221,7 @@ const VoiceLibrary: React.FC = () => {
                   placeholder="Rechercher une voix..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-gray-500"
                 />
               </div>
             </div>
@@ -284,7 +284,7 @@ const VoiceLibrary: React.FC = () => {
 
       {/* Results count */}
       <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-gray-400">
           {filteredVoices.length} voix trouvée{filteredVoices.length !== 1 ? 's' : ''}
         </p>
       </div>
@@ -292,7 +292,7 @@ const VoiceLibrary: React.FC = () => {
       {/* Loading State */}
       {loading && (
         <div className="flex items-center justify-center h-64">
-          <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+          <Loader2 className="h-8 w-8 animate-spin text-purple-500" />
         </div>
       )}
 
@@ -302,7 +302,7 @@ const VoiceLibrary: React.FC = () => {
           {filteredVoices.map((voice) => (
             <Card
               key={voice.id}
-              className="hover:shadow-lg transition-shadow cursor-pointer group"
+              className="bg-white/5 border-white/10 hover:border-white/30 hover:shadow-xl transition-all cursor-pointer group"
             >
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
@@ -311,7 +311,7 @@ const VoiceLibrary: React.FC = () => {
                       {getProviderIcon(voice.provider)}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <CardTitle className="text-base truncate">{voice.name}</CardTitle>
+                      <CardTitle className="text-base truncate text-white">{voice.name}</CardTitle>
                     </div>
                   </div>
                 </div>
@@ -331,7 +331,7 @@ const VoiceLibrary: React.FC = () => {
                 </div>
 
                 {/* Voice Details */}
-                <div className="text-sm text-muted-foreground space-y-1">
+                <div className="text-sm text-gray-400 space-y-1">
                   {voice.gender && (
                     <p className="capitalize">
                       {voice.gender}
@@ -383,17 +383,17 @@ const VoiceLibrary: React.FC = () => {
 
       {/* Empty State */}
       {!loading && filteredVoices.length === 0 && (
-        <Card>
+        <Card className="bg-white/5 border-white/10">
           <CardContent className="py-16 text-center">
             <Mic className="h-16 w-16 mx-auto mb-4 text-gray-400" />
-            <h3 className="text-lg font-semibold mb-2">Aucune voix trouvée</h3>
-            <p className="text-muted-foreground mb-4">
+            <h3 className="text-lg font-semibold mb-2 text-white">Aucune voix trouvée</h3>
+            <p className="text-gray-400 mb-4">
               {searchQuery || providerFilter !== 'all' || languageFilter !== 'all'
                 ? 'Essayez de modifier vos filtres de recherche.'
                 : 'Commencez par cloner une voix pour votre bibliothèque.'}
             </p>
             {!searchQuery && providerFilter === 'all' && languageFilter === 'all' && (
-              <Button onClick={() => setShowCloneModal(true)}>
+              <Button onClick={() => setShowCloneModal(true)} className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white">
                 <Plus className="h-4 w-4 mr-2" />
                 Cloner une Voix
               </Button>

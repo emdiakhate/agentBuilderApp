@@ -57,10 +57,10 @@ const AgentsDashboard: React.FC = () => {
     return (
       <div className="p-6 space-y-6">
         <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 rounded w-64 mb-4"></div>
+          <div className="h-8 bg-white/10 rounded w-64 mb-4"></div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="h-48 bg-gray-200 rounded-lg"></div>
+              <div key={i} className="h-48 bg-white/10 rounded-lg"></div>
             ))}
           </div>
         </div>
@@ -72,8 +72,8 @@ const AgentsDashboard: React.FC = () => {
     return (
       <div className="p-6">
         <div className="text-center py-12">
-          <p className="text-red-500 mb-4">{error}</p>
-          <Button onClick={() => window.location.reload()}>Réessayer</Button>
+          <p className="text-red-400 mb-4">{error}</p>
+          <Button onClick={() => window.location.reload()} className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white">Réessayer</Button>
         </div>
       </div>
     );
@@ -171,16 +171,16 @@ const AgentsDashboard: React.FC = () => {
         {/* En-tête */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+            <h1 className="text-3xl font-bold tracking-tight text-white">
               Tableau de Bord des Agents
             </h1>
-            <p className="text-gray-500 dark:text-gray-400">
+            <p className="text-gray-400">
               Gérez et surveillez vos agents IA
             </p>
           </div>
-          <Button 
+          <Button
             onClick={() => navigate('/agents/create')}
-            className="bg-blue-600 hover:bg-blue-700 text-white"
+            className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
           >
             <Plus className="mr-2 h-4 w-4" />
             Nouvel Agent
@@ -190,16 +190,16 @@ const AgentsDashboard: React.FC = () => {
         {/* Statistiques */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {stats.map((stat, index) => (
-            <Card key={index} className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+            <Card key={index} className="bg-white/5 border-white/10">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                <CardTitle className="text-sm font-medium text-gray-400">
                   {stat.title}
                 </CardTitle>
                 <stat.icon className="h-4 w-4 text-gray-400" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-gray-900 dark:text-white">{stat.value}</div>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
+                <div className="text-2xl font-bold text-white">{stat.value}</div>
+                <p className="text-xs text-gray-400">
                   {stat.description}
                 </p>
               </CardContent>

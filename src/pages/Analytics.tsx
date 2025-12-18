@@ -191,7 +191,7 @@ const Analytics: React.FC = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-purple-500" />
       </div>
     );
   }
@@ -201,8 +201,8 @@ const Analytics: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold">Métriques</h2>
-          <p className="text-sm text-muted-foreground mt-1">
+          <h2 className="text-3xl font-bold text-white">Métriques</h2>
+          <p className="text-sm text-gray-400 mt-1">
             Visualisez les performances de tous vos agents
           </p>
         </div>
@@ -210,9 +210,9 @@ const Analytics: React.FC = () => {
 
       {/* Filtres */}
       <div className="flex items-center gap-3">
-        <div className="flex items-center gap-2 px-3 py-2 border rounded-md">
-          <Calendar className="h-4 w-4 text-muted-foreground" />
-          <span className="text-sm">
+        <div className="flex items-center gap-2 px-3 py-2 border border-white/10 bg-white/5 rounded-md">
+          <Calendar className="h-4 w-4 text-gray-400" />
+          <span className="text-sm text-white">
             {dateRange === '7days' && '7 derniers jours'}
             {dateRange === '30days' && '30 derniers jours'}
             {dateRange === '90days' && '90 derniers jours'}
@@ -220,10 +220,10 @@ const Analytics: React.FC = () => {
           </span>
         </div>
 
-        <span className="text-sm text-muted-foreground">grouped by</span>
+        <span className="text-sm text-gray-400">grouped by</span>
 
         <Select value="days" disabled>
-          <SelectTrigger className="w-[120px]">
+          <SelectTrigger className="w-[120px] bg-white/10 border-white/20 text-white">
             <SelectValue placeholder="Days" />
           </SelectTrigger>
           <SelectContent>
@@ -232,7 +232,7 @@ const Analytics: React.FC = () => {
         </Select>
 
         <Select value={selectedAgent} onValueChange={setSelectedAgent}>
-          <SelectTrigger className="w-[200px]">
+          <SelectTrigger className="w-[200px] bg-white/10 border-white/20 text-white">
             <SelectValue placeholder="Tous les Assistants" />
           </SelectTrigger>
           <SelectContent>

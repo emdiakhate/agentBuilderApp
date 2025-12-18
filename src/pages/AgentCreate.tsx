@@ -54,12 +54,17 @@ const AgentCreate = () => {
         purpose: homepageTemplate.description,
       }));
 
-      toast({
-        title: "✨ Template chargé !",
-        description: `Le template "${homepageTemplate.name}" est prêt à être personnalisé.`,
-      });
+      // Show toast notification (safe with try-catch)
+      try {
+        toast({
+          title: "✨ Template chargé !",
+          description: `Le template "${homepageTemplate.name}" est prêt à être personnalisé.`,
+        });
+      } catch (error) {
+        console.log("Toast notification skipped");
+      }
     }
-  }, [homepageTemplate, toast]);
+  }, [homepageTemplate]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
