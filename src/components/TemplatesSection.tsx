@@ -15,13 +15,14 @@ export interface AgentTemplate {
 }
 
 // Templates pré-configurés avec avatars africains 3D
+// TODO: Remplacer par vos images Freepik téléchargées dans public/templates/
 export const AGENT_TEMPLATES: AgentTemplate[] = [
   {
     id: 'template-1',
     name: 'Kofi',
     role: 'Agent de vente',
     description: 'Spécialisé dans la vente et la prospection commerciale',
-    image: 'blob:https://aistudio.google.com/ff0157ae-69e8-4502-95d2-427243a28487',
+    image: 'https://i.pravatar.cc/300?img=12', // Homme - Remplacer par: /templates/template-1.png
     gradient: 'from-emerald-900/50 to-green-900/30',
     category: 'Ventes'
   },
@@ -30,7 +31,7 @@ export const AGENT_TEMPLATES: AgentTemplate[] = [
     name: 'Amara',
     role: 'Support client',
     description: 'Assistance et support technique pour vos clients',
-    image: 'blob:https://aistudio.google.com/c49c9fd8-45bc-4e1b-9647-efa7112c2025',
+    image: 'https://i.pravatar.cc/300?img=47', // Femme - Remplacer par: /templates/template-2.png
     gradient: 'from-blue-900/50 to-indigo-900/30',
     category: 'Support'
   },
@@ -39,7 +40,7 @@ export const AGENT_TEMPLATES: AgentTemplate[] = [
     name: 'Malik',
     role: 'Directeur commercial',
     description: 'Gestion des relations clients et stratégies commerciales',
-    image: 'blob:https://aistudio.google.com/e7f5f49e-54e4-4a9f-8ce7-8d6e0d18e1e9',
+    image: 'https://i.pravatar.cc/300?img=15', // Homme - Remplacer par: /templates/template-3.png
     gradient: 'from-amber-900/50 to-orange-900/30',
     category: 'Management'
   },
@@ -48,7 +49,7 @@ export const AGENT_TEMPLATES: AgentTemplate[] = [
     name: 'Élisa',
     role: 'Directrice opérationnelle',
     description: 'Coordination et optimisation des opérations',
-    image: 'blob:https://aistudio.google.com/fc4b25c9-45ca-4ad6-a8cb-31588ce401b3',
+    image: 'https://i.pravatar.cc/300?img=44', // Femme - Remplacer par: /templates/template-4.png
     gradient: 'from-rose-900/50 to-pink-900/30',
     category: 'Opérations'
   }
