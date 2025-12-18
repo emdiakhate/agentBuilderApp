@@ -317,7 +317,7 @@ const AgentCreate = () => {
         <CollapsibleSection
           title="Configuration IA"
           description="Paramètres du modèle de langage"
-          icon={Cpu}
+          icon={<Cpu className="h-5 w-5" />}
           defaultOpen={false}
         >
           <div className="space-y-4 pt-4">
@@ -384,7 +384,7 @@ const AgentCreate = () => {
         <CollapsibleSection
           title="System Prompt"
           description="Instructions pour l'IA"
-          icon={Sparkles}
+          icon={<Sparkles className="h-5 w-5" />}
           defaultOpen={true}
         >
           <div className="space-y-4 pt-4">
@@ -444,7 +444,7 @@ const AgentCreate = () => {
         <CollapsibleSection
           title="Voix et Langue"
           description="Configuration vocale"
-          icon={Mic}
+          icon={<Mic className="h-5 w-5" />}
           defaultOpen={false}
         >
           <div className="space-y-4 pt-4">
