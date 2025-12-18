@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAgents } from '@/hooks/useAgents';
 import { AgentCard } from '@/components/AgentCard';
 import { Sidebar } from '@/components/Sidebar';
+import { TemplatesSection } from '@/components/TemplatesSection';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -289,6 +290,15 @@ export const HomePage: React.FC = () => {
                 </div>
               </div>
             </Card>
+          </motion.div>
+
+          {/* Templates Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.35 }}
+          >
+            <TemplatesSection />
           </motion.div>
 
           {/* Filter Tabs */}

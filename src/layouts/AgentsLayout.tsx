@@ -1,23 +1,23 @@
-
 import { Outlet } from "react-router-dom";
-import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/AppSidebar";
-import { Separator } from "@/components/ui/separator";
+import { Sidebar } from "@/components/Sidebar";
 
+/**
+ * Dark Mode Layout pour les pages avec Sidebar
+ * Utilisé pour: Dashboard, Agents, Voice Library, Integrations, Analytics, Settings
+ */
 const AgentsLayout: React.FC = () => {
   return (
-    <SidebarProvider defaultOpen={true}>
-      <AppSidebar />
-      <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-          <SidebarTrigger className="-ml-1" />
-          <Separator orientation="vertical" className="mr-2 h-4" />
-        </header>
-        <main className="flex-1 overflow-y-auto p-6 animate-fade-in">
+    <div className="flex min-h-screen bg-[#0a0a1a]">
+      {/* Dark Mode Sidebar */}
+      <Sidebar />
+
+      {/* Main Content Area */}
+      <main className="flex-1 lg:ml-[240px] transition-all duration-300">
+        <div className="p-8 animate-fade-in">
           <Outlet />
-        </main>
-      </SidebarInset>
-    </SidebarProvider>
+        </div>
+      </main>
+    </div>
   );
 };
 
