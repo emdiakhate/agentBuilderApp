@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
-import { getAgentAvatar, AvatarStyle } from '@/services/avatarService';
+import { getAgentAvatar } from '@/services/avatarService';
 
 interface UseAgentAvatarOptions {
   customUrl?: string;
-  style?: AvatarStyle;
+  index?: number;
 }
 
 /**
@@ -16,11 +16,11 @@ export const useAgentAvatar = (
   agentName: string,
   options: UseAgentAvatarOptions = {}
 ) => {
-  const { customUrl, style = 'avataaars' } = options;
+  const { customUrl, index } = options;
 
   const avatarUrl = useMemo(() => {
-    return getAgentAvatar(agentName, customUrl, style);
-  }, [agentName, customUrl, style]);
+    return getAgentAvatar(agentName, customUrl, index);
+  }, [agentName, customUrl, index]);
 
   return {
     avatarUrl,

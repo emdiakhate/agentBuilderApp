@@ -1,15 +1,15 @@
 import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Send, Loader2, Plus } from 'lucide-react';
+import { Send, Plus, BarChart3, Mic, FileText, Users, Activity, Phone, Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAgents } from '@/hooks/useAgents';
 import { AgentCard } from '@/components/AgentCard';
-import { StatsCards } from '@/components/StatsCards';
-import { QuickActions } from '@/components/QuickActions';
+import { Sidebar } from '@/components/Sidebar';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Card } from '@/components/ui/card';
 
 type FilterTab = 'all' | 'active' | 'inactive' | 'maintenance';
 
@@ -19,8 +19,8 @@ export const HomePage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState<FilterTab>('all');
 
-  // Get user name (from auth context or localStorage)
-  const userName = localStorage.getItem('user_name') || 'Malik'; // Fallback to Malik
+  // Get user name (from localStorage or context)
+  const userName = localStorage.getItem('user_name') || 'Malik';
 
   // Filter agents based on active filter and search query
   const filteredAgents = useMemo(() => {
@@ -62,8 +62,8 @@ export const HomePage: React.FC = () => {
     };
   }, [agents]);
 
-  const handleSearch = () => {
-    // Could trigger a search action or just filter (already done with useMemo)
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
     console.log('Searching for:', searchQuery);
   };
 
@@ -74,21 +74,24 @@ export const HomePage: React.FC = () => {
   // Loading skeleton
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background p-6">
-        <div className="max-w-7xl mx-auto space-y-8">
-          <Skeleton className="h-12 w-96" />
-          <Skeleton className="h-16 w-full max-w-2xl" />
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {[...Array(4)].map((_, i) => (
-              <Skeleton key={i} className="h-32" />
-            ))}
+      <div className="flex min-h-screen bg-[#0a0a1a]">
+        <Sidebar />
+        <main className="flex-1 lg:ml-[240px] transition-all duration-300">
+          <div className="p-8 space-y-8">
+            <Skeleton className="h-12 w-96 bg-white/5" />
+            <Skeleton className="h-16 w-full max-w-2xl bg-white/5" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {[...Array(4)].map((_, i) => (
+                <Skeleton key={i} className="h-32 bg-white/5" />
+              ))}
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {[...Array(8)].map((_, i) => (
+                <Skeleton key={i} className="h-[380px] bg-white/5" />
+              ))}
+            </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[...Array(8)].map((_, i) => (
-              <Skeleton key={i} className="h-[340px]" />
-            ))}
-          </div>
-        </div>
+        </main>
       </div>
     );
   }
@@ -96,18 +99,21 @@ export const HomePage: React.FC = () => {
   // Error state
   if (error) {
     return (
-      <div className="min-h-screen bg-background p-6 flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <p className="text-2xl font-bold text-destructive">
-            Erreur de chargement
-          </p>
-          <p className="text-muted-foreground">
-            Impossible de charger vos agents. Veuillez réessayer.
-          </p>
-          <Button onClick={() => window.location.reload()}>
-            Réessayer
-          </Button>
-        </div>
+      <div className="flex min-h-screen bg-[#0a0a1a]">
+        <Sidebar />
+        <main className="flex-1 lg:ml-[240px] flex items-center justify-center p-8">
+          <div className="text-center space-y-4">
+            <p className="text-2xl font-bold text-red-500">
+              Erreur de chargement
+            </p>
+            <p className="text-gray-400">
+              Impossible de charger vos agents. Veuillez réessayer.
+            </p>
+            <Button onClick={() => window.location.reload()} className="bg-purple-600 hover:bg-purple-700">
+              Réessayer
+            </Button>
+          </div>
+        </main>
       </div>
     );
   }
@@ -115,130 +121,219 @@ export const HomePage: React.FC = () => {
   // Empty state
   if (!agents || agents.length === 0) {
     return (
-      <div className="min-h-screen bg-background p-6">
-        <div className="max-w-7xl mx-auto">
-          {/* Header */}
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-8"
-          >
-            <h1 className="text-4xl font-bold mb-2">
-              <span className="font-serif italic text-muted-foreground">
-                Ravi de te revoir,{' '}
-              </span>
-              <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                {userName}
-              </span>
-            </h1>
-          </motion.div>
-
-          {/* Empty state */}
-          <div className="flex flex-col items-center justify-center min-h-[500px] space-y-6">
-            <div className="text-center space-y-4">
-              <div className="h-32 w-32 mx-auto rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-                <Plus className="h-16 w-16 text-white" />
-              </div>
-              <h2 className="text-3xl font-bold">
-                Créez votre premier agent
-              </h2>
-              <p className="text-muted-foreground max-w-md mx-auto">
-                Commencez à construire des agents IA vocaux intelligents
-                pour automatiser vos conversations.
-              </p>
-              <Button
-                size="lg"
-                onClick={() => navigate('/agents/create')}
-                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-              >
-                <Plus className="h-5 w-5 mr-2" />
-                Créer mon premier agent
-              </Button>
+      <div className="flex min-h-screen bg-[#0a0a1a]">
+        <Sidebar />
+        <main className="flex-1 lg:ml-[240px] flex items-center justify-center p-8">
+          <div className="text-center space-y-6 max-w-md">
+            <div className="w-24 h-24 mx-auto bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+              <Plus size={48} className="text-white" />
             </div>
+            <h2 className="text-3xl font-bold text-white">
+              Créez votre premier agent
+            </h2>
+            <p className="text-gray-400">
+              Commencez à automatiser vos appels avec des agents IA vocaux intelligents.
+            </p>
+            <Button
+              onClick={() => navigate('/agents/create')}
+              size="lg"
+              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+            >
+              <Plus className="mr-2" size={20} />
+              Créer mon premier agent
+            </Button>
           </div>
-        </div>
+        </main>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-7xl mx-auto p-6 space-y-8">
-        {/* Header with personalized greeting */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="space-y-6"
-        >
-          <h1 className="text-4xl md:text-5xl font-bold">
-            <span className="font-serif italic text-muted-foreground">
-              Ravi de te revoir,{' '}
-            </span>
-            <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-              {userName}
-            </span>
-          </h1>
+    <div className="flex min-h-screen bg-[#0a0a1a]">
+      {/* Sidebar */}
+      <Sidebar />
 
-          {/* Search / Action Bar */}
-          <div className="flex gap-3 max-w-2xl">
-            <div className="relative flex-1">
-              <Input
-                placeholder="Comment puis-je vous aider aujourd'hui ?"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                className="h-14 pl-4 pr-12 text-lg rounded-2xl border-2 border-border/50 focus:border-primary shadow-lg"
-              />
-              <Button
-                size="icon"
-                onClick={handleSearch}
-                className="absolute right-2 top-2 h-10 w-10 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-              >
-                <Send className="h-5 w-5" />
-              </Button>
-            </div>
-          </div>
+      {/* Main Content */}
+      <main className="flex-1 lg:ml-[240px] transition-all duration-300">
+        <div className="p-8 space-y-8 max-w-[1800px] mx-auto">
+          {/* Header with Personalized Greeting */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="space-y-2"
+          >
+            <h1 className="text-4xl font-serif mb-2">
+              <span className="text-gray-400 italic">Ravi de te revoir, </span>
+              <span className="text-white font-bold">{userName}</span>
+            </h1>
+            <p className="text-gray-400 text-sm">
+              Gérez vos agents vocaux et optimisez vos performances
+            </p>
+          </motion.div>
+
+          {/* Search Bar */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
+            <form onSubmit={handleSearch} className="max-w-2xl mx-auto">
+              <div className="flex gap-3">
+                <Input
+                  type="text"
+                  placeholder="Comment puis-je vous aider aujourd'hui ?"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="flex-1 h-14 bg-white text-gray-900 placeholder:text-gray-500 rounded-2xl shadow-2xl border-0 text-base px-6"
+                />
+                <Button
+                  type="submit"
+                  size="lg"
+                  className="h-14 px-8 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-2xl shadow-2xl"
+                >
+                  <Send size={20} />
+                </Button>
+              </div>
+            </form>
+          </motion.div>
 
           {/* Quick Actions */}
-          <QuickActions />
-        </motion.div>
-
-        {/* Stats Cards */}
-        <StatsCards
-          totalAgents={stats.total}
-          activeAgents={stats.active}
-          callsToday={stats.calls}
-          avgSatisfaction={stats.satisfaction}
-        />
-
-        {/* Filters */}
-        <div className="flex items-center justify-between">
-          <Tabs
-            value={activeFilter}
-            onValueChange={(value) => setActiveFilter(value as FilterTab)}
-            className="w-full"
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="flex flex-wrap justify-center gap-3"
           >
-            <TabsList className="bg-muted/50">
-              <TabsTrigger value="all">Tous les Agents</TabsTrigger>
-              <TabsTrigger value="active">Actifs</TabsTrigger>
-              <TabsTrigger value="inactive">Inactifs</TabsTrigger>
-              <TabsTrigger value="maintenance">Maintenance</TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </div>
+            <Button
+              onClick={() => navigate('/agents/create')}
+              className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full font-medium shadow-lg hover:scale-105 transition-transform"
+            >
+              <Plus size={18} className="mr-2" />
+              Créer un agent
+            </Button>
+            <Button
+              onClick={() => navigate('/analytics')}
+              className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full font-medium shadow-lg hover:scale-105 transition-transform"
+            >
+              <BarChart3 size={18} className="mr-2" />
+              Analytics
+            </Button>
+            <Button
+              onClick={() => navigate('/voice-library')}
+              className="px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-full font-medium shadow-lg hover:scale-105 transition-transform"
+            >
+              <Mic size={18} className="mr-2" />
+              Bibliothèque de voix
+            </Button>
+            <Button
+              onClick={() => navigate('/agents/create?template=true')}
+              className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-full font-medium shadow-lg hover:scale-105 transition-transform"
+            >
+              <FileText size={18} className="mr-2" />
+              Templates
+            </Button>
+          </motion.div>
 
-        {/* Agents Grid */}
-        {filteredAgents.length === 0 ? (
-          <div className="text-center py-20">
-            <p className="text-2xl font-semibold text-muted-foreground">
-              Aucun agent trouvé
-            </p>
-            <p className="text-muted-foreground mt-2">
-              Essayez un autre filtre ou créez un nouvel agent.
-            </p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {/* Stats Cards */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+          >
+            <Card className="bg-white/5 backdrop-blur border border-white/10 p-4 rounded-xl hover:bg-white/10 transition-all">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center">
+                  <Users size={24} className="text-blue-400" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-white">{stats.total}</p>
+                  <p className="text-sm text-gray-400">Total Agents</p>
+                </div>
+              </div>
+            </Card>
+
+            <Card className="bg-white/5 backdrop-blur border border-white/10 p-4 rounded-xl hover:bg-white/10 transition-all">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                  <Activity size={24} className="text-emerald-400" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-white">{stats.active}</p>
+                  <p className="text-sm text-gray-400">Agents Actifs</p>
+                </div>
+              </div>
+            </Card>
+
+            <Card className="bg-white/5 backdrop-blur border border-white/10 p-4 rounded-xl hover:bg-white/10 transition-all">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center">
+                  <Phone size={24} className="text-purple-400" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-white">{stats.calls}</p>
+                  <p className="text-sm text-gray-400">Appels Aujourd'hui</p>
+                </div>
+              </div>
+            </Card>
+
+            <Card className="bg-white/5 backdrop-blur border border-white/10 p-4 rounded-xl hover:bg-white/10 transition-all">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-orange-500/20 flex items-center justify-center">
+                  <Star size={24} className="text-orange-400" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-white">{stats.satisfaction.toFixed(1)}/5</p>
+                  <p className="text-sm text-gray-400">Satisfaction</p>
+                </div>
+              </div>
+            </Card>
+          </motion.div>
+
+          {/* Filter Tabs */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+          >
+            <Tabs value={activeFilter} onValueChange={(v) => setActiveFilter(v as FilterTab)}>
+              <TabsList className="bg-white/5 border border-white/10">
+                <TabsTrigger
+                  value="all"
+                  className="data-[state=active]:bg-white/10 data-[state=active]:border-b-2 data-[state=active]:border-purple-500 text-gray-400 data-[state=active]:text-white"
+                >
+                  Tous les Agents
+                </TabsTrigger>
+                <TabsTrigger
+                  value="active"
+                  className="data-[state=active]:bg-white/10 data-[state=active]:border-b-2 data-[state=active]:border-purple-500 text-gray-400 data-[state=active]:text-white"
+                >
+                  Actifs
+                </TabsTrigger>
+                <TabsTrigger
+                  value="inactive"
+                  className="data-[state=active]:bg-white/10 data-[state=active]:border-b-2 data-[state=active]:border-purple-500 text-gray-400 data-[state=active]:text-white"
+                >
+                  Inactifs
+                </TabsTrigger>
+                <TabsTrigger
+                  value="maintenance"
+                  className="data-[state=active]:bg-white/10 data-[state=active]:border-b-2 data-[state=active]:border-purple-500 text-gray-400 data-[state=active]:text-white"
+                >
+                  Maintenance
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </motion.div>
+
+          {/* Agents Grid */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+          >
             {filteredAgents.map((agent, index) => (
               <AgentCard
                 key={agent.id}
@@ -247,9 +342,22 @@ export const HomePage: React.FC = () => {
                 onTest={handleTest}
               />
             ))}
-          </div>
-        )}
-      </div>
+          </motion.div>
+
+          {/* No Results */}
+          {filteredAgents.length === 0 && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center py-12"
+            >
+              <p className="text-gray-400 text-lg">
+                Aucun agent ne correspond à vos critères de recherche.
+              </p>
+            </motion.div>
+          )}
+        </div>
+      </main>
     </div>
   );
 };
