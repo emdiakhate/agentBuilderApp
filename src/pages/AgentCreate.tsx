@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { ArrowLeft, Bot, Loader2, Sparkles, Cpu, Mic, Upload, Settings, Layout } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation, Link } from "react-router-dom";
+import { ArrowLeft, Bot, Loader2, Sparkles, Cpu, Mic, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -10,20 +10,23 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/components/ui/use-toast";
 import { createAgent } from "@/services/agentService";
+import { AvatarSelector } from "@/components/AvatarSelector";
 import { CollapsibleSection } from "@/components/CollapsibleSection";
-import { TemplateSelector } from "@/components/TemplateSelector";
-import { AgentTemplate, fetchTemplateDetail, createAgentFromTemplate } from "@/services/templateService";
+import { AgentTemplate as HomePageTemplate } from "@/components/TemplatesSection";
 
 const AgentCreate = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGeneratingPrompt, setIsGeneratingPrompt] = useState(false);
-  const [templateSelectorOpen, setTemplateSelectorOpen] = useState(false);
-  const [selectedTemplate, setSelectedTemplate] = useState<AgentTemplate | null>(null);
+
+  // Get template from HomePage navigation
+  const homepageTemplate = location.state?.template as HomePageTemplate | undefined;
 
   const [formData, setFormData] = useState({
     name: "",
+    avatar: "",
     description: "",
     type: "customer_support",
     llm_provider: "openai",
@@ -39,6 +42,25 @@ const AgentCreate = () => {
     background_denoising_enabled: false,
   });
 
+  // Pre-fill form if template was selected from HomePage
+  useEffect(() => {
+    if (homepageTemplate) {
+      setFormData(prev => ({
+        ...prev,
+        name: homepageTemplate.name,
+        avatar: homepageTemplate.image,
+        description: homepageTemplate.description,
+        type: homepageTemplate.category.toLowerCase().replace('é', 'e'),
+        purpose: homepageTemplate.description,
+      }));
+
+      toast({
+        title: "✨ Template chargé !",
+        description: `Le template "${homepageTemplate.name}" est prêt à être personnalisé.`,
+      });
+    }
+  }, [homepageTemplate, toast]);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -48,48 +70,8 @@ const AgentCreate = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleTemplateSelect = async (template: AgentTemplate) => {
-    setSelectedTemplate(template);
-
-    // If blank template, just reset form
-    if (template.id === "blank") {
-      return;
-    }
-
-    try {
-      // Fetch detailed template configuration
-      const templateDetail = await fetchTemplateDetail(template.id);
-
-      // Pre-fill form with template configuration
-      setFormData({
-        name: templateDetail.config.name,
-        description: template.description,
-        type: templateDetail.config.type,
-        llm_provider: templateDetail.config.llm_provider,
-        model: templateDetail.config.model,
-        temperature: templateDetail.config.temperature,
-        max_tokens: templateDetail.config.max_tokens,
-        purpose: template.description,
-        prompt: templateDetail.config.prompt,
-        first_message: templateDetail.config.first_message,
-        first_message_mode: templateDetail.config.first_message_mode,
-        language: templateDetail.config.language.split('-')[0], // Convert 'fr-FR' to 'fr'
-        background_sound: templateDetail.config.background_sound || "off",
-        background_denoising_enabled: templateDetail.config.background_denoising_enabled || false,
-      });
-
-      toast({
-        title: "✅ Template appliqué !",
-        description: `Le template "${template.name}" a été chargé. Vous pouvez le personnaliser avant de créer l'agent.`,
-      });
-    } catch (error) {
-      console.error("Error loading template:", error);
-      toast({
-        title: "Erreur",
-        description: "Impossible de charger le template",
-        variant: "destructive",
-      });
-    }
+  const handleAvatarChange = (avatarUrl: string) => {
+    setFormData(prev => ({ ...prev, avatar: avatarUrl }));
   };
 
   const handleGeneratePrompt = async () => {
@@ -160,6 +142,7 @@ const AgentCreate = () => {
     try {
       const newAgent = await createAgent({
         name: formData.name,
+        avatar: formData.avatar || undefined,
         description: formData.description || undefined,
         type: formData.type,
         llm_provider: formData.llm_provider,
@@ -197,69 +180,48 @@ const AgentCreate = () => {
 
   return (
     <div className="max-w-4xl mx-auto animate-fade-in">
+      {/* Header */}
       <div className="mb-8">
         <Link
           to="/agents"
-          className="flex items-center text-muted-foreground hover:text-foreground transition-colors"
+          className="flex items-center text-gray-400 hover:text-white transition-colors mb-6"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Retour aux Agents
         </Link>
-      </div>
 
-      <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-3">
-          <Bot className="h-8 w-8 text-primary" />
+          <Bot className="h-8 w-8 text-purple-500" />
           <div>
-            <h1 className="text-3xl font-semibold text-foreground">Créer un Nouvel Agent</h1>
-            <p className="text-muted-foreground mt-1">Configurez votre agent IA en quelques clics</p>
+            <h1 className="text-3xl font-semibold text-white">
+              {homepageTemplate ? `Créer ${homepageTemplate.name}` : 'Créer un Nouvel Agent'}
+            </h1>
+            <p className="text-gray-400 mt-1">
+              {homepageTemplate ? homepageTemplate.description : 'Configurez votre agent IA en quelques clics'}
+            </p>
           </div>
         </div>
-        <Button
-          variant="outline"
-          onClick={() => setTemplateSelectorOpen(true)}
-          className="gap-2"
-        >
-          <Layout className="h-4 w-4" />
-          Choisir un Template
-        </Button>
       </div>
 
-      {selectedTemplate && selectedTemplate.id !== "blank" && (
-        <Card className="mb-6 bg-primary/5 border-primary/20">
+      {/* Template Info Banner */}
+      {homepageTemplate && (
+        <Card className="mb-6 bg-purple-500/10 border-purple-500/30">
           <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <Layout className="h-5 w-5 text-primary" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium">Template appliqué</p>
-                  <p className="text-sm text-muted-foreground">{selectedTemplate.name}</p>
-                </div>
+            <div className="flex items-center gap-4">
+              <img
+                src={homepageTemplate.image}
+                alt={homepageTemplate.name}
+                className="w-16 h-16 rounded-full object-cover border-2 border-purple-500"
+              />
+              <div className="flex-1">
+                <p className="text-sm font-medium text-white">Template appliqué</p>
+                <p className="text-sm text-gray-400">{homepageTemplate.name} - {homepageTemplate.role}</p>
               </div>
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => {
-                  setSelectedTemplate(null);
-                  setFormData({
-                    name: "",
-                    description: "",
-                    type: "customer_support",
-                    llm_provider: "openai",
-                    model: "gpt-4o-mini",
-                    temperature: 0.7,
-                    max_tokens: 1000,
-                    purpose: "",
-                    prompt: "",
-                    first_message: "",
-                    first_message_mode: "assistant-speaks-first",
-                    language: "fr",
-                    background_sound: "off",
-                    background_denoising_enabled: false,
-                  });
-                }}
+                onClick={() => navigate('/agents/create', { replace: true, state: {} })}
+                className="text-gray-400 hover:text-white"
               >
                 Réinitialiser
               </Button>
@@ -268,391 +230,292 @@ const AgentCreate = () => {
         </Card>
       )}
 
-      <TemplateSelector
-        open={templateSelectorOpen}
-        onClose={() => setTemplateSelectorOpen(false)}
-        onSelectTemplate={handleTemplateSelect}
-      />
-
+      {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Configuration Sections */}
-        <div className="space-y-4">
-          {/* Model Section - Contains all main fields */}
-          <CollapsibleSection
-            title="Model"
-            icon={<Cpu className="h-5 w-5" />}
-            defaultOpen={true}
-          >
-            <div className="space-y-4">
-              {/* Nom de l'agent */}
+        {/* Basic Information */}
+        <Card className="bg-white/5 border-white/10">
+          <CardHeader>
+            <CardTitle className="text-white flex items-center gap-2">
+              <Bot className="h-5 w-5" />
+              Informations de Base
+            </CardTitle>
+            <CardDescription className="text-gray-400">
+              Les détails essentiels de votre agent
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* Avatar Selector */}
+            <div className="space-y-2">
+              <Label className="text-white">Avatar de l'agent</Label>
+              <div className="flex items-center gap-4">
+                <AvatarSelector
+                  currentAvatar={formData.avatar}
+                  onAvatarChange={handleAvatarChange}
+                  agentName={formData.name || "Agent"}
+                />
+                <div className="flex-1">
+                  <p className="text-sm text-gray-400">
+                    Cliquez sur l'avatar pour choisir une photo ou en importer une.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Name */}
+            <div className="space-y-2">
+              <Label htmlFor="name" className="text-white">Nom de l'agent *</Label>
+              <Input
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
+                placeholder="Ex: Marie, Assistant Commercial, etc."
+                required
+                className="bg-white/10 border-white/20 text-white placeholder:text-gray-500"
+              />
+            </div>
+
+            {/* Description */}
+            <div className="space-y-2">
+              <Label htmlFor="description" className="text-white">Description</Label>
+              <Textarea
+                id="description"
+                name="description"
+                value={formData.description}
+                onChange={handleInputChange}
+                placeholder="Décrivez brièvement le rôle de cet agent..."
+                rows={3}
+                className="bg-white/10 border-white/20 text-white placeholder:text-gray-500"
+              />
+            </div>
+
+            {/* Type */}
+            <div className="space-y-2">
+              <Label htmlFor="type" className="text-white">Type d'agent</Label>
+              <Select value={formData.type} onValueChange={(value) => handleSelectChange("type", value)}>
+                <SelectTrigger className="bg-white/10 border-white/20 text-white">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-[#1a1a2e] border-white/10">
+                  <SelectItem value="customer_support" className="text-white hover:bg-white/10">Support Client</SelectItem>
+                  <SelectItem value="sales" className="text-white hover:bg-white/10">Ventes</SelectItem>
+                  <SelectItem value="appointment_booking" className="text-white hover:bg-white/10">Prise de RDV</SelectItem>
+                  <SelectItem value="lead_qualification" className="text-white hover:bg-white/10">Qualification de Leads</SelectItem>
+                  <SelectItem value="information_provider" className="text-white hover:bg-white/10">Fournisseur d'Informations</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* AI Configuration */}
+        <CollapsibleSection
+          title="Configuration IA"
+          description="Paramètres du modèle de langage"
+          icon={Cpu}
+          defaultOpen={false}
+        >
+          <div className="space-y-4 pt-4">
+            <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="name">
-                  Nom de l'agent <span className="text-red-500">*</span>
-                </Label>
+                <Label className="text-white">Fournisseur LLM</Label>
+                <Select value={formData.llm_provider} onValueChange={(value) => handleSelectChange("llm_provider", value)}>
+                  <SelectTrigger className="bg-white/10 border-white/20 text-white">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#1a1a2e] border-white/10">
+                    <SelectItem value="openai" className="text-white hover:bg-white/10">OpenAI</SelectItem>
+                    <SelectItem value="anthropic" className="text-white hover:bg-white/10">Anthropic</SelectItem>
+                    <SelectItem value="google" className="text-white hover:bg-white/10">Google</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-white">Modèle</Label>
+                <Select value={formData.model} onValueChange={(value) => handleSelectChange("model", value)}>
+                  <SelectTrigger className="bg-white/10 border-white/20 text-white">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#1a1a2e] border-white/10">
+                    <SelectItem value="gpt-4o" className="text-white hover:bg-white/10">GPT-4o</SelectItem>
+                    <SelectItem value="gpt-4o-mini" className="text-white hover:bg-white/10">GPT-4o Mini</SelectItem>
+                    <SelectItem value="gpt-4-turbo" className="text-white hover:bg-white/10">GPT-4 Turbo</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className="text-white">Température: {formData.temperature}</Label>
+                <input
+                  type="range"
+                  min="0"
+                  max="2"
+                  step="0.1"
+                  value={formData.temperature}
+                  onChange={(e) => setFormData(prev => ({ ...prev, temperature: parseFloat(e.target.value) }))}
+                  className="w-full"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="max_tokens" className="text-white">Max Tokens</Label>
                 <Input
-                  id="name"
-                  name="name"
-                  placeholder="Ex: Assistant Support Client"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  required
+                  id="max_tokens"
+                  name="max_tokens"
+                  type="number"
+                  value={formData.max_tokens}
+                  onChange={(e) => setFormData(prev => ({ ...prev, max_tokens: parseInt(e.target.value) }))}
+                  className="bg-white/10 border-white/20 text-white"
                 />
-              </div>
-
-              {/* Description */}
-              <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
-                <Textarea
-                  id="description"
-                  name="description"
-                  placeholder="Décrivez brièvement le rôle de cet agent..."
-                  value={formData.description}
-                  onChange={handleInputChange}
-                  rows={3}
-                />
-              </div>
-
-              {/* Type d'agent */}
-              <div className="space-y-2">
-                <Label htmlFor="type">Type d'agent</Label>
-                <Select
-                  value={formData.type}
-                  onValueChange={(value) => handleSelectChange("type", value)}
-                >
-                  <SelectTrigger id="type">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="customer_support">Support Client</SelectItem>
-                    <SelectItem value="sales">Ventes</SelectItem>
-                    <SelectItem value="technical_support">Support Technique</SelectItem>
-                    <SelectItem value="lead_generation">Génération de Leads</SelectItem>
-                    <SelectItem value="other">Autre</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* System Prompt with Generate Button */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="prompt">System Prompt</Label>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={handleGeneratePrompt}
-                    disabled={isGeneratingPrompt || !formData.name.trim()}
-                    className="gap-2"
-                  >
-                    {isGeneratingPrompt ? (
-                      <>
-                        <Loader2 className="h-3 w-3 animate-spin" />
-                        Génération...
-                      </>
-                    ) : (
-                      <>
-                        <Sparkles className="h-3 w-3" />
-                        Générer avec IA
-                      </>
-                    )}
-                  </Button>
-                </div>
-                <Textarea
-                  id="prompt"
-                  name="prompt"
-                  placeholder="Le system prompt définit le comportement de l'agent... (Utilisez le bouton Générer)"
-                  value={formData.prompt}
-                  onChange={handleInputChange}
-                  rows={4}
-                />
-                <p className="text-xs text-muted-foreground">
-                  Instructions système qui définissent le comportement et le rôle de l'agent
-                </p>
-              </div>
-
-              {/* First Message */}
-              <div className="space-y-2">
-                <Label htmlFor="first_message">Premier Message</Label>
-                <Textarea
-                  id="first_message"
-                  name="first_message"
-                  placeholder="Bonjour ! Je suis votre assistant. Comment puis-je vous aider ?"
-                  value={formData.first_message}
-                  onChange={handleInputChange}
-                  rows={2}
-                />
-                <p className="text-xs text-muted-foreground">
-                  Le premier message que l'agent dira lors d'un appel
-                </p>
-              </div>
-
-              {/* First Message Mode */}
-              <div className="space-y-2">
-                <Label htmlFor="first_message_mode">Mode Premier Message</Label>
-                <Select
-                  value={formData.first_message_mode}
-                  onValueChange={(value) => handleSelectChange("first_message_mode", value)}
-                >
-                  <SelectTrigger id="first_message_mode">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="assistant-speaks-first">L'assistant parle en premier</SelectItem>
-                    <SelectItem value="assistant-waits">L'assistant attend</SelectItem>
-                  </SelectContent>
-                </Select>
-                <p className="text-xs text-muted-foreground">
-                  Choisissez si l'agent doit parler en premier ou attendre que l'utilisateur parle
-                </p>
-              </div>
-
-              <div className="border-t pt-4 mt-4">
-                <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-4">Configuration du modèle</h4>
-
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="llm_provider">Provider</Label>
-                    <Select
-                      value={formData.llm_provider}
-                      onValueChange={(value) => handleSelectChange("llm_provider", value)}
-                    >
-                      <SelectTrigger id="llm_provider">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="openai">OpenAI</SelectItem>
-                        <SelectItem value="anthropic">Anthropic</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="model_advanced">Model</Label>
-                    <Select
-                      value={formData.model}
-                      onValueChange={(value) => handleSelectChange("model", value)}
-                    >
-                      <SelectTrigger id="model_advanced">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="gpt-4o">GPT-4o</SelectItem>
-                        <SelectItem value="gpt-4o-mini">GPT-4o Mini</SelectItem>
-                        <SelectItem value="gpt-4-turbo">GPT-4 Turbo</SelectItem>
-                        <SelectItem value="gpt-3.5-turbo">GPT-3.5 Turbo</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="temperature">
-                        Temperature: {formData.temperature}
-                      </Label>
-                      <Input
-                        id="temperature"
-                        name="temperature"
-                        type="range"
-                        min="0"
-                        max="2"
-                        step="0.1"
-                        value={formData.temperature}
-                        onChange={(e) => setFormData(prev => ({ ...prev, temperature: parseFloat(e.target.value) }))}
-                      />
-                      <p className="text-xs text-muted-foreground">
-                        Contrôle la créativité (0 = précis, 2 = créatif)
-                      </p>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="max_tokens">Max Tokens</Label>
-                      <Input
-                        id="max_tokens"
-                        name="max_tokens"
-                        type="number"
-                        min="100"
-                        max="4000"
-                        step="100"
-                        value={formData.max_tokens}
-                        onChange={(e) => setFormData(prev => ({ ...prev, max_tokens: parseInt(e.target.value) }))}
-                      />
-                      <p className="text-xs text-muted-foreground">
-                        Longueur maximale de la réponse
-                      </p>
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
-          </CollapsibleSection>
+          </div>
+        </CollapsibleSection>
 
-          {/* Voice Section */}
-          <CollapsibleSection
-            title="Voice"
-            icon={<Mic className="h-5 w-5" />}
-            defaultOpen={false}
-          >
-            <div className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label>Provider</Label>
-                      <Select value="cartesia" disabled>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Cartesia" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="cartesia">Cartesia</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <p className="text-xs text-muted-foreground">
-                        Par défaut : Cartesia (meilleure qualité)
-                      </p>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label>Voice</Label>
-                      <Select value="helpful-french-lady" disabled>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Helpful French Lady" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="helpful-french-lady">Helpful French Lady</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <p className="text-xs text-muted-foreground">
-                        Voix française par défaut
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>Model</Label>
-                    <Select value="sonic-multilingual" disabled>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Sonic Multilingual (Sonic 2)" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="sonic-multilingual">Sonic Multilingual (Sonic 2)</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <p className="text-xs text-muted-foreground">
-                      Sonic 2 - Support multilingue pour le français
-                    </p>
-                  </div>
-                </div>
-          </CollapsibleSection>
-
-          {/* Additional Configuration Section */}
-          <CollapsibleSection
-            title="Configuration Additionnelle"
-            icon={<Settings className="h-5 w-5" />}
-            defaultOpen={false}
-          >
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="background_sound">Bruit de fond</Label>
-                <Select
-                  value={formData.background_sound}
-                  onValueChange={(value) => handleSelectChange("background_sound", value)}
+        {/* System Prompt */}
+        <CollapsibleSection
+          title="System Prompt"
+          description="Instructions pour l'IA"
+          icon={Sparkles}
+          defaultOpen={true}
+        >
+          <div className="space-y-4 pt-4">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="purpose" className="text-white">Objectif de l'agent</Label>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleGeneratePrompt}
+                  disabled={isGeneratingPrompt}
+                  className="bg-purple-500/20 border-purple-500/30 text-white hover:bg-purple-500/30"
                 >
-                  <SelectTrigger id="background_sound">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="off">🔇 Aucun - Pas de bruit de fond</SelectItem>
-                    <SelectItem value="office">🏢 Bureau - Environnement de bureau calme</SelectItem>
-                    <SelectItem value="restaurant">🍽️ Restaurant - Ambiance avec conversations</SelectItem>
-                    <SelectItem value="cafe">☕ Café - Ambiance café avec discussions</SelectItem>
-                    <SelectItem value="clinic">🏥 Clinique - Environnement médical</SelectItem>
-                    <SelectItem value="noisy">📢 Bruyant - Centre d'appels, environnement très bruyant</SelectItem>
-                    <SelectItem value="home">🏠 Domestique - Maison avec TV/musique</SelectItem>
-                  </SelectContent>
-                </Select>
-                <p className="text-xs text-muted-foreground">
-                  Ajoute un bruit de fond ambiant pour rendre les conversations plus naturelles. Le bruit est ajouté côté agent.
-                </p>
+                  {isGeneratingPrompt ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Génération...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="h-4 w-4 mr-2" />
+                      Générer avec IA
+                    </>
+                  )}
+                </Button>
               </div>
-
-              <div className="flex items-center justify-between space-x-2 rounded-lg border p-4">
-                <div className="flex-1 space-y-1">
-                  <Label htmlFor="background_denoising_enabled" className="cursor-pointer">
-                    Débruitage intelligent (Krisp)
-                  </Label>
-                  <p className="text-xs text-muted-foreground">
-                    Active le débruitage intelligent pour filtrer les bruits parasites de l'utilisateur
-                  </p>
-                </div>
-                <Switch
-                  id="background_denoising_enabled"
-                  checked={formData.background_denoising_enabled}
-                  onCheckedChange={(checked) =>
-                    setFormData(prev => ({ ...prev, background_denoising_enabled: checked }))
-                  }
-                />
-              </div>
-
-              {formData.background_sound !== "off" && (
-                <div className="bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800/30 rounded-lg p-4">
-                  <p className="text-sm text-blue-800 dark:text-blue-200">
-                    💡 <strong>Recommandation</strong> : Pour un environnement {
-                      formData.background_sound === "office" ? "de bureau" :
-                      formData.background_sound === "restaurant" ? "de restaurant" :
-                      formData.background_sound === "cafe" ? "de café" :
-                      formData.background_sound === "clinic" ? "médical" :
-                      formData.background_sound === "noisy" ? "bruyant" :
-                      "domestique"
-                    }, il est recommandé d'activer le débruitage intelligent pour une meilleure qualité audio.
-                  </p>
-                </div>
-              )}
+              <Input
+                id="purpose"
+                name="purpose"
+                value={formData.purpose}
+                onChange={handleInputChange}
+                placeholder="Ex: Répondre aux questions des clients sur nos produits"
+                className="bg-white/10 border-white/20 text-white placeholder:text-gray-500"
+              />
             </div>
-          </CollapsibleSection>
 
-          {/* File Section */}
-          <CollapsibleSection
-            title="Files"
-            icon={<Upload className="h-5 w-5" />}
-            defaultOpen={false}
-          >
-            <div className="space-y-4">
-              <div className="bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800/30 rounded-lg p-4">
-                <p className="text-sm text-blue-800 dark:text-blue-200">
-                  💡 <strong>Astuce</strong> : Les documents peuvent être ajoutés après la création de l'agent dans l'onglet "Base de connaissances".
-                </p>
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Créez d'abord l'agent, puis uploadez des documents (PDF, DOCX, TXT) dans la section "Base de connaissances".
-                Le prompt sera automatiquement mis à jour avec les noms des documents.
+            <div className="space-y-2">
+              <Label htmlFor="prompt" className="text-white">System Prompt</Label>
+              <Textarea
+                id="prompt"
+                name="prompt"
+                value={formData.prompt}
+                onChange={handleInputChange}
+                placeholder="Tu es un assistant IA spécialisé dans..."
+                rows={8}
+                className="bg-white/10 border-white/20 text-white placeholder:text-gray-500 font-mono text-sm"
+              />
+              <p className="text-xs text-gray-500">
+                Instructions système qui définissent le comportement de l'agent
               </p>
             </div>
-          </CollapsibleSection>
-        </div>
+          </div>
+        </CollapsibleSection>
 
-        {/* Buttons */}
-        <div className="flex justify-end gap-3 pt-6">
+        {/* Voice & Language */}
+        <CollapsibleSection
+          title="Voix et Langue"
+          description="Configuration vocale"
+          icon={Mic}
+          defaultOpen={false}
+        >
+          <div className="space-y-4 pt-4">
+            <div className="space-y-2">
+              <Label className="text-white">Langue</Label>
+              <Select value={formData.language} onValueChange={(value) => handleSelectChange("language", value)}>
+                <SelectTrigger className="bg-white/10 border-white/20 text-white">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-[#1a1a2e] border-white/10">
+                  <SelectItem value="fr" className="text-white hover:bg-white/10">Français</SelectItem>
+                  <SelectItem value="en" className="text-white hover:bg-white/10">English</SelectItem>
+                  <SelectItem value="es" className="text-white hover:bg-white/10">Español</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="first_message" className="text-white">Premier Message</Label>
+              <Textarea
+                id="first_message"
+                name="first_message"
+                value={formData.first_message}
+                onChange={handleInputChange}
+                placeholder="Bonjour ! Comment puis-je vous aider aujourd'hui ?"
+                rows={3}
+                className="bg-white/10 border-white/20 text-white placeholder:text-gray-500"
+              />
+            </div>
+
+            <div className="flex items-center justify-between py-2">
+              <div>
+                <Label className="text-white">Background Sound</Label>
+                <p className="text-sm text-gray-500">Activer le son d'ambiance</p>
+              </div>
+              <Switch
+                checked={formData.background_sound !== "off"}
+                onCheckedChange={(checked) => handleSelectChange("background_sound", checked ? "office" : "off")}
+              />
+            </div>
+
+            <div className="flex items-center justify-between py-2">
+              <div>
+                <Label className="text-white">Débruitage</Label>
+                <p className="text-sm text-gray-500">Réduction du bruit de fond</p>
+              </div>
+              <Switch
+                checked={formData.background_denoising_enabled}
+                onCheckedChange={(checked) => setFormData(prev => ({ ...prev, background_denoising_enabled: checked }))}
+              />
+            </div>
+          </div>
+        </CollapsibleSection>
+
+        {/* Submit Buttons */}
+        <div className="flex gap-3 pt-6">
           <Button
             type="button"
             variant="outline"
             onClick={() => navigate("/agents")}
-            disabled={isSubmitting}
+            className="flex-1 bg-transparent border-white/20 text-white hover:bg-white/10"
           >
             Annuler
           </Button>
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="gap-2"
+            className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
           >
             {isSubmitting ? (
               <>
-                <Loader2 className="h-4 w-4 animate-spin" />
-                Création en cours...
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Création...
               </>
             ) : (
-              <>
-                <Bot className="h-4 w-4" />
-                Créer l'Agent
-              </>
+              "Créer l'Agent"
             )}
           </Button>
         </div>

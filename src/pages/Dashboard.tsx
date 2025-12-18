@@ -60,12 +60,15 @@ const Dashboard = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-muted-foreground mt-1">
+          <h1 className="text-3xl font-bold tracking-tight text-white">Dashboard</h1>
+          <p className="text-gray-400 mt-1">
             Vue d'ensemble de votre plateforme d'agents vocaux
           </p>
         </div>
-        <Button onClick={() => navigate("/agents/create")} className="gap-2">
+        <Button
+          onClick={() => navigate("/agents/create")}
+          className="gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+        >
           <Plus className="h-4 w-4" />
           Nouvel Agent
         </Button>
@@ -74,23 +77,23 @@ const Dashboard = () => {
       {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat) => (
-          <Card key={stat.title}>
+          <Card key={stat.title} className="bg-white/5 border-white/10">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
+              <CardTitle className="text-sm font-medium text-white">{stat.title}</CardTitle>
               <div className={`p-2 rounded-lg ${stat.bgColor}`}>
                 <stat.icon className={`h-4 w-4 ${stat.color}`} />
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
-              <p className="text-xs text-muted-foreground mt-1">
+              <div className="text-2xl font-bold text-white">{stat.value}</div>
+              <p className="text-xs text-gray-400 mt-1">
                 {stat.description}
               </p>
               <div className="flex items-center gap-1 mt-2">
                 <span className={`text-xs font-medium ${stat.color}`}>
                   {stat.trend}
                 </span>
-                <span className="text-xs text-muted-foreground">vs mois dernier</span>
+                <span className="text-xs text-gray-500">vs mois dernier</span>
               </div>
             </CardContent>
           </Card>
@@ -98,14 +101,14 @@ const Dashboard = () => {
       </div>
 
       {/* Recent Agents */}
-      <Card>
+      <Card className="bg-white/5 border-white/10">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>Agents Récents</CardTitle>
-              <CardDescription>Vos derniers agents créés</CardDescription>
+              <CardTitle className="text-white">Agents Récents</CardTitle>
+              <CardDescription className="text-gray-400">Vos derniers agents créés</CardDescription>
             </div>
-            <Button variant="ghost" onClick={() => navigate("/agents")} className="gap-2">
+            <Button variant="ghost" onClick={() => navigate("/agents")} className="gap-2 text-gray-400 hover:text-white hover:bg-white/10">
               Voir tout
               <ArrowRight className="h-4 w-4" />
             </Button>
