@@ -45,6 +45,9 @@ const AgentCreate = () => {
   // Pre-fill form if template was selected from HomePage
   useEffect(() => {
     if (homepageTemplate) {
+      console.log('🟢 Template received in AgentCreate:', homepageTemplate);
+      console.log('🟢 Template config:', homepageTemplate.config);
+
       // Map template ID to proper agent type
       const getAgentType = (templateId: string): string => {
         const typeMap: Record<string, string> = {
@@ -89,6 +92,15 @@ const AgentCreate = () => {
           background_sound: homepageTemplate.config.background_sound || 'off',
           background_denoising_enabled: homepageTemplate.config.background_denoising_enabled || false,
         }));
+
+        console.log('🟢 Form data after mapping:', {
+          name: homepageTemplate.config.name,
+          type: homepageTemplate.config.type,
+          model: homepageTemplate.config.model,
+          temperature: homepageTemplate.config.temperature,
+          prompt: homepageTemplate.config.prompt?.substring(0, 100) + '...',
+          first_message: homepageTemplate.config.first_message,
+        });
       } else {
         // Fallback for templates without config
         setFormData(prev => ({

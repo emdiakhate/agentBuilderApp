@@ -37,6 +37,10 @@ const TemplateCard: React.FC<TemplateCardProps> = ({ template, index }) => {
   };
 
   const handleSelectTemplate = () => {
+    // Log the template being passed
+    console.log('🔵 Template selected:', template);
+    console.log('🔵 Template config:', template.config);
+
     // Navigate to create agent with template pre-filled
     navigate(`/agents/create?template=${template.id}`, {
       state: { template }
@@ -114,12 +118,20 @@ export const TemplatesSection: React.FC = () => {
 
       // Fetch basic templates list
       const basicTemplates = await fetchTemplates();
+      console.log('🔵 Basic templates fetched:', basicTemplates.length);
 
       // Fetch detailed config for each template
       const detailedTemplates = await Promise.all(
         basicTemplates.map(async (t) => {
           try {
-            return await fetchTemplateDetail(t.id);
+            const detail = await fetchTemplateDetail(t.id);
+            console.log(`🔵 Template detail for ${t.id}:`, {
+              name: detail.name,
+              hasConfig: !!detail.config,
+              configKeys: detail.config ? Object.keys(detail.config) : [],
+              prompt: detail.config?.prompt?.substring(0, 50) + '...'
+            });
+            return detail;
           } catch (error) {
             console.error(`Error loading template ${t.id}:`, error);
             // Return basic template if detail fetch fails
