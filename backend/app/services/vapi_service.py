@@ -78,6 +78,7 @@ class VapiService:
         first_message: Optional[str] = None,
         first_message_mode: str = "assistant-speaks-first",
         system_prompt: Optional[str] = None,
+        language: str = "fr",
         background_sound: str = "off",
         background_denoising_enabled: bool = False,
         **kwargs
@@ -94,6 +95,7 @@ class VapiService:
             first_message: First message to say
             first_message_mode: Mode for first message ("assistant-speaks-first" or "assistant-waits")
             system_prompt: System prompt for the assistant
+            language: Language for transcription and speech (fr, en, es, etc.)
             **kwargs: Additional Vapi assistant configuration
 
         Returns:
@@ -110,19 +112,39 @@ class VapiService:
             if voice_provider == "cartesia":
                 voice_config["model"] = voice_model
 
+            # Map language codes to full language names for instructions
+            language_names = {
+                "fr": "French (Français)",
+                "en": "English",
+                "es": "Spanish (Español)",
+                "de": "German (Deutsch)",
+                "it": "Italian (Italiano)",
+                "pt": "Portuguese (Português)",
+            }
+
+            # Get the language code (handle both "fr" and "Français")
+            lang_code = language.lower()[:2] if language else "fr"
+            language_name = language_names.get(lang_code, "French")
+
+            # Add language instruction at the beginning of system prompt
+            base_prompt = system_prompt or f"You are {name}, a helpful AI assistant."
+            enhanced_prompt = f"""IMPORTANT: You MUST speak in {language_name}. All your responses must be in {language_name}.
+
+{base_prompt}"""
+
             # Build base payload
             payload = {
                 "name": name,
                 "model": {
                     "provider": "openai",
                     "model": model,
-                    "systemPrompt": system_prompt or f"You are {name}, a helpful AI assistant.",
+                    "systemPrompt": enhanced_prompt,
                 },
                 "voice": voice_config,
                 "transcriber": {
                     "provider": "deepgram",
                     "model": "nova-2",
-                    "language": "fr"
+                    "language": lang_code
                 },
                 "firstMessageMode": first_message_mode,
                 **kwargs

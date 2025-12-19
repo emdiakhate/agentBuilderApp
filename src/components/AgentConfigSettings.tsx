@@ -505,7 +505,14 @@ const AgentConfigSettings: React.FC<AgentConfigSettingsProps> = ({ agent, onAgen
       </Card>
 
       {/* Base de connaissances */}
-      <KnowledgeBaseCardConnected agent={agent} />
+      <KnowledgeBaseCardConnected
+        agentId={agent.id}
+        currentPrompt={agent.prompt || ""}
+        onPromptUpdate={(newPrompt) => {
+          // Update local agent state
+          setFormData(prev => ({ ...prev, prompt: newPrompt }));
+        }}
+      />
 
       <Card>
         <CardHeader>

@@ -56,6 +56,7 @@ Objectif : {agent_data.purpose or 'Aider les utilisateurs avec leurs questions'}
             first_message=first_message,
             first_message_mode=agent_data.first_message_mode or "assistant-speaks-first",
             system_prompt=system_prompt,
+            language=agent_data.language or "fr",  # Pass language for transcription and speech
             background_sound=agent_data.background_sound or "off",
             background_denoising_enabled=agent_data.background_denoising_enabled or False
         )
