@@ -58,13 +58,12 @@ const AgentCreate = () => {
         return typeMap[templateId] || 'customer_support';
       };
 
-      // Check if template has config property with all fields
+      // Map ALL template config fields from backend/app/core/agent_templates.py
       if (homepageTemplate.config) {
-        // Map ALL template config fields to formData
         setFormData(prev => ({
           ...prev,
-          // Basic info
-          name: homepageTemplate.name,
+          // Basic info - use config.name or template.name as fallback
+          name: homepageTemplate.config.name || homepageTemplate.name,
           avatar: homepageTemplate.image,
           description: homepageTemplate.description,
 
@@ -72,26 +71,26 @@ const AgentCreate = () => {
           type: homepageTemplate.config.type || getAgentType(homepageTemplate.id),
 
           // LLM Configuration
-          llm_provider: homepageTemplate.config.llm_provider || prev.llm_provider,
-          model: homepageTemplate.config.model || prev.model,
-          temperature: homepageTemplate.config.temperature ?? prev.temperature,
-          max_tokens: homepageTemplate.config.max_tokens || prev.max_tokens,
+          llm_provider: homepageTemplate.config.llm_provider,
+          model: homepageTemplate.config.model,
+          temperature: homepageTemplate.config.temperature,
+          max_tokens: homepageTemplate.config.max_tokens,
 
-          // Purpose & System Prompt
-          purpose: homepageTemplate.config.purpose || homepageTemplate.description,
-          prompt: homepageTemplate.config.prompt || prev.prompt,
+          // System Prompt (most important field!)
+          prompt: homepageTemplate.config.prompt,
+          purpose: homepageTemplate.description,
 
           // First Message
-          first_message: homepageTemplate.config.first_message || prev.first_message,
-          first_message_mode: homepageTemplate.config.first_message_mode || prev.first_message_mode,
+          first_message: homepageTemplate.config.first_message,
+          first_message_mode: homepageTemplate.config.first_message_mode,
 
           // Voice & Language
-          language: homepageTemplate.config.language || prev.language,
-          background_sound: homepageTemplate.config.background_sound || prev.background_sound,
-          background_denoising_enabled: homepageTemplate.config.background_denoising_enabled ?? prev.background_denoising_enabled,
+          language: homepageTemplate.config.language,
+          background_sound: 'off',
+          background_denoising_enabled: false,
         }));
       } else {
-        // Fallback for templates without config property
+        // Fallback for templates without config
         setFormData(prev => ({
           ...prev,
           name: homepageTemplate.name,
