@@ -447,6 +447,32 @@ const AgentCreate = () => {
         >
           <div className="space-y-4 pt-4">
             <div className="space-y-2">
+              <Label className="text-white">Mode premier message</Label>
+              <Select value={formData.first_message_mode} onValueChange={(value) => handleSelectChange("first_message_mode", value)}>
+                <SelectTrigger className="bg-white/10 border-white/20 text-white">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-[#1a1a2e] border-white/10">
+                  <SelectItem value="assistant-speaks-first" className="text-white hover:bg-white/10">L'assistant parle en premier</SelectItem>
+                  <SelectItem value="assistant-waits" className="text-white hover:bg-white/10">L'assistant attend</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="first_message" className="text-white">Premier Message</Label>
+              <Textarea
+                id="first_message"
+                name="first_message"
+                value={formData.first_message}
+                onChange={handleInputChange}
+                placeholder="Bonjour ! Comment puis-je vous aider aujourd'hui ?"
+                rows={3}
+                className="bg-white/10 border-white/20 text-white placeholder:text-gray-500"
+              />
+            </div>
+
+            <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label htmlFor="prompt" className="text-white">System Prompt</Label>
                 <Button
@@ -483,32 +509,6 @@ const AgentCreate = () => {
                 Instructions système qui définissent le comportement de l'agent
               </p>
             </div>
-
-            <div className="space-y-2">
-              <Label className="text-white">Mode premier message</Label>
-              <Select value={formData.first_message_mode} onValueChange={(value) => handleSelectChange("first_message_mode", value)}>
-                <SelectTrigger className="bg-white/10 border-white/20 text-white">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-[#1a1a2e] border-white/10">
-                  <SelectItem value="assistant-speaks-first" className="text-white hover:bg-white/10">L'assistant parle en premier</SelectItem>
-                  <SelectItem value="assistant-waits" className="text-white hover:bg-white/10">L'assistant attend</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="first_message" className="text-white">Premier Message</Label>
-              <Textarea
-                id="first_message"
-                name="first_message"
-                value={formData.first_message}
-                onChange={handleInputChange}
-                placeholder="Bonjour ! Comment puis-je vous aider aujourd'hui ?"
-                rows={3}
-                className="bg-white/10 border-white/20 text-white placeholder:text-gray-500"
-              />
-            </div>
           </div>
         </CollapsibleSection>
 
@@ -534,21 +534,31 @@ const AgentCreate = () => {
               </Select>
             </div>
 
-            <div className="flex items-center justify-between py-2">
-              <div>
-                <Label className="text-white">Background Sound</Label>
-                <p className="text-sm text-gray-500">Activer le son d'ambiance</p>
-              </div>
-              <Switch
-                checked={formData.background_sound !== "off"}
-                onCheckedChange={(checked) => handleSelectChange("background_sound", checked ? "office" : "off")}
-              />
+            <div className="space-y-2">
+              <Label className="text-white">Bruit de fond</Label>
+              <Select value={formData.background_sound} onValueChange={(value) => handleSelectChange("background_sound", value)}>
+                <SelectTrigger className="bg-white/10 border-white/20 text-white">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-[#1a1a2e] border-white/10">
+                  <SelectItem value="off" className="text-white hover:bg-white/10">🔇 Aucun - Pas de bruit de fond</SelectItem>
+                  <SelectItem value="office" className="text-white hover:bg-white/10">🏢 Bureau - Environnement de bureau calme</SelectItem>
+                  <SelectItem value="restaurant" className="text-white hover:bg-white/10">🍽️ Restaurant - Ambiance avec conversations</SelectItem>
+                  <SelectItem value="clinic" className="text-white hover:bg-white/10">🏥 Clinique - Environnement médical</SelectItem>
+                  <SelectItem value="noisy" className="text-white hover:bg-white/10">📢 Bruyant - Centre d'appels, environnement très bruyant</SelectItem>
+                  <SelectItem value="home" className="text-white hover:bg-white/10">🏠 Domestique - Maison avec TV/musique</SelectItem>
+                  <SelectItem value="cafe" className="text-white hover:bg-white/10">☕ Café - Ambiance café avec discussions</SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-gray-500">
+                Ajoute un bruit de fond ambiant pour rendre les conversations plus naturelles
+              </p>
             </div>
 
             <div className="flex items-center justify-between py-2">
               <div>
-                <Label className="text-white">Débruitage</Label>
-                <p className="text-sm text-gray-500">Réduction du bruit de fond</p>
+                <Label className="text-white">Débruitage intelligent (Krisp)</Label>
+                <p className="text-sm text-gray-500">Filtre les bruits parasites de l'utilisateur</p>
               </div>
               <Switch
                 checked={formData.background_denoising_enabled}

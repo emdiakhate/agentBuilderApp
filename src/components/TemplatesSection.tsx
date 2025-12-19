@@ -91,7 +91,7 @@ const TemplateCard: React.FC<TemplateCardProps> = ({ template, index }) => {
           {/* Footer */}
           <div className="flex items-center justify-between pt-4 border-t border-white/10">
             <span className="text-xs text-gray-400">
-              {template.config.model}
+              {template.config.name}
             </span>
             <span className="text-xs text-purple-400 group-hover:text-purple-300">
               Utiliser ce template →

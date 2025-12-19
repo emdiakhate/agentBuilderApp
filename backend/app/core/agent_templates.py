@@ -9,8 +9,8 @@ from typing import Dict, List, Any, Optional
 AGENT_TEMPLATES: Dict[str, Dict[str, Any]] = {
     "customer_support": {
         "id": "customer_support",
-        "name": "Customer Service & Support Agent",
-        "description": "Resolves product issues, answers questions, and ensures satisfying support experiences with technical knowledge and empathy.",
+        "name": "Agent de Service Client & Support",
+        "description": "Résout les problèmes produits, répond aux questions et assure des expériences de support satisfaisantes avec connaissances techniques et empathie.",
         "icon": "heart",
         "category": "support",
         "config": {
@@ -85,8 +85,8 @@ Remember that your ultimate goal is to resolve customer issues efficiently while
 
     "lead_qualification": {
         "id": "lead_qualification",
-        "name": "Lead Qualification & Nurturing Agent",
-        "description": "Identifies qualified prospects, understands business challenges, and connects them with appropriate sales representatives.",
+        "name": "Agent de Qualification & Nurturing de Leads",
+        "description": "Identifie les prospects qualifiés, comprend les défis commerciaux et les connecte avec les représentants commerciaux appropriés.",
         "icon": "user",
         "category": "sales",
         "config": {
@@ -147,8 +147,8 @@ Remember that your ultimate goal is to identify prospects who would genuinely be
 
     "appointment_scheduler": {
         "id": "appointment_scheduler",
-        "name": "Appointment Scheduling Agent",
-        "description": "Efficiently schedules, confirms, reschedules, or cancels appointments while providing clear information about services.",
+        "name": "Agent de Planification de Rendez-vous",
+        "description": "Planifie, confirme, reprogramme ou annule efficacement les rendez-vous tout en fournissant des informations claires sur les services.",
         "icon": "calendar",
         "category": "scheduling",
         "config": {
@@ -220,8 +220,8 @@ Remember that your ultimate goal is to match patients with the appropriate care 
 
     "info_collector": {
         "id": "info_collector",
-        "name": "Information Collection & Verification Agent",
-        "description": "Gathers accurate and complete information from customers while ensuring data quality and regulatory compliance.",
+        "name": "Agent de Collecte & Vérification d'Informations",
+        "description": "Recueille des informations précises et complètes auprès des clients tout en garantissant la qualité des données et la conformité réglementaire.",
         "icon": "clipboard",
         "category": "data",
         "config": {
@@ -296,8 +296,8 @@ Remember that your ultimate goal is to collect complete and accurate information
 
     "feedback_gatherer": {
         "id": "feedback_gatherer",
-        "name": "Surveys & Feedback Collection Agent",
-        "description": "Conducts engaging surveys, gathers meaningful customer feedback, and collects market research data with high completion rates.",
+        "name": "Agent de Sondages & Collecte de Feedback",
+        "description": "Réalise des sondages engageants, recueille des retours clients significatifs et collecte des données d'études de marché avec des taux d'achèvement élevés.",
         "icon": "star",
         "category": "research",
         "config": {
@@ -371,8 +371,8 @@ Remember that your ultimate goal is to collect accurate, unbiased feedback that 
 
     "care_coordinator": {
         "id": "care_coordinator",
-        "name": "Healthcare Coordination Agent",
-        "description": "Helps patients schedule medical appointments, answer health questions, provide pre-visit guidance, and coordinate care services with HIPAA compliance.",
+        "name": "Agent de Coordination de Soins de Santé",
+        "description": "Aide les patients à planifier des rendez-vous médicaux, répond aux questions de santé, fournit des conseils pré-visite et coordonne les services de soins avec conformité HIPAA.",
         "icon": "activity",
         "category": "health",
         "config": {
