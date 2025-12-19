@@ -25,15 +25,25 @@ const TemplateCard: React.FC<TemplateCardProps> = ({ template, index }) => {
     'appointment_scheduler': 'https://i.pravatar.cc/300?img=47',
     'info_collector': 'https://i.pravatar.cc/300?img=15',
     'feedback_gatherer': 'https://i.pravatar.cc/300?img=60',
-    'sales_agent': 'https://i.pravatar.cc/300?img=35',
+    'care_coordinator': 'https://i.pravatar.cc/300?img=35',
   };
 
   const gradientMap: Record<string, string> = {
-    'support': 'from-blue-900/50 to-cyan-900/30',
-    'sales': 'from-emerald-900/50 to-green-900/30',
-    'scheduling': 'from-purple-900/50 to-indigo-900/30',
+    'support': 'from-rose-900/50 to-pink-900/30',
+    'sales': 'from-blue-900/50 to-indigo-900/30',
+    'scheduling': 'from-teal-900/50 to-cyan-900/30',
     'data': 'from-amber-900/50 to-orange-900/30',
-    'research': 'from-teal-900/50 to-cyan-900/30',
+    'research': 'from-purple-900/50 to-violet-900/30',
+    'health': 'from-emerald-900/50 to-green-900/30',
+  };
+
+  const categoryLabels: Record<string, string> = {
+    'support': 'Support',
+    'sales': 'Ventes',
+    'scheduling': 'Planification',
+    'data': 'Données',
+    'research': 'Recherche',
+    'health': 'Santé',
   };
 
   const handleSelectTemplate = () => {
@@ -52,51 +62,52 @@ const TemplateCard: React.FC<TemplateCardProps> = ({ template, index }) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1, duration: 0.3 }}
-      whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
+      whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
     >
       <Card
         onClick={handleSelectTemplate}
         className={`
-          relative overflow-hidden cursor-pointer group
-          bg-white/5 border-white/10
-          hover:bg-white/10 hover:border-white/20
-          transition-all duration-300
+          relative overflow-hidden cursor-pointer rounded-2xl h-[380px]
+          bg-gradient-to-br ${gradientMap[template.category] || 'from-gray-900/50 to-gray-800/30'}
+          border-white/10 hover:border-white/20
+          transition-all duration-300 group
         `}
       >
-        <div className={`absolute inset-0 bg-gradient-to-br ${gradientMap[template.category] || 'from-gray-900/50 to-gray-800/30'} opacity-50`} />
+        {/* Badge catégorie - top right */}
+        <div className="absolute top-4 right-4 z-20">
+          <span className="bg-white/20 backdrop-blur-sm text-white text-xs font-medium px-3 py-1 rounded-full border border-white/30">
+            {categoryLabels[template.category] || template.category}
+          </span>
+        </div>
 
-        <div className="relative p-6 space-y-4">
-          {/* Image & Badge */}
-          <div className="flex items-start justify-between">
-            <img
-              src={imageMap[template.id] || 'https://i.pravatar.cc/300?img=1'}
-              alt={template.name}
-              className="w-16 h-16 rounded-full object-cover border-2 border-white/20"
-            />
-            <Badge variant="secondary" className="bg-white/10 text-white border-white/20 capitalize">
-              {template.category}
-            </Badge>
-          </div>
+        {/* Content - top */}
+        <div className="relative z-10 p-6">
+          <h3 className="text-white font-bold text-xl mb-1">
+            {template.config.name}
+          </h3>
+          <p className="text-white/80 text-sm">
+            {template.name}
+          </p>
+        </div>
 
-          {/* Content */}
-          <div className="space-y-2">
-            <h3 className="text-xl font-semibold text-white">
-              {template.name}
-            </h3>
-            <p className="text-sm text-gray-300 line-clamp-3">
-              {template.description}
-            </p>
-          </div>
+        {/* Avatar - CENTER, BIG */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <img
+            src={imageMap[template.id] || 'https://i.pravatar.cc/300?img=1'}
+            alt={template.name}
+            className="w-48 h-48 rounded-full object-cover border-4 border-white/20 shadow-2xl"
+          />
+        </div>
 
-          {/* Footer */}
-          <div className="flex items-center justify-between pt-4 border-t border-white/10">
-            <span className="text-xs text-gray-400">
-              {template.config.name}
-            </span>
-            <span className="text-xs text-purple-400 group-hover:text-purple-300">
-              Utiliser ce template →
-            </span>
-          </div>
+        {/* Hover overlay */}
+        <div className="
+          absolute inset-0 bg-black/60 backdrop-blur-sm
+          opacity-0 group-hover:opacity-100 transition-opacity duration-300
+          flex items-center justify-center z-30
+        ">
+          <Button className="bg-white text-gray-900 hover:bg-gray-100 font-semibold px-6 py-3 rounded-xl shadow-lg">
+            Utiliser ce template →
+          </Button>
         </div>
       </Card>
     </motion.div>
