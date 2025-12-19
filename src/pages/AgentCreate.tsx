@@ -12,7 +12,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { createAgent } from "@/services/agentService";
 import { AvatarSelector } from "@/components/AvatarSelector";
 import { CollapsibleSection } from "@/components/CollapsibleSection";
-import { AgentTemplate as HomePageTemplate } from "@/components/TemplatesSection";
+import { TemplateDetail } from "@/services/templateService";
 
 const AgentCreate = () => {
   const navigate = useNavigate();
@@ -22,7 +22,7 @@ const AgentCreate = () => {
   const [isGeneratingPrompt, setIsGeneratingPrompt] = useState(false);
 
   // Get template from HomePage navigation
-  const homepageTemplate = location.state?.template as HomePageTemplate | undefined;
+  const homepageTemplate = location.state?.template as TemplateDetail | undefined;
 
   const [formData, setFormData] = useState({
     name: "",
@@ -58,19 +58,19 @@ const AgentCreate = () => {
         return typeMap[templateId] || 'customer_support';
       };
 
-      // Map ALL template config fields from backend/app/core/agent_templates.py
+      // Map ALL template config fields from backend API
       if (homepageTemplate.config) {
         setFormData(prev => ({
           ...prev,
           // Basic info - use config.name or template.name as fallback
           name: homepageTemplate.config.name || homepageTemplate.name,
-          avatar: homepageTemplate.image,
+          // Avatar is not provided by templates - user can choose their own
           description: homepageTemplate.description,
 
           // Agent type
           type: homepageTemplate.config.type || getAgentType(homepageTemplate.id),
 
-          // LLM Configuration
+          // LLM Configuration (all fields from backend)
           llm_provider: homepageTemplate.config.llm_provider,
           model: homepageTemplate.config.model,
           temperature: homepageTemplate.config.temperature,
@@ -86,15 +86,14 @@ const AgentCreate = () => {
 
           // Voice & Language
           language: homepageTemplate.config.language,
-          background_sound: 'off',
-          background_denoising_enabled: false,
+          background_sound: homepageTemplate.config.background_sound || 'off',
+          background_denoising_enabled: homepageTemplate.config.background_denoising_enabled || false,
         }));
       } else {
         // Fallback for templates without config
         setFormData(prev => ({
           ...prev,
           name: homepageTemplate.name,
-          avatar: homepageTemplate.image,
           description: homepageTemplate.description,
           type: getAgentType(homepageTemplate.id),
           purpose: homepageTemplate.description,
