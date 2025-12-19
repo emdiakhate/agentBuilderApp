@@ -448,7 +448,7 @@ const AgentCreate = () => {
           <div className="space-y-4 pt-4">
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label htmlFor="purpose" className="text-white">Objectif de l'agent</Label>
+                <Label htmlFor="prompt" className="text-white">System Prompt</Label>
                 <Button
                   type="button"
                   variant="outline"
@@ -470,18 +470,6 @@ const AgentCreate = () => {
                   )}
                 </Button>
               </div>
-              <Input
-                id="purpose"
-                name="purpose"
-                value={formData.purpose}
-                onChange={handleInputChange}
-                placeholder="Ex: Répondre aux questions des clients sur nos produits"
-                className="bg-white/10 border-white/20 text-white placeholder:text-gray-500"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="prompt" className="text-white">System Prompt</Label>
               <Textarea
                 id="prompt"
                 name="prompt"
@@ -494,6 +482,32 @@ const AgentCreate = () => {
               <p className="text-xs text-gray-500">
                 Instructions système qui définissent le comportement de l'agent
               </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-white">Mode premier message</Label>
+              <Select value={formData.first_message_mode} onValueChange={(value) => handleSelectChange("first_message_mode", value)}>
+                <SelectTrigger className="bg-white/10 border-white/20 text-white">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-[#1a1a2e] border-white/10">
+                  <SelectItem value="assistant-speaks-first" className="text-white hover:bg-white/10">L'assistant parle en premier</SelectItem>
+                  <SelectItem value="assistant-waits" className="text-white hover:bg-white/10">L'assistant attend</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="first_message" className="text-white">Premier Message</Label>
+              <Textarea
+                id="first_message"
+                name="first_message"
+                value={formData.first_message}
+                onChange={handleInputChange}
+                placeholder="Bonjour ! Comment puis-je vous aider aujourd'hui ?"
+                rows={3}
+                className="bg-white/10 border-white/20 text-white placeholder:text-gray-500"
+              />
             </div>
           </div>
         </CollapsibleSection>
@@ -518,19 +532,6 @@ const AgentCreate = () => {
                   <SelectItem value="es" className="text-white hover:bg-white/10">Español</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="first_message" className="text-white">Premier Message</Label>
-              <Textarea
-                id="first_message"
-                name="first_message"
-                value={formData.first_message}
-                onChange={handleInputChange}
-                placeholder="Bonjour ! Comment puis-je vous aider aujourd'hui ?"
-                rows={3}
-                className="bg-white/10 border-white/20 text-white placeholder:text-gray-500"
-              />
             </div>
 
             <div className="flex items-center justify-between py-2">
