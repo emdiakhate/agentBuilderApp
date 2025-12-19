@@ -49,6 +49,30 @@ async def startup_event():
     init_db()
     logger.info("Database initialized")
 
+    # Run migration: Fix avatar column size to support base64 images
+    try:
+        from app.core.database import engine
+        from sqlalchemy import text
+
+        with engine.connect() as conn:
+            # Check if avatar column is VARCHAR(500) and needs migration
+            result = conn.execute(text("""
+                SELECT character_maximum_length
+                FROM information_schema.columns
+                WHERE table_name = 'agents' AND column_name = 'avatar'
+            """))
+            row = result.fetchone()
+
+            if row and row[0] == 500:
+                logger.info("Running migration: Changing avatar column to TEXT...")
+                conn.execute(text("ALTER TABLE agents ALTER COLUMN avatar TYPE TEXT;"))
+                conn.commit()
+                logger.info("✅ Avatar column migration completed")
+            else:
+                logger.info("Avatar column migration not needed (already TEXT)")
+    except Exception as e:
+        logger.warning(f"Avatar column migration skipped: {e}")
+
     # Create dev user in development mode
     if settings.ENVIRONMENT == "development":
         from app.core.database import SessionLocal

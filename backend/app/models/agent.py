@@ -21,7 +21,7 @@ class Agent(Base):
     description = Column(Text, nullable=True)
     type = Column(String(100), nullable=False)  # AgentTypeCategory
     status = Column(String(50), default="draft")  # active, inactive, draft
-    avatar = Column(String(500), nullable=True)
+    avatar = Column(Text, nullable=True)  # Support base64 images (can be large)
 
     # LLM Configuration
     llm_provider = Column(String(50), default="openai")  # openai, anthropic, openrouter
