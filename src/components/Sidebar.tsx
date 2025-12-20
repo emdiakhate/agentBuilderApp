@@ -8,6 +8,7 @@ import {
   Link,
   BarChart3,
   Settings,
+  MessageSquare,
   ChevronLeft,
   ChevronRight,
   Menu,
@@ -26,6 +27,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { label: 'Accueil', icon: <Home size={20} />, path: '/' },
   { label: 'Mes Agents', icon: <Bot size={20} />, path: '/agents' },
+  { label: 'Conversations', icon: <MessageSquare size={20} />, path: '/conversations' },
   { label: 'Bibliothèque de Voix', icon: <Mic size={20} />, path: '/voice-library' },
   { label: 'Intégrations', icon: <Link size={20} />, path: '/integrations' },
   { label: 'Analytics', icon: <BarChart3 size={20} />, path: '/analytics' },

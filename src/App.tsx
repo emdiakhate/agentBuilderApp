@@ -15,6 +15,7 @@ import Analytics from "./pages/Analytics";
 import VoiceLibrary from "./pages/VoiceLibrary";
 import Settings from "./pages/Settings";
 import Integrations from "./pages/Integrations";
+import ConversationsPage from "./pages/ConversationsPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient({
@@ -45,6 +46,7 @@ const App = () => (
               <Route path="/agents" element={<AgentsDashboard />} />
               <Route path="/agents/create" element={<AgentCreate />} />
               <Route path="/agents/:agentId" element={<AgentDetails />} />
+              <Route path="/conversations" element={<ConversationsPage />} />
               <Route path="/voice-library" element={<VoiceLibrary />} />
               <Route path="/integrations" element={<Integrations />} />
               <Route path="/analytics" element={<Analytics />} />
