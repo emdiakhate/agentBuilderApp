@@ -3,7 +3,7 @@
  * Service for managing agent conversations
  */
 
-import api from './api';
+import { apiClient } from '@/lib/api';
 
 export interface ConversationMessage {
   role: string;
@@ -69,8 +69,8 @@ export async function fetchConversations(
   if (filters.page) params.append('page', filters.page.toString());
   if (filters.limit) params.append('limit', filters.limit.toString());
 
-  const response = await api.get<ConversationListResponse>(
-    `/conversations?${params.toString()}`
+  const response = await apiClient.get<ConversationListResponse>(
+    `/api/conversations?${params.toString()}`
   );
   return response;
 }
@@ -79,7 +79,7 @@ export async function fetchConversations(
  * Fetch a single conversation by ID
  */
 export async function fetchConversation(callId: string): Promise<Conversation> {
-  const response = await api.get<Conversation>(`/conversations/${callId}`);
+  const response = await apiClient.get<Conversation>(`/api/conversations/${callId}`);
   return response;
 }
 
@@ -95,11 +95,14 @@ export async function exportConversationsCSV(filters: ConversationFilters = {}):
   if (filters.status) params.append('status', filters.status);
   if (filters.sentiment) params.append('sentiment', filters.sentiment);
 
+  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+  const token = localStorage.getItem('access_token');
+
   const response = await fetch(
-    `${import.meta.env.VITE_API_URL}/conversations/export/csv?${params.toString()}`,
+    `${API_BASE_URL}/api/conversations/export/csv?${params.toString()}`,
     {
       headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        'Authorization': token ? `Bearer ${token}` : '',
       },
     }
   );
