@@ -36,11 +36,11 @@ export const ConversationsPage: React.FC = () => {
   const [exporting, setExporting] = useState(false);
 
   const [filters, setFilters] = useState<ConversationFilters>({
-    assistantId: '',
+    assistantId: 'all',
     startDate: '',
     endDate: '',
-    status: '',
-    sentiment: '',
+    status: 'all',
+    sentiment: 'all',
     search: '',
     page: 1,
     limit: 20
@@ -186,7 +186,7 @@ export const ConversationsPage: React.FC = () => {
                     <SelectValue placeholder="Tous les agents" />
                   </SelectTrigger>
                   <SelectContent className="bg-[#1a1a2e] border-white/10">
-                    <SelectItem value="" className="text-white">Tous les agents</SelectItem>
+                    <SelectItem value="all" className="text-white">Tous les agents</SelectItem>
                     {agents?.map(agent => (
                       <SelectItem key={agent.id} value={agent.vapi_assistant_id || agent.id} className="text-white">
                         {agent.name}
@@ -219,7 +219,7 @@ export const ConversationsPage: React.FC = () => {
                     <SelectValue placeholder="Tous les statuts" />
                   </SelectTrigger>
                   <SelectContent className="bg-[#1a1a2e] border-white/10">
-                    <SelectItem value="" className="text-white">Tous les statuts</SelectItem>
+                    <SelectItem value="all" className="text-white">Tous les statuts</SelectItem>
                     <SelectItem value="ended" className="text-white">Terminé</SelectItem>
                     <SelectItem value="in-progress" className="text-white">En cours</SelectItem>
                     <SelectItem value="failed" className="text-white">Échoué</SelectItem>
@@ -234,7 +234,7 @@ export const ConversationsPage: React.FC = () => {
                     <SelectValue placeholder="Tous les sentiments" />
                   </SelectTrigger>
                   <SelectContent className="bg-[#1a1a2e] border-white/10">
-                    <SelectItem value="" className="text-white">Tous les sentiments</SelectItem>
+                    <SelectItem value="all" className="text-white">Tous les sentiments</SelectItem>
                     <SelectItem value="positive" className="text-white">Positif</SelectItem>
                     <SelectItem value="neutral" className="text-white">Neutre</SelectItem>
                     <SelectItem value="negative" className="text-white">Négatif</SelectItem>

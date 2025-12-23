@@ -60,11 +60,11 @@ export async function fetchConversations(
 ): Promise<ConversationListResponse> {
   const params = new URLSearchParams();
 
-  if (filters.assistantId) params.append('assistant_id', filters.assistantId);
+  if (filters.assistantId && filters.assistantId !== 'all') params.append('assistant_id', filters.assistantId);
   if (filters.startDate) params.append('start_date', filters.startDate);
   if (filters.endDate) params.append('end_date', filters.endDate);
-  if (filters.status) params.append('status', filters.status);
-  if (filters.sentiment) params.append('sentiment', filters.sentiment);
+  if (filters.status && filters.status !== 'all') params.append('status', filters.status);
+  if (filters.sentiment && filters.sentiment !== 'all') params.append('sentiment', filters.sentiment);
   if (filters.search) params.append('search', filters.search);
   if (filters.page) params.append('page', filters.page.toString());
   if (filters.limit) params.append('limit', filters.limit.toString());
@@ -89,11 +89,11 @@ export async function fetchConversation(callId: string): Promise<Conversation> {
 export async function exportConversationsCSV(filters: ConversationFilters = {}): Promise<Blob> {
   const params = new URLSearchParams();
 
-  if (filters.assistantId) params.append('assistant_id', filters.assistantId);
+  if (filters.assistantId && filters.assistantId !== 'all') params.append('assistant_id', filters.assistantId);
   if (filters.startDate) params.append('start_date', filters.startDate);
   if (filters.endDate) params.append('end_date', filters.endDate);
-  if (filters.status) params.append('status', filters.status);
-  if (filters.sentiment) params.append('sentiment', filters.sentiment);
+  if (filters.status && filters.status !== 'all') params.append('status', filters.status);
+  if (filters.sentiment && filters.sentiment !== 'all') params.append('sentiment', filters.sentiment);
 
   const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
   const token = localStorage.getItem('access_token');
