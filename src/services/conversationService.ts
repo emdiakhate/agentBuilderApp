@@ -50,6 +50,7 @@ export interface ConversationListResponse {
     limit: number;
     total: number;
   };
+  error?: string; // Optional error message when VAPI is not configured
 }
 
 /**

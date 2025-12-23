@@ -62,11 +62,20 @@ export const ConversationsPage: React.FC = () => {
       const response = await fetchConversations(filters);
       setConversations(response.conversations);
       setPagination(response.pagination);
+
+      // Show warning if VAPI is not configured
+      if (response.error) {
+        toast({
+          title: 'Configuration requise',
+          description: response.error,
+          variant: 'default'
+        });
+      }
     } catch (error) {
       console.error('Error loading conversations:', error);
       toast({
         title: 'Erreur',
-        description: 'Impossible de charger les conversations',
+        description: 'Impossible de charger les conversations. Vérifiez que le backend est lancé et que VAPI est configuré.',
         variant: 'destructive'
       });
     } finally {

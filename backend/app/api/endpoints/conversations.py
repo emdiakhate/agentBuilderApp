@@ -36,6 +36,15 @@ async def list_conversations(
     """
     List conversations with filtering and pagination
     """
+    # Check if VAPI credentials are configured
+    if not settings.VAPI_API_KEY or settings.VAPI_API_KEY.startswith("your-"):
+        logger.warning("VAPI_API_KEY not configured")
+        return {
+            "conversations": [],
+            "pagination": {"page": page, "limit": limit, "total": 0},
+            "error": "VAPI API key not configured. Please add your VAPI_API_KEY to the .env file."
+        }
+
     try:
         # Build VAPI API request params
         params = {
@@ -143,6 +152,13 @@ async def get_conversation(
     """
     Get a specific conversation with full details
     """
+    # Check if VAPI credentials are configured
+    if not settings.VAPI_API_KEY or settings.VAPI_API_KEY.startswith("your-"):
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="VAPI API key not configured. Please add your VAPI_API_KEY to the .env file."
+        )
+
     try:
         async with httpx.AsyncClient(timeout=30.0) as client:
             response = await client.get(
@@ -218,6 +234,13 @@ async def export_conversations_csv(
     """
     Export conversations to CSV
     """
+    # Check if VAPI credentials are configured
+    if not settings.VAPI_API_KEY or settings.VAPI_API_KEY.startswith("your-"):
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="VAPI API key not configured. Please add your VAPI_API_KEY to the .env file."
+        )
+
     try:
         # Build VAPI API request params
         params = {}
