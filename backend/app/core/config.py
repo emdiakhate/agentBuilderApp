@@ -40,6 +40,7 @@ class Settings(BaseSettings):
     # Vapi.ai Integration
     VAPI_API_KEY: str = ""
     VAPI_PUBLIC_KEY: str = ""
+    VAPI_BASE_URL: str = "https://api.vapi.ai"
 
     # ElevenLabs Integration
     ELEVENLABS_API_KEY: str = ""

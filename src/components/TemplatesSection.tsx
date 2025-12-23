@@ -19,23 +19,24 @@ interface TemplateCardProps {
 const TemplateCard: React.FC<TemplateCardProps> = ({ template, index }) => {
   const navigate = useNavigate();
 
-  // Placeholder images (can be updated later with real template images)
+  // Avatar images for templates
   const imageMap: Record<string, string> = {
-    'customer_support': 'https://i.pravatar.cc/300?img=12',
-    'lead_qualification': 'https://i.pravatar.cc/300?img=28',
-    'appointment_scheduler': 'https://i.pravatar.cc/300?img=47',
-    'info_collector': 'https://i.pravatar.cc/300?img=15',
-    'feedback_gatherer': 'https://i.pravatar.cc/300?img=60',
-    'care_coordinator': 'https://i.pravatar.cc/300?img=35',
+    'customer_support': 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop&crop=face',
+    'lead_qualification': 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face',
+    'appointment_scheduler': 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=face',
+    'info_collector': 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=face',
+    'feedback_gatherer': 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop&crop=face',
+    'care_coordinator': 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=400&fit=crop&crop=face',
   };
 
+  // 3-color gradients for modern look
   const gradientMap: Record<string, string> = {
-    'support': 'from-rose-900/50 to-pink-900/30',
-    'sales': 'from-blue-900/50 to-indigo-900/30',
-    'scheduling': 'from-teal-900/50 to-cyan-900/30',
-    'data': 'from-amber-900/50 to-orange-900/30',
-    'research': 'from-purple-900/50 to-violet-900/30',
-    'health': 'from-emerald-900/50 to-green-900/30',
+    'support': 'from-rose-500 via-pink-500 to-fuchsia-500',
+    'sales': 'from-blue-500 via-indigo-500 to-purple-500',
+    'scheduling': 'from-teal-500 via-cyan-500 to-sky-500',
+    'data': 'from-amber-500 via-orange-500 to-red-500',
+    'research': 'from-purple-500 via-violet-500 to-indigo-500',
+    'health': 'from-emerald-500 via-green-500 to-teal-500',
   };
 
   const categoryLabels: Record<string, string> = {
@@ -68,45 +69,46 @@ const TemplateCard: React.FC<TemplateCardProps> = ({ template, index }) => {
       <Card
         onClick={handleSelectTemplate}
         className={`
-          relative overflow-hidden cursor-pointer rounded-2xl h-[380px]
-          bg-gradient-to-br ${gradientMap[template.category] || 'from-gray-900/50 to-gray-800/30'}
-          border-white/10 hover:border-white/20
+          relative overflow-hidden cursor-pointer rounded-2xl h-[420px]
+          bg-gradient-to-br ${gradientMap[template.category] || 'from-gray-500 via-gray-600 to-gray-700'}
+          border-2 border-white/20 hover:border-white/40
+          shadow-xl hover:shadow-2xl
           transition-all duration-300 group
         `}
       >
         {/* Badge catégorie - top right */}
-        <div className="absolute top-4 right-4 z-20">
-          <span className="bg-white/20 backdrop-blur-sm text-white text-xs font-medium px-3 py-1 rounded-full border border-white/30">
+        <div className="absolute top-5 right-5 z-20">
+          <span className="bg-white/95 backdrop-blur-sm text-gray-900 text-xs font-bold px-4 py-1.5 rounded-full shadow-md">
             {categoryLabels[template.category] || template.category}
           </span>
         </div>
 
-        {/* Content - top */}
-        <div className="relative z-10 p-6">
-          <h3 className="text-white font-bold text-xl mb-1">
+        {/* Name + Role - top left */}
+        <div className="absolute top-5 left-5 z-20 max-w-[60%]">
+          <h3 className="text-white font-bold text-2xl mb-0.5 drop-shadow-lg">
             {template.config.name}
           </h3>
-          <p className="text-white/80 text-sm">
+          <p className="text-white/90 text-sm font-medium drop-shadow-md">
             {template.name}
           </p>
         </div>
 
-        {/* Avatar - CENTER, BIG */}
-        <div className="absolute inset-0 flex items-center justify-center">
+        {/* Avatar - BOTTOM, occupying 75% of card height */}
+        <div className="absolute bottom-0 left-0 right-0 h-[75%] flex items-end justify-center pb-8">
           <img
-            src={imageMap[template.id] || 'https://i.pravatar.cc/300?img=1'}
+            src={imageMap[template.id] || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&h=400&fit=crop&crop=face'}
             alt={template.name}
-            className="w-48 h-48 rounded-full object-cover border-4 border-white/20 shadow-2xl"
+            className="w-64 h-64 rounded-full object-cover border-4 border-white/30 shadow-2xl transform group-hover:scale-105 transition-transform duration-300"
           />
         </div>
 
         {/* Hover overlay */}
         <div className="
-          absolute inset-0 bg-black/60 backdrop-blur-sm
+          absolute inset-0 bg-black/70 backdrop-blur-sm
           opacity-0 group-hover:opacity-100 transition-opacity duration-300
           flex items-center justify-center z-30
         ">
-          <Button className="bg-white text-gray-900 hover:bg-gray-100 font-semibold px-6 py-3 rounded-xl shadow-lg">
+          <Button className="bg-white text-gray-900 hover:bg-gray-100 font-bold px-8 py-4 rounded-xl shadow-2xl text-base">
             Utiliser ce template →
           </Button>
         </div>
