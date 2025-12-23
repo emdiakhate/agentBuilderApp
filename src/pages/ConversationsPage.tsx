@@ -60,7 +60,9 @@ export const ConversationsPage: React.FC = () => {
     setLoading(true);
     try {
       const response = await fetchConversations(filters);
-      setConversations(response.conversations);
+
+      // Ensure conversations is always an array
+      setConversations(Array.isArray(response.conversations) ? response.conversations : []);
       setPagination(response.pagination);
 
       // Show warning if VAPI is not configured
@@ -73,6 +75,7 @@ export const ConversationsPage: React.FC = () => {
       }
     } catch (error) {
       console.error('Error loading conversations:', error);
+      setConversations([]); // Reset to empty array on error
       toast({
         title: 'Erreur',
         description: 'Impossible de charger les conversations. Vérifiez que le backend est lancé et que VAPI est configuré.',
@@ -460,7 +463,7 @@ export const ConversationsPage: React.FC = () => {
                     <div>
                       <h4 className="text-white font-semibold mb-4">Transcription</h4>
                       <div className="space-y-3 max-h-[400px] overflow-y-auto">
-                        {selectedConversation.transcript.length === 0 ? (
+                        {!selectedConversation.transcript || !Array.isArray(selectedConversation.transcript) || selectedConversation.transcript.length === 0 ? (
                           <p className="text-gray-400 text-sm">Aucune transcription disponible</p>
                         ) : (
                           selectedConversation.transcript.map((msg, idx) => (

@@ -104,6 +104,11 @@ async def list_conversations(
                 except:
                     pass
 
+            # Ensure transcript is always a list
+            transcript = call.get("artifact", {}).get("transcript", [])
+            if not isinstance(transcript, list):
+                transcript = []
+
             enriched_calls.append({
                 "id": call.get("id"),
                 "assistantId": call.get("assistantId"),
@@ -112,7 +117,7 @@ async def list_conversations(
                 "endedAt": ended_at,
                 "duration": duration,
                 "cost": call.get("cost"),
-                "transcript": call.get("artifact", {}).get("transcript", []),
+                "transcript": transcript,
                 "recording": call.get("artifact", {}).get("recordingUrl"),
                 "summary": call.get("analysis", {}).get("summary"),
                 "sentiment": call.get("analysis", {}).get("sentiment"),
@@ -183,6 +188,15 @@ async def get_conversation(
             except:
                 pass
 
+        # Ensure transcript and messages are always lists
+        transcript = call.get("artifact", {}).get("transcript", [])
+        if not isinstance(transcript, list):
+            transcript = []
+
+        messages = call.get("artifact", {}).get("messages", [])
+        if not isinstance(messages, list):
+            messages = []
+
         conversation = {
             "id": call.get("id"),
             "assistantId": call.get("assistantId"),
@@ -191,8 +205,8 @@ async def get_conversation(
             "endedAt": ended_at,
             "duration": duration,
             "cost": call.get("cost"),
-            "transcript": call.get("artifact", {}).get("transcript", []),
-            "messages": call.get("artifact", {}).get("messages", []),
+            "transcript": transcript,
+            "messages": messages,
             "recording": call.get("artifact", {}).get("recordingUrl"),
             "recordingUrl": call.get("artifact", {}).get("recordingUrl"),
             "logUrl": call.get("artifact", {}).get("logUrl"),
