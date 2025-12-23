@@ -7,7 +7,6 @@ from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 from typing import Optional, List
 from datetime import datetime, date
-import httpx
 import io
 import csv
 from loguru import logger
@@ -16,6 +15,7 @@ from app.core.database import get_db
 from app.core.config import settings
 from app.core.security import get_current_user_optional
 from app.models.user import User
+from app.services.vapi_service import VapiService
 
 router = APIRouter()
 
@@ -46,37 +46,31 @@ async def list_conversations(
         }
 
     try:
-        # Build VAPI API request params
-        params = {
-            "limit": limit,
-            "offset": (page - 1) * limit
-        }
+        # Use VapiService to fetch calls
+        vapi_service = VapiService()
 
-        if assistant_id:
-            params["assistantId"] = assistant_id
+        # Build date filters
+        created_at_gt = start_date.isoformat() if start_date else None
+        created_at_lt = end_date.isoformat() if end_date else None
 
-        if start_date:
-            params["createdAtGte"] = start_date.isoformat()
+        # Fetch calls from VAPI
+        calls = await vapi_service.get_calls(
+            assistant_id=assistant_id if assistant_id and assistant_id != 'all' else None,
+            created_at_gt=created_at_gt,
+            created_at_lt=created_at_lt,
+            limit=limit * page  # Fetch more to handle filtering
+        )
 
-        if end_date:
-            params["createdAtLte"] = end_date.isoformat()
-
-        # Call VAPI API
-        async with httpx.AsyncClient(timeout=30.0) as client:
-            response = await client.get(
-                f"{settings.VAPI_BASE_URL}/call",
-                headers={"Authorization": f"Bearer {settings.VAPI_API_KEY}"},
-                params=params
-            )
-            response.raise_for_status()
-            calls = response.json()
+        # Ensure calls is a list
+        if not isinstance(calls, list):
+            calls = []
 
         # Filter by status
-        if status:
+        if status and status != 'all':
             calls = [c for c in calls if c.get("status") == status]
 
         # Filter by sentiment
-        if sentiment:
+        if sentiment and sentiment != 'all':
             calls = [c for c in calls if c.get("analysis", {}).get("sentiment") == sentiment]
 
         # Search in transcripts
@@ -90,9 +84,14 @@ async def list_conversations(
                     filtered_calls.append(call)
             calls = filtered_calls
 
+        # Pagination
+        start_index = (page - 1) * limit
+        end_index = start_index + limit
+        paginated_calls = calls[start_index:end_index]
+
         # Enrich conversation data
         enriched_calls = []
-        for call in calls:
+        for call in paginated_calls:
             created_at = call.get("createdAt")
             ended_at = call.get("endedAt")
 
@@ -126,16 +125,10 @@ async def list_conversations(
             "pagination": {
                 "page": page,
                 "limit": limit,
-                "total": len(enriched_calls)
+                "total": len(calls)
             }
         }
 
-    except httpx.HTTPStatusError as e:
-        logger.error(f"VAPI API error: {e.response.status_code} - {e.response.text}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error fetching conversations: {e.response.text}"
-        )
     except Exception as e:
         logger.error(f"Error fetching conversations: {e}")
         raise HTTPException(
@@ -160,13 +153,23 @@ async def get_conversation(
         )
 
     try:
-        async with httpx.AsyncClient(timeout=30.0) as client:
-            response = await client.get(
-                f"{settings.VAPI_BASE_URL}/call/{call_id}",
-                headers={"Authorization": f"Bearer {settings.VAPI_API_KEY}"}
+        # Use VapiService - note: we'll need to fetch all calls and filter
+        # since VapiService doesn't have a get_single_call method
+        vapi_service = VapiService()
+        calls = await vapi_service.get_calls(limit=100)
+
+        # Find the specific call
+        call = None
+        for c in calls:
+            if c.get("id") == call_id:
+                call = c
+                break
+
+        if not call:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Conversation not found"
             )
-            response.raise_for_status()
-            call = response.json()
 
         created_at = call.get("createdAt")
         ended_at = call.get("endedAt")
@@ -203,17 +206,8 @@ async def get_conversation(
 
         return conversation
 
-    except httpx.HTTPStatusError as e:
-        if e.response.status_code == 404:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Conversation not found"
-            )
-        logger.error(f"VAPI API error: {e.response.status_code} - {e.response.text}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error fetching conversation: {e.response.text}"
-        )
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error fetching conversation: {e}")
         raise HTTPException(
@@ -242,33 +236,31 @@ async def export_conversations_csv(
         )
 
     try:
-        # Build VAPI API request params
-        params = {}
+        # Use VapiService to fetch calls
+        vapi_service = VapiService()
 
-        if assistant_id:
-            params["assistantId"] = assistant_id
+        # Build date filters
+        created_at_gt = start_date.isoformat() if start_date else None
+        created_at_lt = end_date.isoformat() if end_date else None
 
-        if start_date:
-            params["createdAtGte"] = start_date.isoformat()
+        # Fetch calls from VAPI
+        calls = await vapi_service.get_calls(
+            assistant_id=assistant_id if assistant_id and assistant_id != 'all' else None,
+            created_at_gt=created_at_gt,
+            created_at_lt=created_at_lt,
+            limit=1000
+        )
 
-        if end_date:
-            params["createdAtLte"] = end_date.isoformat()
+        # Ensure calls is a list
+        if not isinstance(calls, list):
+            calls = []
 
-        # Call VAPI API
-        async with httpx.AsyncClient(timeout=60.0) as client:
-            response = await client.get(
-                f"{settings.VAPI_BASE_URL}/call",
-                headers={"Authorization": f"Bearer {settings.VAPI_API_KEY}"},
-                params=params
-            )
-            response.raise_for_status()
-            calls = response.json()
-
-        # Filter
-        if status:
+        # Filter by status
+        if status and status != 'all':
             calls = [c for c in calls if c.get("status") == status]
 
-        if sentiment:
+        # Filter by sentiment
+        if sentiment and sentiment != 'all':
             calls = [c for c in calls if c.get("analysis", {}).get("sentiment") == sentiment]
 
         # Prepare CSV data
