@@ -20,7 +20,7 @@ from app.models.user import User
 router = APIRouter()
 
 
-@router.get("/")
+@router.get("")
 async def list_conversations(
     assistant_id: Optional[str] = Query(None, description="Filter by assistant ID"),
     start_date: Optional[date] = Query(None, description="Filter by start date"),
