@@ -1,5 +1,5 @@
-from pydantic import BaseModel
-from typing import Optional, List, Dict, Any
+from pydantic import BaseModel, field_validator
+from typing import Optional, List, Dict, Any, Union
 from datetime import datetime
 
 
@@ -28,8 +28,8 @@ class AgentCreate(AgentBase):
     bot_function: Optional[str] = None
     custom_function: Optional[str] = None
 
-    # Voice Configuration
-    voice: Optional[str] = None
+    # Voice Configuration (can be string ID or voice config object)
+    voice: Optional[Union[str, Dict[str, Any]]] = None
     voice_provider: Optional[str] = None
     custom_voice_id: Optional[str] = None
     voice_traits: Optional[List[Dict[str, Any]]] = None
@@ -75,8 +75,8 @@ class AgentUpdate(BaseModel):
     bot_function: Optional[str] = None
     custom_function: Optional[str] = None
 
-    # Voice Configuration
-    voice: Optional[str] = None
+    # Voice Configuration (can be string ID or voice config object)
+    voice: Optional[Union[str, Dict[str, Any]]] = None
     voice_provider: Optional[str] = None
     custom_voice_id: Optional[str] = None
     voice_traits: Optional[List[Dict[str, Any]]] = None

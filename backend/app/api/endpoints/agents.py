@@ -43,16 +43,41 @@ Votre rôle : {agent_data.type or 'Assistant'}
 Objectif : {agent_data.purpose or 'Aider les utilisateurs avec leurs questions'}"""
 
         # Create Vapi assistant first
-        # Default to Cartesia voice with Helpful French lady
-        voice_id = agent_data.voice or "65b25c5d-ff07-4687-a04c-da2f43ef6fa9"
-        voice_provider = agent_data.voice_provider or "cartesia"
+        # Handle voice configuration (can be string ID or dict config)
+        voice_config = None
+        voice_id = None
+        voice_provider = None
+
+        if isinstance(agent_data.voice, dict):
+            # New format: voice is a config object from VoiceSelector
+            voice_config = agent_data.voice
+            voice_id = voice_config.get("voiceId")
+            voice_provider = voice_config.get("provider")
+        elif isinstance(agent_data.voice, str):
+            # Old format: voice is a string ID
+            voice_id = agent_data.voice
+            voice_provider = agent_data.voice_provider or "cartesia"
+            voice_config = {
+                "provider": voice_provider,
+                "voiceId": voice_id
+            }
+            if voice_provider == "cartesia":
+                voice_config["model"] = "sonic-multilingual"
+        else:
+            # Default to Hana (VAPI native voice)
+            voice_id = "hana"
+            voice_provider = "vapi"
+            voice_config = {
+                "provider": "vapi",
+                "voiceId": "hana"
+            }
 
         vapi_assistant = await vapi_service.create_assistant(
             name=agent_data.name,
             model=agent_data.model or "gpt-4o-mini",
             voice=voice_id,
             voice_provider=voice_provider,
-            voice_model="sonic-multilingual",  # Cartesia Sonic 2 - multilingual for French
+            voice_model=voice_config.get("model") if voice_provider == "cartesia" else None,
             first_message=first_message,
             first_message_mode=agent_data.first_message_mode or "assistant-speaks-first",
             system_prompt=system_prompt,
@@ -63,6 +88,9 @@ Objectif : {agent_data.purpose or 'Aider les utilisateurs avec leurs questions'}
 
         # Prepare agent data with defaults applied
         agent_dict = agent_data.model_dump()
+        # Store voice as string ID for database
+        if isinstance(agent_dict.get("voice"), dict):
+            agent_dict["voice"] = voice_id
         if not agent_dict.get("voice"):
             agent_dict["voice"] = voice_id
         if not agent_dict.get("voice_provider"):
