@@ -35,6 +35,15 @@ export const ConversationsPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [exporting, setExporting] = useState(false);
 
+  // Create agent ID to name mapping
+  const agentMap = React.useMemo(() => {
+    const map: Record<string, string> = {};
+    agents?.forEach(agent => {
+      map[agent.id] = agent.name;
+    });
+    return map;
+  }, [agents]);
+
   const [filters, setFilters] = useState<ConversationFilters>({
     assistantId: 'all',
     startDate: '',
@@ -88,6 +97,10 @@ export const ConversationsPage: React.FC = () => {
 
   const handleFilterChange = (key: keyof ConversationFilters, value: string) => {
     setFilters(prev => ({ ...prev, [key]: value, page: 1 }));
+  };
+
+  const handleApplyFilters = () => {
+    loadConversations();
   };
 
   const handleSelectConversation = async (conversationId: string) => {
@@ -317,9 +330,14 @@ export const ConversationsPage: React.FC = () => {
                         `}
                       >
                         <div className="flex items-start justify-between mb-2">
-                          <span className="text-white font-medium text-sm">
-                            #{conversation.id.slice(-8)}
-                          </span>
+                          <div>
+                            <span className="text-white font-semibold text-sm block">
+                              {agentMap[conversation.assistantId] || 'Agent inconnu'}
+                            </span>
+                            <span className="text-gray-500 text-xs">
+                              #{conversation.id.slice(-8)}
+                            </span>
+                          </div>
                           <Badge className={getStatusColor(conversation.status)}>
                             {conversation.status}
                           </Badge>
