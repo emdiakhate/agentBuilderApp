@@ -13,6 +13,8 @@ import { createAgent } from "@/services/agentService";
 import { AvatarSelector } from "@/components/AvatarSelector";
 import { CollapsibleSection } from "@/components/CollapsibleSection";
 import { TemplateDetail } from "@/services/templateService";
+import { VoiceSelector, getVoiceConfig } from "@/components/VoiceSelector";
+import { type AvailableVoice } from "@/services/voiceService";
 
 const AgentCreate = () => {
   const navigate = useNavigate();
@@ -23,6 +25,8 @@ const AgentCreate = () => {
 
   // Get template from HomePage navigation
   const homepageTemplate = location.state?.template as TemplateDetail | undefined;
+
+  const [selectedVoice, setSelectedVoice] = useState<AvailableVoice | null>(null);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -38,6 +42,7 @@ const AgentCreate = () => {
     first_message: "",
     first_message_mode: "assistant-speaks-first",
     language: "fr",
+    voice: null as any, // Voice configuration
     background_sound: "off",
     background_denoising_enabled: false,
   });
@@ -188,6 +193,12 @@ const AgentCreate = () => {
     }
   };
 
+  const handleVoiceSelect = (voice: AvailableVoice) => {
+    setSelectedVoice(voice);
+    const voiceConfig = getVoiceConfig(voice);
+    setFormData(prev => ({ ...prev, voice: voiceConfig }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -217,6 +228,7 @@ const AgentCreate = () => {
         first_message: formData.first_message || undefined,
         first_message_mode: formData.first_message_mode,
         language: formData.language,
+        voice: formData.voice || undefined,
         status: "active",
         background_sound: formData.background_sound,
         background_denoising_enabled: formData.background_denoising_enabled,
@@ -533,6 +545,13 @@ const AgentCreate = () => {
                 </SelectContent>
               </Select>
             </div>
+
+            {/* Voice Selector */}
+            <VoiceSelector
+              selectedVoice={selectedVoice}
+              onVoiceSelect={handleVoiceSelect}
+              language={formData.language}
+            />
 
             <div className="space-y-2">
               <Label className="text-white">Bruit de fond</Label>
