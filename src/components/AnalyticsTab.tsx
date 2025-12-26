@@ -158,10 +158,10 @@ const AnalyticsTab: React.FC<AnalyticsTabProps> = ({ agent, isNewAgent = false }
                 <Filter className="h-4 w-4 text-muted-foreground" />
                 <Select value={channelFilter} onValueChange={setChannelFilter}>
                   <SelectTrigger className="w-[160px]">
-                    <SelectValue placeholder="Select channel" />
+                    <SelectValue placeholder="Sélectionner un canal" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Channels</SelectItem>
+                    <SelectItem value="all">Tous les canaux</SelectItem>
                     <SelectItem value="voice">Voice</SelectItem>
                     <SelectItem value="chat">Chat</SelectItem>
                     <SelectItem value="email">Email</SelectItem>

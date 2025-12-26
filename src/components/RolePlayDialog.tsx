@@ -572,7 +572,7 @@ export const RolePlayDialog = ({
                       <Label>Microphone</Label>
                       <Select value={selectedMic} onValueChange={setSelectedMic}>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select microphone" />
+                          <SelectValue placeholder="Sélectionner un microphone" />
                         </SelectTrigger>
                         <SelectContent>
                           {availableMics.map((device) => (
@@ -588,7 +588,7 @@ export const RolePlayDialog = ({
                       <Label>Speaker</Label>
                       <Select value={selectedSpeaker} onValueChange={setSelectedSpeaker}>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select speaker" />
+                          <SelectValue placeholder="Sélectionner un haut-parleur" />
                         </SelectTrigger>
                         <SelectContent>
                           {availableSpeakers.map((device) => (
@@ -736,7 +736,7 @@ export const RolePlayDialog = ({
                       <Label className="text-xs">Microphone</Label>
                       <Select value={selectedMic} onValueChange={setSelectedMic}>
                         <SelectTrigger className="h-8 text-xs">
-                          <SelectValue placeholder="Select microphone" />
+                          <SelectValue placeholder="Sélectionner un microphone" />
                         </SelectTrigger>
                         <SelectContent>
                           {availableMics.map((device) => (
@@ -752,7 +752,7 @@ export const RolePlayDialog = ({
                       <Label className="text-xs">Speaker</Label>
                       <Select value={selectedSpeaker} onValueChange={setSelectedSpeaker}>
                         <SelectTrigger className="h-8 text-xs">
-                          <SelectValue placeholder="Select speaker" />
+                          <SelectValue placeholder="Sélectionner un haut-parleur" />
                         </SelectTrigger>
                         <SelectContent>
                           {availableSpeakers.map((device) => (
