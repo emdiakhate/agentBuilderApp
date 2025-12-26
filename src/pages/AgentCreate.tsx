@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
-import { ArrowLeft, Bot, Loader2, Sparkles, Cpu, Mic, Settings } from "lucide-react";
+import { ArrowLeft, Bot, Loader2, Sparkles, Cpu, Mic, Settings, Upload, FileText, Trash2, Database, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -9,12 +9,13 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/components/ui/use-toast";
-import { createAgent } from "@/services/agentService";
+import { createAgent, uploadDocument } from "@/services/agentService";
 import { AvatarSelector } from "@/components/AvatarSelector";
 import { CollapsibleSection } from "@/components/CollapsibleSection";
 import { TemplateDetail } from "@/services/templateService";
 import { VoiceSelector, getVoiceConfig } from "@/components/VoiceSelector";
 import { type AvailableVoice } from "@/services/voiceService";
+import { Badge } from "@/components/ui/badge";
 
 const AgentCreate = () => {
   const navigate = useNavigate();
@@ -27,6 +28,10 @@ const AgentCreate = () => {
   const homepageTemplate = location.state?.template as TemplateDetail | undefined;
 
   const [selectedVoice, setSelectedVoice] = useState<AvailableVoice | null>(null);
+
+  // Document upload state
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -199,6 +204,42 @@ const AgentCreate = () => {
     setFormData(prev => ({ ...prev, voice: voiceConfig }));
   };
 
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      const newFiles = Array.from(files);
+      setSelectedFiles(prev => [...prev, ...newFiles]);
+
+      toast({
+        title: "Fichiers sélectionnés",
+        description: `${newFiles.length} fichier(s) seront uploadés après la création de l'agent`,
+      });
+    }
+
+    // Reset input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const handleRemoveFile = (index: number) => {
+    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleUploadClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const formatFileSize = (bytes: number): string => {
+    if (bytes === 0) return "0 B";
+    const k = 1024;
+    const sizes = ["B", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + " " + sizes[i];
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -238,6 +279,33 @@ const AgentCreate = () => {
         title: "✅ Agent créé !",
         description: `${newAgent.name} a été créé avec succès.`,
       });
+
+      // Upload documents if any were selected
+      if (selectedFiles.length > 0) {
+        toast({
+          title: "📤 Upload des documents en cours...",
+          description: `Upload de ${selectedFiles.length} document(s)`,
+        });
+
+        try {
+          for (let i = 0; i < selectedFiles.length; i++) {
+            const file = selectedFiles[i];
+            await uploadDocument(newAgent.id, file);
+          }
+
+          toast({
+            title: "✅ Documents uploadés !",
+            description: `${selectedFiles.length} document(s) uploadé(s) avec succès`,
+          });
+        } catch (uploadError) {
+          console.error("Error uploading documents:", uploadError);
+          toast({
+            title: "⚠️ Erreur d'upload",
+            description: "L'agent a été créé mais certains documents n'ont pas pu être uploadés",
+            variant: "destructive",
+          });
+        }
+      }
 
       // Rediriger vers la liste des agents
       navigate("/agents");
@@ -584,6 +652,148 @@ const AgentCreate = () => {
                 onCheckedChange={(checked) => setFormData(prev => ({ ...prev, background_denoising_enabled: checked }))}
               />
             </div>
+          </div>
+        </CollapsibleSection>
+
+        {/* Knowledge Base / Documents */}
+        <CollapsibleSection
+          title="Base de connaissances"
+          description="Documents pour enrichir les connaissances de l'agent"
+          icon={<BookOpen className="h-5 w-5" />}
+          defaultOpen={false}
+        >
+          <div className="space-y-4 pt-4">
+            <p className="text-sm text-gray-400">
+              Ajoutez des documents (PDF, DOCX, TXT) pour créer la base de connaissances de votre agent. Les documents seront uploadés après la création de l'agent.
+            </p>
+
+            {selectedFiles.length === 0 ? (
+              <div className="bg-white/5 border border-white/10 rounded-lg p-8 text-center">
+                <Database className="h-12 w-12 text-gray-500 mx-auto mb-4" />
+                <h4 className="text-lg font-medium text-white mb-2">
+                  Aucun document sélectionné
+                </h4>
+                <p className="text-gray-400 mb-6 max-w-md mx-auto">
+                  Sélectionnez des documents pour enrichir les connaissances de votre agent
+                </p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="border-white/20 text-white gap-2 hover:bg-white/10"
+                  onClick={handleUploadClick}
+                >
+                  <Upload className="h-4 w-4" />
+                  Sélectionner des documents
+                </Button>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  style={{ display: 'none' }}
+                  onChange={handleFileSelect}
+                  multiple
+                  accept=".pdf,.doc,.docx,.txt"
+                />
+              </div>
+            ) : (
+              <div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                  <div className="bg-white/5 p-6 rounded-lg border border-white/10">
+                    <div className="flex items-center gap-2 mb-1 text-gray-400">
+                      <FileText className="h-4 w-4" />
+                      <span className="text-xs font-medium">Documents</span>
+                    </div>
+                    <div className="flex items-end justify-between mt-auto">
+                      <div className="text-3xl font-bold text-white">{selectedFiles.length}</div>
+                      <div className="text-xs text-gray-500">Fichiers</div>
+                    </div>
+                  </div>
+                  <div className="bg-white/5 p-6 rounded-lg border border-white/10">
+                    <div className="flex items-center gap-2 mb-1 text-gray-400">
+                      <Database className="h-4 w-4" />
+                      <span className="text-xs font-medium">Taille totale</span>
+                    </div>
+                    <div className="flex items-end justify-between mt-auto">
+                      <div className="text-3xl font-bold text-white">
+                        {formatFileSize(selectedFiles.reduce((sum, file) => sum + file.size, 0))}
+                      </div>
+                      <div className="text-xs text-gray-500">Total</div>
+                    </div>
+                  </div>
+                  <div className="bg-white/5 p-6 rounded-lg border border-white/10">
+                    <div className="flex items-center gap-2 mb-1 text-gray-400">
+                      <Upload className="h-4 w-4" />
+                      <span className="text-xs font-medium">Status</span>
+                    </div>
+                    <div className="flex items-end justify-between mt-auto">
+                      <div className="text-lg font-bold text-yellow-500">En attente</div>
+                      <div className="text-xs text-gray-500">Upload après création</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mb-6">
+                  <h4 className="font-medium text-white mb-4">Documents sélectionnés</h4>
+                  <div className="space-y-2">
+                    {selectedFiles.map((file, index) => (
+                      <div
+                        key={index}
+                        className="bg-white/5 border border-white/10 rounded-lg p-4 flex items-center justify-between"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="bg-white/10 p-2 rounded-full">
+                            <FileText className="h-5 w-5 text-gray-400" />
+                          </div>
+                          <div>
+                            <h5 className="font-medium text-white">{file.name}</h5>
+                            <p className="text-xs text-gray-500">
+                              {file.type.split('/')[1]?.toUpperCase() || 'FICHIER'} • {formatFileSize(file.size)}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Badge className="bg-yellow-500/20 text-yellow-400">
+                            En attente
+                          </Badge>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                            onClick={() => handleRemoveFile(index)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="bg-white/5 p-6 rounded-lg border border-white/10">
+                  <h4 className="font-medium text-white mb-3">Ajouter plus de documents</h4>
+                  <p className="text-sm text-gray-400 mb-4">
+                    Vous pouvez sélectionner des fichiers supplémentaires à ajouter
+                  </p>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="border-white/20 text-white gap-2 hover:bg-white/10"
+                    onClick={handleUploadClick}
+                  >
+                    <Upload className="h-4 w-4" />
+                    Sélectionner plus de documents
+                  </Button>
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    style={{ display: 'none' }}
+                    onChange={handleFileSelect}
+                    multiple
+                    accept=".pdf,.doc,.docx,.txt"
+                  />
+                </div>
+              </div>
+            )}
           </div>
         </CollapsibleSection>
 
