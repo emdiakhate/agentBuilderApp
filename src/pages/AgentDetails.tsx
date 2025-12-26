@@ -228,8 +228,8 @@ const AgentDetails = () => {
   const handleStatusToggle = () => {
     setIsActive(!isActive);
     toast({
-      title: !isActive ? "Agent Activated" : "Agent Deactivated",
-      description: !isActive ? "Your agent is now active and will process requests." : "Your agent has been deactivated and won't process new requests.",
+      title: !isActive ? "Agent Activé" : "Agent Désactivé",
+      description: !isActive ? "Votre agent est maintenant actif et traitera les demandes." : "Votre agent a été désactivé et ne traitera pas de nouvelles demandes.",
       variant: !isActive ? "default" : "destructive"
     });
   };
@@ -243,13 +243,13 @@ const AgentDetails = () => {
           model: value
         });
         toast({
-          title: "Model updated",
-          description: `The agent model has been updated to ${value}.`
+          title: "Modèle mis à jour",
+          description: `Le modèle de l'agent a été mis à jour vers ${value}.`
         });
       } catch (error) {
         toast({
           title: "Échec de mise à jour du modèle",
-          description: "There was an error updating the agent model.",
+          description: "Une erreur s'est produite lors de la mise à jour du modèle de l'agent.",
           variant: "destructive"
         });
       }
@@ -344,14 +344,14 @@ const AgentDetails = () => {
         };
         await updateAgent(agentId, updatedAgent);
         toast({
-          title: "Voice settings updated",
-          description: `The voice settings have been updated.`
+          title: "Paramètres vocaux mis à jour",
+          description: `Les paramètres vocaux ont été mis à jour.`
         });
         setIsVoiceDialogOpen(false);
       } catch (error) {
         toast({
           title: "Échec de mise à jour des paramètres vocaux",
-          description: "There was an error updating the voice settings.",
+          description: "Une erreur s'est produite lors de la mise à jour des paramètres vocaux.",
           variant: "destructive"
         });
       }
@@ -411,13 +411,13 @@ const AgentDetails = () => {
       await updateAgent(agentId, updatedAgent);
       setIsActive(updatedAgent.status === "active");
       toast({
-        title: config.enabled ? "Channel enabled" : "Channel disabled",
-        description: `The ${channel} channel has been updated.`
+        title: config.enabled ? "Canal activé" : "Canal désactivé",
+        description: `Le canal ${channel} a été mis à jour.`
       });
     } catch (error) {
       toast({
         title: "Échec de mise à jour du canal",
-        description: "There was an error updating the channel configuration.",
+        description: "Une erreur s'est produite lors de la mise à jour de la configuration du canal.",
         variant: "destructive"
       });
     }
@@ -427,8 +427,8 @@ const AgentDetails = () => {
     if (voicePhoneNumber) {
       navigator.clipboard.writeText(voicePhoneNumber);
       toast({
-        title: "Phone number copied",
-        description: "Phone number has been copied to clipboard."
+        title: "Numéro de téléphone copié",
+        description: "Le numéro de téléphone a été copié dans le presse-papiers."
       });
     }
   };
@@ -437,13 +437,13 @@ const AgentDetails = () => {
     if (voicePhoneNumber) {
       window.location.href = `tel:${voicePhoneNumber}`;
       toast({
-        title: "Calling agent",
-        description: `Initiating call to ${voicePhoneNumber}`
+        title: "Appel de l'agent",
+        description: `Lancement de l'appel vers ${voicePhoneNumber}`
       });
     } else {
       toast({
-        title: "No phone number available",
-        description: "Please configure a phone number for voice channel first.",
+        title: "Aucun numéro de téléphone disponible",
+        description: "Veuillez d'abord configurer un numéro de téléphone pour le canal vocal.",
         variant: "destructive"
       });
     }
@@ -453,23 +453,23 @@ const AgentDetails = () => {
     if (emailAddress) {
       navigator.clipboard.writeText(emailAddress);
       toast({
-        title: "Email address copied",
-        description: "Email address has been copied to clipboard."
+        title: "Adresse e-mail copiée",
+        description: "L'adresse e-mail a été copiée dans le presse-papiers."
       });
     }
   };
   
   const handleTestEmail = () => {
     if (emailAddress) {
-      window.location.href = `mailto:${emailAddress}?subject=Test Email for ${agent?.name || 'Agent'}&body=This is a test email for your AI agent.`;
+      window.location.href = `mailto:${emailAddress}?subject=E-mail de test pour ${agent?.name || 'Agent'}&body=Ceci est un e-mail de test pour votre agent IA.`;
       toast({
-        title: "Composing email",
-        description: `Opening email client to send test email to ${emailAddress}`
+        title: "Rédaction d'e-mail",
+        description: `Ouverture du client e-mail pour envoyer un e-mail de test à ${emailAddress}`
       });
     } else {
       toast({
-        title: "No email address available",
-        description: "Please configure an email address for email channel first.",
+        title: "Aucune adresse e-mail disponible",
+        description: "Veuillez d'abord configurer une adresse e-mail pour le canal e-mail.",
         variant: "destructive"
       });
     }
@@ -478,14 +478,14 @@ const AgentDetails = () => {
   const handleCallMe = () => {
     if (customCallNumber && customCallNumber.trim() !== "") {
       toast({
-        title: "Outbound call initiated",
-        description: `Your agent will call ${customCallNumber} shortly.`
+        title: "Appel sortant lancé",
+        description: `Votre agent appellera ${customCallNumber} sous peu.`
       });
       setIsCallTooltipOpen(false);
     } else {
       toast({
-        title: "Phone number required",
-        description: "Please enter a valid phone number.",
+        title: "Numéro de téléphone requis",
+        description: "Veuillez entrer un numéro de téléphone valide.",
         variant: "destructive"
       });
     }
@@ -494,16 +494,16 @@ const AgentDetails = () => {
   const handleDeactivateAgent = () => {
     setIsActive(false);
     toast({
-      title: "Agent Deactivated",
-      description: "Your agent has been deactivated and won't process new requests.",
+      title: "Agent Désactivé",
+      description: "Votre agent a été désactivé et ne traitera pas de nouvelles demandes.",
       variant: "destructive"
     });
   };
-  
+
   const handleArchiveAgent = () => {
     toast({
-      title: "Agent Archived",
-      description: "The agent has been archived and can be restored later."
+      title: "Agent Archivé",
+      description: "L'agent a été archivé et peut être restauré ultérieurement."
     });
     navigate("/agents");
   };
@@ -521,8 +521,8 @@ const AgentDetails = () => {
     if (avatarUrl) {
       navigator.clipboard.writeText(avatarUrl);
       toast({
-        title: "Avatar copied",
-        description: "Avatar URL has been copied to clipboard."
+        title: "Avatar copié",
+        description: "L'URL de l'avatar a été copiée dans le presse-papiers."
       });
     }
   };
@@ -564,8 +564,8 @@ const AgentDetails = () => {
     setIsActive(updatedAgent.status === "active");
     if (updatedAgent.name !== agent?.name) {
       toast({
-        title: "Agent name updated",
-        description: `The agent name has been updated to ${updatedAgent.name}.`
+        title: "Nom de l'agent mis à jour",
+        description: `Le nom de l'agent a été mis à jour en ${updatedAgent.name}.`
       });
     }
   };
@@ -589,18 +589,18 @@ const AgentDetails = () => {
         <div className="mb-8">
           <Link to="/agents" className="flex items-center text-gray-500 hover:text-agent-primary">
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Agents
+            Retour aux Agents
           </Link>
         </div>
-        
+
         <Alert variant="destructive" className="mb-8">
           <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Error</AlertTitle>
+          <AlertTitle>Erreur</AlertTitle>
           <AlertDescription>
-            {error || "This agent could not be found or you don't have permission to view it."}
+            {error || "Cet agent est introuvable ou vous n'avez pas la permission de le visualiser."}
           </AlertDescription>
         </Alert>
-        
+
         <Button onClick={() => navigate("/agents")}>Retour au Tableau de Bord</Button>
       </div>;
   }
@@ -619,7 +619,7 @@ const AgentDetails = () => {
         </Link>
       </div>
       
-      <Card className="mb-6 overflow-hidden">
+      <Card className="mb-6 overflow-hidden bg-gray-800/50 border-gray-700">
         <CardHeader className="pb-3">
           <div className="grid grid-cols-1 md:grid-cols-[auto_1fr_auto] gap-4 items-start">
             <div className="relative group">
@@ -649,7 +649,7 @@ const AgentDetails = () => {
                 {isActive ? <Badge variant="outline" className="border-green-500/30 text-green-500 bg-green-500/10">
                     <span className="flex items-center gap-1.5">
                       <span className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse"></span>
-                      Active
+                      Actif
                     </span>
                   </Badge> : <Badge variant="outline" className="border-border">
                     {agent.type}
@@ -740,11 +740,11 @@ const AgentDetails = () => {
                 <div className="flex flex-wrap gap-4">
                   <div className="flex items-center gap-1">
                     <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
-                    <span>Created: {agent.createdAt}</span>
+                    <span>Créé : {agent.createdAt}</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <History className="h-3.5 w-3.5 text-muted-foreground" />
-                    <span>Updated: {lastUpdated.split(',')[0]}</span>
+                    <span>Mis à jour : {lastUpdated.split(',')[0]}</span>
                   </div>
                 </div>
               </div>
@@ -755,24 +755,24 @@ const AgentDetails = () => {
 
       {/* Performance Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
-        <Card>
+        <Card className="bg-gray-800/50 border-gray-700">
           <CardHeader className="pb-2">
-            <CardDescription className="text-xs">AVM</CardDescription>
+            <CardDescription className="text-xs text-gray-400">AVM</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex items-baseline gap-1">
-              <span className="text-2xl font-bold">{agent.avm_score || 7.8}</span>
-              <span className="text-sm text-muted-foreground">/10</span>
+              <span className="text-2xl font-bold text-white">{agent.avm_score || 7.8}</span>
+              <span className="text-sm text-gray-400">/10</span>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-gray-800/50 border-gray-700">
           <CardHeader className="pb-2">
-            <CardDescription className="text-xs">Interactions</CardDescription>
+            <CardDescription className="text-xs text-gray-400">Interactions</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
+            <div className="text-2xl font-bold text-white">
               {agent.interactions >= 1000
                 ? `${(agent.interactions / 1000).toFixed(1)}k`
                 : agent.interactions || '1.3k'}
@@ -780,21 +780,21 @@ const AgentDetails = () => {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-gray-800/50 border-gray-700">
           <CardHeader className="pb-2">
-            <CardDescription className="text-xs">CSAT</CardDescription>
+            <CardDescription className="text-xs text-gray-400">CSAT</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{agent.csat || 85}%</div>
+            <div className="text-2xl font-bold text-white">{agent.csat || 85}%</div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-gray-800/50 border-gray-700">
           <CardHeader className="pb-2">
-            <CardDescription className="text-xs">Performance</CardDescription>
+            <CardDescription className="text-xs text-gray-400">Performance</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{agent.performance || 92}%</div>
+            <div className="text-2xl font-bold text-white">{agent.performance || 92}%</div>
           </CardContent>
         </Card>
       </div>
@@ -837,8 +837,8 @@ const AgentDetails = () => {
         agentName={agent?.name || "Agent"}
         onCallComplete={(recordingData) => {
           toast({
-            title: "Call completed",
-            description: `Call with ${recordingData.title} has been recorded.`
+            title: "Appel terminé",
+            description: `L'appel avec ${recordingData.title} a été enregistré.`
           });
         }}
       />
@@ -851,7 +851,7 @@ const AgentDetails = () => {
         }}
         onStartDirectCall={startDirectCall}
       />
-      
+
       <TestAgentSidebar
         open={isTestAgentSidebarOpen}
         onOpenChange={setIsTestAgentSidebarOpen}
@@ -859,8 +859,8 @@ const AgentDetails = () => {
         onStartDirectCall={startDirectCall}
         onStartChat={() => {
           toast({
-            title: "Chat interface started",
-            description: "You can now chat with your agent."
+            title: "Interface de chat démarrée",
+            description: "Vous pouvez maintenant discuter avec votre agent."
           });
         }}
       />
