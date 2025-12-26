@@ -78,6 +78,7 @@ Objectif : {agent_data.purpose or 'Aider les utilisateurs avec leurs questions'}
             voice=voice_id,
             voice_provider=voice_provider,
             voice_model=voice_config.get("model") if voice_provider == "cartesia" else None,
+            voice_config_full=voice_config,  # Pass the full voice configuration
             first_message=first_message,
             first_message_mode=agent_data.first_message_mode or "assistant-speaks-first",
             system_prompt=system_prompt,

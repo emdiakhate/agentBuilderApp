@@ -75,6 +75,7 @@ class VapiService:
         voice: str = "65b25c5d-ff07-4687-a04c-da2f43ef6fa9",  # Helpful French lady (Cartesia)
         voice_provider: str = "cartesia",
         voice_model: str = "sonic-multilingual",  # Sonic 2 multilingual for French
+        voice_config_full: Optional[Dict[str, Any]] = None,  # Full voice configuration
         first_message: Optional[str] = None,
         first_message_mode: str = "assistant-speaks-first",
         system_prompt: Optional[str] = None,
@@ -92,6 +93,7 @@ class VapiService:
             voice: Voice ID to use (default: Helpful French lady)
             voice_provider: Voice provider (cartesia, playht, elevenlabs, etc.)
             voice_model: Voice model to use (Sonic 2 multilingual for French)
+            voice_config_full: Full voice configuration object (if provided, overrides voice/voice_provider/voice_model)
             first_message: First message to say
             first_message_mode: Mode for first message ("assistant-speaks-first" or "assistant-waits")
             system_prompt: System prompt for the assistant
@@ -103,14 +105,26 @@ class VapiService:
         """
         try:
             # Build voice configuration
-            voice_config = {
-                "provider": voice_provider,
-                "voiceId": voice
-            }
+            if voice_config_full:
+                # Use the full voice configuration if provided
+                voice_config = voice_config_full.copy()
+            else:
+                # Build voice config from individual parameters
+                voice_config = {
+                    "provider": voice_provider,
+                    "voiceId": voice
+                }
 
-            # Add model for Cartesia
-            if voice_provider == "cartesia":
-                voice_config["model"] = voice_model
+                # Add model for Cartesia
+                if voice_provider == "cartesia":
+                    voice_config["model"] = voice_model or "sonic-multilingual"
+                # Add config for ElevenLabs
+                elif voice_provider in ["11labs", "eleven-labs"]:
+                    voice_config["provider"] = "11labs"  # Normalize provider name
+                    voice_config["model"] = "eleven_multilingual_v2"
+                    voice_config["stability"] = 0.5
+                    voice_config["similarityBoost"] = 0.75
+                # Azure doesn't need additional config beyond voiceId
 
             # Map language codes to full language names for instructions
             language_names = {

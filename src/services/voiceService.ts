@@ -166,7 +166,7 @@ export function getVoiceConfig(voice: AvailableVoice): any {
       return {
         provider: 'cartesia',
         voiceId: voice.id,
-        model: 'sonic-english'
+        model: 'sonic-multilingual'
       };
     case 'eleven-labs':
       return {
