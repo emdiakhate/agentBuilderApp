@@ -146,7 +146,7 @@ export const getAvailableVoices = async (filters?: {
   if (filters?.language) params.append('language', filters.language);
 
   const queryString = params.toString();
-  const endpoint = queryString ? `/voices?${queryString}` : '/voices';
+  const endpoint = queryString ? `/api/voices?${queryString}` : '/api/voices';
 
   const response = await api.get<AvailableVoicesResponse>(endpoint);
   return response;
