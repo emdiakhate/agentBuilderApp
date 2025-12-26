@@ -86,6 +86,182 @@ CARTESIA_VOICES = [
         "characteristics": ["spanish", "clear", "professional"],
         "sampleUrl": None,
         "category": "Cartesia Voices"
+    },
+    {
+        "id": "f114a2e7-c622-4284-8364-fa53f5b40c1a",
+        "name": "Confident British Man",
+        "provider": "cartesia",
+        "gender": "male",
+        "accent": "British",
+        "age": 40,
+        "language": "en",
+        "characteristics": ["confident", "authoritative", "deep"],
+        "sampleUrl": None,
+        "category": "Cartesia Voices"
+    },
+    {
+        "id": "e95cc44f-c635-4faa-8c79-9c7403e96b6e",
+        "name": "Warm American Woman",
+        "provider": "cartesia",
+        "gender": "female",
+        "accent": "American",
+        "age": 32,
+        "language": "en",
+        "characteristics": ["warm", "caring", "nurturing"],
+        "sampleUrl": None,
+        "category": "Cartesia Voices"
+    },
+    {
+        "id": "b6a72e1d-0bb3-4e96-ae77-9e4f4e8b0f8c",
+        "name": "Friendly Australian Man",
+        "provider": "cartesia",
+        "gender": "male",
+        "accent": "Australian",
+        "age": 28,
+        "language": "en",
+        "characteristics": ["friendly", "casual", "approachable"],
+        "sampleUrl": None,
+        "category": "Cartesia Voices"
+    },
+    {
+        "id": "a3e1f8b2-cd4f-4e9a-9f7c-6d5e4b3a2c1d",
+        "name": "Energetic Young Woman",
+        "provider": "cartesia",
+        "gender": "female",
+        "accent": "American",
+        "age": 24,
+        "language": "en",
+        "characteristics": ["energetic", "enthusiastic", "bright"],
+        "sampleUrl": None,
+        "category": "Cartesia Voices"
+    }
+]
+
+# ElevenLabs Voices (static fallback)
+ELEVENLABS_VOICES = [
+    {
+        "id": "N2lVS1w4EtoT3dr4eOWO",
+        "name": "Sarah",
+        "provider": "eleven-labs",
+        "gender": "female",
+        "accent": "American",
+        "age": 28,
+        "language": "en",
+        "characteristics": ["warm", "friendly", "professional"],
+        "previewUrl": None,
+        "category": "ElevenLabs"
+    },
+    {
+        "id": "pNInz6obpgDQGcFmaJgB",
+        "name": "Adam",
+        "provider": "eleven-labs",
+        "gender": "male",
+        "accent": "American",
+        "age": 35,
+        "language": "en",
+        "characteristics": ["deep", "authoritative", "clear"],
+        "previewUrl": None,
+        "category": "ElevenLabs"
+    },
+    {
+        "id": "EXAVITQu4vr4xnSDxMaL",
+        "name": "Bella",
+        "provider": "eleven-labs",
+        "gender": "female",
+        "accent": "American",
+        "age": 22,
+        "language": "en",
+        "characteristics": ["young", "energetic", "bright"],
+        "previewUrl": None,
+        "category": "ElevenLabs"
+    },
+    {
+        "id": "21m00Tcm4TlvDq8ikWAM",
+        "name": "Rachel",
+        "provider": "eleven-labs",
+        "gender": "female",
+        "accent": "American",
+        "age": 30,
+        "language": "en",
+        "characteristics": ["calm", "soothing", "professional"],
+        "previewUrl": None,
+        "category": "ElevenLabs"
+    },
+    {
+        "id": "AZnzlk1XvdvUeBnXmlld",
+        "name": "Domi",
+        "provider": "eleven-labs",
+        "gender": "female",
+        "accent": "American",
+        "age": 26,
+        "language": "en",
+        "characteristics": ["strong", "confident", "clear"],
+        "previewUrl": None,
+        "category": "ElevenLabs"
+    }
+]
+
+# Azure Voices
+AZURE_VOICES = [
+    {
+        "id": "en-US-AriaNeural",
+        "name": "Aria",
+        "provider": "azure",
+        "gender": "female",
+        "accent": "American",
+        "age": 28,
+        "language": "en",
+        "characteristics": ["natural", "conversational"],
+        "sampleUrl": None,
+        "category": "Azure"
+    },
+    {
+        "id": "en-US-JennyNeural",
+        "name": "Jenny",
+        "provider": "azure",
+        "gender": "female",
+        "accent": "American",
+        "age": 25,
+        "language": "en",
+        "characteristics": ["friendly", "assistant-like"],
+        "sampleUrl": None,
+        "category": "Azure"
+    },
+    {
+        "id": "fr-FR-DeniseNeural",
+        "name": "Denise",
+        "provider": "azure",
+        "gender": "female",
+        "accent": "French",
+        "age": 30,
+        "language": "fr",
+        "characteristics": ["natural", "clear"],
+        "sampleUrl": None,
+        "category": "Azure"
+    },
+    {
+        "id": "en-GB-RyanNeural",
+        "name": "Ryan",
+        "provider": "azure",
+        "gender": "male",
+        "accent": "British",
+        "age": 32,
+        "language": "en",
+        "characteristics": ["professional", "clear"],
+        "sampleUrl": None,
+        "category": "Azure"
+    },
+    {
+        "id": "es-ES-ElviraNeural",
+        "name": "Elvira",
+        "provider": "azure",
+        "gender": "female",
+        "accent": "Spanish",
+        "age": 28,
+        "language": "es",
+        "characteristics": ["warm", "friendly"],
+        "sampleUrl": None,
+        "category": "Azure"
     }
 ]
 
@@ -237,9 +413,10 @@ async def get_voices(
         if provider is None or provider == "vapi":
             all_voices.extend(vapi_voices)
 
-        # Add ElevenLabs voices if API key is configured
-        if settings.ELEVENLABS_API_KEY and not settings.ELEVENLABS_API_KEY.startswith("your-"):
-            if provider is None or provider == "eleven-labs":
+        # Add ElevenLabs voices
+        if provider is None or provider == "eleven-labs":
+            # Try to fetch from API if key is configured
+            if settings.ELEVENLABS_API_KEY and not settings.ELEVENLABS_API_KEY.startswith("your-"):
                 try:
                     elevenlabs_service = ElevenLabsService(settings.ELEVENLABS_API_KEY)
                     elevenlabs_voices = await elevenlabs_service.get_voices()
@@ -258,7 +435,17 @@ async def get_voices(
                             "category": "ElevenLabs"
                         })
                 except Exception as e:
-                    logger.warning(f"Could not fetch ElevenLabs voices: {e}")
+                    logger.warning(f"Could not fetch ElevenLabs voices from API: {e}, using static fallback")
+                    # Fallback to static voices
+                    all_voices.extend(ELEVENLABS_VOICES.copy())
+            else:
+                # No API key, use static voices
+                all_voices.extend(ELEVENLABS_VOICES.copy())
+
+        # Add Azure voices
+        azure_voices = AZURE_VOICES.copy()
+        if provider is None or provider == "azure":
+            all_voices.extend(azure_voices)
 
         # Apply filters
         if gender:
@@ -311,7 +498,13 @@ async def get_voice_providers(
             "id": "eleven-labs",
             "name": "ElevenLabs",
             "description": "High-quality AI voices with custom voice cloning",
-            "enabled": bool(settings.ELEVENLABS_API_KEY and not settings.ELEVENLABS_API_KEY.startswith("your-"))
+            "enabled": True
+        },
+        {
+            "id": "azure",
+            "name": "Azure",
+            "description": "Microsoft Azure neural voices in multiple languages",
+            "enabled": True
         }
     ]
 

@@ -81,10 +81,10 @@ const AgentsDashboard: React.FC = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'bg-green-100 text-green-800 border-green-200';
-      case 'inactive': return 'bg-gray-100 text-gray-800 border-gray-200';
-      case 'maintenance': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'active': return 'bg-green-500/20 text-green-400 border-green-500/30';
+      case 'inactive': return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
+      case 'maintenance': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
+      default: return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
     }
   };
 
@@ -219,7 +219,7 @@ const AgentsDashboard: React.FC = () => {
                 "transition-all",
                 categoryFilter === category
                   ? "bg-blue-600 text-white hover:bg-blue-700"
-                  : "hover:bg-gray-100"
+                  : "hover:bg-gray-800/50 text-gray-300"
               )}
             >
               {category}
@@ -229,17 +229,17 @@ const AgentsDashboard: React.FC = () => {
 
         {/* Filtres par statut */}
         <Tabs value={activeFilter} onValueChange={setActiveFilter} className="w-full">
-          <TabsList className="grid w-full grid-cols-4 bg-gray-100 dark:bg-gray-800">
-            <TabsTrigger value="all-agents" className="data-[state=active]:bg-white dark:data-[state=active]:bg-gray-700">
+          <TabsList className="grid w-full grid-cols-4 bg-gray-800/50">
+            <TabsTrigger value="all-agents" className="data-[state=active]:bg-gray-700 data-[state=active]:text-white">
               Tous les Agents
             </TabsTrigger>
-            <TabsTrigger value="active-agents" className="data-[state=active]:bg-white dark:data-[state=active]:bg-gray-700">
+            <TabsTrigger value="active-agents" className="data-[state=active]:bg-gray-700 data-[state=active]:text-white">
               Actifs
             </TabsTrigger>
-            <TabsTrigger value="inactive-agents" className="data-[state=active]:bg-white dark:data-[state=active]:bg-gray-700">
+            <TabsTrigger value="inactive-agents" className="data-[state=active]:bg-gray-700 data-[state=active]:text-white">
               Inactifs
             </TabsTrigger>
-            <TabsTrigger value="maintenance-agents" className="data-[state=active]:bg-white dark:data-[state=active]:bg-gray-700">
+            <TabsTrigger value="maintenance-agents" className="data-[state=active]:bg-gray-700 data-[state=active]:text-white">
               Maintenance
             </TabsTrigger>
           </TabsList>
@@ -247,9 +247,9 @@ const AgentsDashboard: React.FC = () => {
           <TabsContent value={activeFilter} className="mt-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredAgents.map((agent) => (
-                <Card 
-                  key={agent.id} 
-                  className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-200 cursor-pointer group"
+                <Card
+                  key={agent.id}
+                  className="bg-gray-800/50 border-gray-700 hover:shadow-lg transition-all duration-200 cursor-pointer group hover:border-blue-500/50"
                   onClick={() => navigate(`/agents/${agent.id}`)}
                 >
                   <CardHeader className="pb-3">
@@ -260,12 +260,12 @@ const AgentsDashboard: React.FC = () => {
                             src={agent.avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${agent.id}`}
                             alt={agent.name}
                           />
-                          <AvatarFallback className="bg-blue-100 text-blue-600 font-semibold">
+                          <AvatarFallback className="bg-blue-500/20 text-blue-400 font-semibold">
                             {agent.name.charAt(0)}
                           </AvatarFallback>
                         </Avatar>
                         <div>
-                          <CardTitle className="text-lg text-gray-900 dark:text-white group-hover:text-blue-600 transition-colors">
+                          <CardTitle className="text-lg text-white group-hover:text-blue-400 transition-colors">
                             {agent.name}
                           </CardTitle>
                           <div className="flex items-center gap-2 mt-1">
@@ -286,22 +286,22 @@ const AgentsDashboard: React.FC = () => {
                   </CardHeader>
                   
                   <CardContent className="space-y-4">
-                    <CardDescription className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+                    <CardDescription className="text-sm text-gray-400 line-clamp-2">
                       {agent.description}
                     </CardDescription>
-                    
+
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
-                        <p className="text-gray-500 dark:text-gray-400">Total Appels</p>
-                        <p className="font-semibold text-gray-900 dark:text-white">{agent.totalCalls || 0}</p>
+                        <p className="text-gray-400">Total Appels</p>
+                        <p className="font-semibold text-white">{agent.totalCalls || 0}</p>
                       </div>
                       <div>
-                        <p className="text-gray-500 dark:text-gray-400">Note Moyenne</p>
-                        <p className="font-semibold text-gray-900 dark:text-white">{agent.averageRating || 0}/5</p>
+                        <p className="text-gray-400">Note Moyenne</p>
+                        <p className="font-semibold text-white">{agent.averageRating || 0}/5</p>
                       </div>
                     </div>
                     
-                    <div className="flex gap-2 pt-2 border-t border-gray-100 dark:border-gray-700">
+                    <div className="flex gap-2 pt-2 border-t border-gray-700">
                       <Button
                         variant="outline"
                         size="sm"

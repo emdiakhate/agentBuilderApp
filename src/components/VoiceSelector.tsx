@@ -198,6 +198,7 @@ export const VoiceSelector: React.FC<VoiceSelectorProps> = ({
               <SelectItem value="cartesia" className="text-white">Cartesia</SelectItem>
               <SelectItem value="vapi" className="text-white">Vapi</SelectItem>
               <SelectItem value="eleven-labs" className="text-white">ElevenLabs</SelectItem>
+              <SelectItem value="azure" className="text-white">Azure</SelectItem>
             </SelectContent>
           </Select>
 
