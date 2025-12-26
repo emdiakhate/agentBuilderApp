@@ -22,7 +22,7 @@ VAPI_VOICES = [
         "gender": "male",
         "accent": "Indian American",
         "age": 24,
-        "language": "en",
+        "language": "multilingual",  # VAPI voices support multiple languages
         "characteristics": ["bright", "optimistic", "cheerful", "energetic"],
         "sampleUrl": "https://docs.vapi.ai/file:72be4cc4-fd1e-4d86-8e59-74801b68066a",
         "category": "Vapi Voices"
@@ -34,7 +34,7 @@ VAPI_VOICES = [
         "gender": "female",
         "accent": "Indian American",
         "age": 30,
-        "language": "en",
+        "language": "multilingual",
         "characteristics": ["professional", "charming"],
         "sampleUrl": "https://docs.vapi.ai/file:b8908e74-61ee-412d-9b8e-37e08a3d7833",
         "category": "Vapi Voices"
@@ -46,7 +46,7 @@ VAPI_VOICES = [
         "gender": "female",
         "accent": "American",
         "age": 22,
-        "language": "en",
+        "language": "multilingual",
         "characteristics": ["soft", "soothing", "gentle"],
         "sampleUrl": "https://docs.vapi.ai/file:89067384-0458-4c2f-90ee-cc92a494c975",
         "category": "Vapi Voices"
@@ -58,7 +58,7 @@ VAPI_VOICES = [
         "gender": "male",
         "accent": "American",
         "age": 24,
-        "language": "en",
+        "language": "multilingual",
         "characteristics": ["clear", "energetic", "professional"],
         "sampleUrl": "https://docs.vapi.ai/file:d214c546-c5a0-4911-8a72-beb75ed1a64e",
         "category": "Vapi Voices"
@@ -70,7 +70,7 @@ VAPI_VOICES = [
         "gender": "male",
         "accent": "Canadian",
         "age": 25,
-        "language": "en",
+        "language": "multilingual",
         "characteristics": ["soothing", "friendly", "professional"],
         "sampleUrl": "https://docs.vapi.ai/file:a3891ed4-5707-4207-a159-e2c3542d0e8d",
         "category": "Vapi Voices"
@@ -82,7 +82,7 @@ VAPI_VOICES = [
         "gender": "female",
         "accent": "Asian American",
         "age": 25,
-        "language": "en",
+        "language": "multilingual",
         "characteristics": ["bright personality", "bubbly", "cheerful"],
         "sampleUrl": "https://docs.vapi.ai/file:2a71e318-5202-4b64-ba92-94d40443dcd3",
         "category": "Vapi Voices"
@@ -94,7 +94,7 @@ VAPI_VOICES = [
         "gender": "female",
         "accent": "American",
         "age": 26,
-        "language": "en",
+        "language": "multilingual",
         "characteristics": ["deeper tone", "calming", "professional"],
         "sampleUrl": "https://docs.vapi.ai/file:aa334223-e9e2-4067-9bed-c0b04a0ac8d2",
         "category": "Vapi Voices"
@@ -106,7 +106,7 @@ VAPI_VOICES = [
         "gender": "male",
         "accent": "American",
         "age": 22,
-        "language": "en",
+        "language": "multilingual",
         "characteristics": ["deeper tone", "calming", "professional"],
         "sampleUrl": "https://docs.vapi.ai/file:b8c1afe2-c2a7-4bcd-b71a-0b3fefafae90",
         "category": "Vapi Voices"
@@ -118,7 +118,7 @@ VAPI_VOICES = [
         "gender": "female",
         "accent": "Southern American",
         "age": 25,
-        "language": "en",
+        "language": "multilingual",
         "characteristics": ["southern american accent"],
         "sampleUrl": "https://docs.vapi.ai/file:13c3ea44-a6e1-4c28-aaac-c27c0f8c434a",
         "category": "Vapi Voices"
@@ -130,7 +130,7 @@ VAPI_VOICES = [
         "gender": "female",
         "accent": "American",
         "age": 26,
-        "language": "en",
+        "language": "multilingual",
         "characteristics": ["energetic", "quippy", "lighthearted", "cheeky", "amused"],
         "sampleUrl": "https://docs.vapi.ai/file:1b35bd21-2bf7-4036-90f2-09d2b1d5cfac",
         "category": "Vapi Voices"
@@ -184,7 +184,11 @@ async def get_voices(
             all_voices = [v for v in all_voices if v.get("gender") == gender]
 
         if language:
-            all_voices = [v for v in all_voices if v.get("language", "").startswith(language)]
+            # Include multilingual voices and voices that match the language
+            all_voices = [
+                v for v in all_voices
+                if v.get("language") == "multilingual" or v.get("language", "").startswith(language)
+            ]
 
         categories = list(set(v["category"] for v in all_voices))
 
