@@ -24,6 +24,7 @@ export const VoiceSelector: React.FC<VoiceSelectorProps> = ({
   const [categories, setCategories] = useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [genderFilter, setGenderFilter] = useState<string>('all');
+  const [providerFilter, setProviderFilter] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [playingVoice, setPlayingVoice] = useState<string | null>(null);
@@ -58,8 +59,8 @@ export const VoiceSelector: React.FC<VoiceSelectorProps> = ({
 
       // Select default voice if none selected
       if (!selectedVoice && response.voices.length > 0) {
-        // Default to 'hana' (VAPI voice) or first voice
-        const defaultVoice = response.voices.find(v => v.id === 'hana') || response.voices[0];
+        // Default to 'Helpful French Lady' (Cartesia voice) or first voice
+        const defaultVoice = response.voices.find(v => v.id === '65b25c5d-ff07-4687-a04c-da2f43ef6fa9') || response.voices[0];
         onVoiceSelect(defaultVoice);
       }
     } catch (error) {
@@ -77,6 +78,7 @@ export const VoiceSelector: React.FC<VoiceSelectorProps> = ({
   const filteredVoices = voices.filter(voice => {
     if (selectedCategory !== 'all' && voice.category !== selectedCategory) return false;
     if (genderFilter !== 'all' && voice.gender !== genderFilter) return false;
+    if (providerFilter !== 'all' && voice.provider !== providerFilter) return false;
     if (searchTerm && !voice.name.toLowerCase().includes(searchTerm.toLowerCase())) return false;
     return true;
   });
@@ -184,6 +186,18 @@ export const VoiceSelector: React.FC<VoiceSelectorProps> = ({
               <SelectItem value="all" className="text-white">Tous</SelectItem>
               <SelectItem value="male" className="text-white">Masculin</SelectItem>
               <SelectItem value="female" className="text-white">Féminin</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select value={providerFilter} onValueChange={setProviderFilter}>
+            <SelectTrigger className="w-[150px] bg-white/10 border-white/20 text-white">
+              <SelectValue placeholder="Fournisseur" />
+            </SelectTrigger>
+            <SelectContent className="bg-[#1a1a2e] border-white/10">
+              <SelectItem value="all" className="text-white">Tous</SelectItem>
+              <SelectItem value="cartesia" className="text-white">Cartesia</SelectItem>
+              <SelectItem value="vapi" className="text-white">Vapi</SelectItem>
+              <SelectItem value="eleven-labs" className="text-white">ElevenLabs</SelectItem>
             </SelectContent>
           </Select>
 

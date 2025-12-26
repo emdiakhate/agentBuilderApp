@@ -13,6 +13,82 @@ from app.services.elevenlabs_service import ElevenLabsService
 
 router = APIRouter()
 
+# Cartesia Voices
+CARTESIA_VOICES = [
+    {
+        "id": "65b25c5d-ff07-4687-a04c-da2f43ef6fa9",
+        "name": "Helpful French Lady",
+        "provider": "cartesia",
+        "gender": "female",
+        "accent": "French",
+        "age": 30,
+        "language": "fr",
+        "characteristics": ["helpful", "friendly", "professional", "french"],
+        "sampleUrl": None,
+        "category": "Cartesia Voices"
+    },
+    {
+        "id": "79a125e8-cd45-4c13-8a67-188112f4dd22",
+        "name": "British Lady",
+        "provider": "cartesia",
+        "gender": "female",
+        "accent": "British",
+        "age": 28,
+        "language": "en",
+        "characteristics": ["professional", "clear", "british"],
+        "sampleUrl": None,
+        "category": "Cartesia Voices"
+    },
+    {
+        "id": "a0e99841-438c-4a64-b679-ae501e7d6091",
+        "name": "Classy British Man",
+        "provider": "cartesia",
+        "gender": "male",
+        "accent": "British",
+        "age": 35,
+        "language": "en",
+        "characteristics": ["classy", "professional", "british", "deep"],
+        "sampleUrl": None,
+        "category": "Cartesia Voices"
+    },
+    {
+        "id": "95856005-0332-41b0-935f-352e296aa0df",
+        "name": "Professional Man",
+        "provider": "cartesia",
+        "gender": "male",
+        "accent": "American",
+        "age": 32,
+        "language": "en",
+        "characteristics": ["professional", "clear", "confident"],
+        "sampleUrl": None,
+        "category": "Cartesia Voices"
+    },
+    {
+        "id": "c2ac25f9-ecc4-4f56-9095-651354df60c0",
+        "name": "Friendly Woman",
+        "provider": "cartesia",
+        "gender": "female",
+        "accent": "American",
+        "age": 26,
+        "language": "en",
+        "characteristics": ["friendly", "warm", "approachable"],
+        "sampleUrl": None,
+        "category": "Cartesia Voices"
+    },
+    {
+        "id": "83a5c9b1-1f69-4bb7-9c1e-5d5d3c8b4e0a",
+        "name": "Spanish Man",
+        "provider": "cartesia",
+        "gender": "male",
+        "accent": "Spanish",
+        "age": 30,
+        "language": "es",
+        "characteristics": ["spanish", "clear", "professional"],
+        "sampleUrl": None,
+        "category": "Cartesia Voices"
+    }
+]
+
 # VAPI Native Voices
 VAPI_VOICES = [
     {
@@ -151,6 +227,11 @@ async def get_voices(
     try:
         all_voices = []
 
+        # Add Cartesia voices
+        cartesia_voices = CARTESIA_VOICES.copy()
+        if provider is None or provider == "cartesia":
+            all_voices.extend(cartesia_voices)
+
         # Add VAPI voices
         vapi_voices = VAPI_VOICES.copy()
         if provider is None or provider == "vapi":
@@ -214,6 +295,12 @@ async def get_voice_providers(
     Get available voice providers
     """
     providers = [
+        {
+            "id": "cartesia",
+            "name": "Cartesia",
+            "description": "Ultra-realistic voices with natural expressiveness",
+            "enabled": True
+        },
         {
             "id": "vapi",
             "name": "Vapi Voices",

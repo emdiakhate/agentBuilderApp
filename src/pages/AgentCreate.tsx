@@ -776,8 +776,7 @@ const AgentCreate = () => {
                   </p>
                   <Button
                     type="button"
-                    variant="outline"
-                    className="border-white/20 text-white gap-2 hover:bg-white/10"
+                    className="bg-black text-white gap-2 hover:bg-black/80 border border-white/10"
                     onClick={handleUploadClick}
                   >
                     <Upload className="h-4 w-4" />
