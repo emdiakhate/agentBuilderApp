@@ -75,9 +75,11 @@ class VapiService:
         voice: str = "65b25c5d-ff07-4687-a04c-da2f43ef6fa9",  # Helpful French lady (Cartesia)
         voice_provider: str = "cartesia",
         voice_model: str = "sonic-multilingual",  # Sonic 2 multilingual for French
+        voice_config_full: Optional[Dict[str, Any]] = None,  # Full voice configuration
         first_message: Optional[str] = None,
         first_message_mode: str = "assistant-speaks-first",
         system_prompt: Optional[str] = None,
+        language: str = "fr",
         background_sound: str = "off",
         background_denoising_enabled: bool = False,
         **kwargs
@@ -91,9 +93,11 @@ class VapiService:
             voice: Voice ID to use (default: Helpful French lady)
             voice_provider: Voice provider (cartesia, playht, elevenlabs, etc.)
             voice_model: Voice model to use (Sonic 2 multilingual for French)
+            voice_config_full: Full voice configuration object (if provided, overrides voice/voice_provider/voice_model)
             first_message: First message to say
             first_message_mode: Mode for first message ("assistant-speaks-first" or "assistant-waits")
             system_prompt: System prompt for the assistant
+            language: Language for transcription and speech (fr, en, es, etc.)
             **kwargs: Additional Vapi assistant configuration
 
         Returns:
@@ -101,14 +105,46 @@ class VapiService:
         """
         try:
             # Build voice configuration
-            voice_config = {
-                "provider": voice_provider,
-                "voiceId": voice
+            if voice_config_full:
+                # Use the full voice configuration if provided
+                voice_config = voice_config_full.copy()
+            else:
+                # Build voice config from individual parameters
+                voice_config = {
+                    "provider": voice_provider,
+                    "voiceId": voice
+                }
+
+                # Add model for Cartesia
+                if voice_provider == "cartesia":
+                    voice_config["model"] = voice_model or "sonic-multilingual"
+                # Add config for ElevenLabs
+                elif voice_provider in ["11labs", "eleven-labs"]:
+                    voice_config["provider"] = "11labs"  # Normalize provider name
+                    voice_config["model"] = "eleven_multilingual_v2"
+                    voice_config["stability"] = 0.5
+                    voice_config["similarityBoost"] = 0.75
+                # Azure doesn't need additional config beyond voiceId
+
+            # Map language codes to full language names for instructions
+            language_names = {
+                "fr": "French (Français)",
+                "en": "English",
+                "es": "Spanish (Español)",
+                "de": "German (Deutsch)",
+                "it": "Italian (Italiano)",
+                "pt": "Portuguese (Português)",
             }
 
-            # Add model for Cartesia
-            if voice_provider == "cartesia":
-                voice_config["model"] = voice_model
+            # Get the language code (handle both "fr" and "Français")
+            lang_code = language.lower()[:2] if language else "fr"
+            language_name = language_names.get(lang_code, "French")
+
+            # Add language instruction at the beginning of system prompt
+            base_prompt = system_prompt or f"You are {name}, a helpful AI assistant."
+            enhanced_prompt = f"""IMPORTANT: You MUST speak in {language_name}. All your responses must be in {language_name}.
+
+{base_prompt}"""
 
             # Build base payload
             payload = {
@@ -116,13 +152,13 @@ class VapiService:
                 "model": {
                     "provider": "openai",
                     "model": model,
-                    "systemPrompt": system_prompt or f"You are {name}, a helpful AI assistant.",
+                    "systemPrompt": enhanced_prompt,
                 },
                 "voice": voice_config,
                 "transcriber": {
                     "provider": "deepgram",
                     "model": "nova-2",
-                    "language": "fr"
+                    "language": lang_code
                 },
                 "firstMessageMode": first_message_mode,
                 **kwargs

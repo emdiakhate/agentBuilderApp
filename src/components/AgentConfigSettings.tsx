@@ -24,6 +24,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { isEqual } from 'lodash';
 import VoiceSelectionModal from './VoiceSelectionModal';
 import { KnowledgeBaseCardConnected } from './KnowledgeBaseCardConnected';
+import { useElevenLabsVoices } from '@/hooks/useVoices';
 
 const VOICE_PROVIDERS = {
   "Eleven Labs": {
@@ -184,6 +185,7 @@ interface AgentConfigSettingsProps {
 
 const AgentConfigSettings: React.FC<AgentConfigSettingsProps> = ({ agent, onAgentUpdate, showSuccessToast }) => {
   const { toast } = useToast();
+  const { data: elevenLabsVoices } = useElevenLabsVoices();
   const [name, setName] = useState(agent.name);
   const [avatar, setAvatar] = useState(agent.avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${agent.id}`);
   const [purpose, setPurpose] = useState(agent.purpose || '');
@@ -287,6 +289,26 @@ const AgentConfigSettings: React.FC<AgentConfigSettingsProps> = ({ agent, onAgen
   };
 
   const getCurrentVoiceDetails = () => {
+    // First, check in Eleven Labs dynamic voices
+    if (elevenLabsVoices) {
+      const elevenLabsVoice = elevenLabsVoices.find(v => v.id === voice);
+      if (elevenLabsVoice) {
+        return {
+          id: elevenLabsVoice.id,
+          name: elevenLabsVoice.name,
+          provider: "Eleven Labs",
+          traits: [
+            { name: elevenLabsVoice.accent, color: "bg-primary/10 text-primary" },
+            { name: elevenLabsVoice.gender, color: "bg-secondary/20 text-fg" },
+            { name: elevenLabsVoice.language === 'fr' ? 'French' : elevenLabsVoice.language === 'en' ? 'English' : elevenLabsVoice.language, color: "bg-green-100 text-green-800" }
+          ].filter(t => t.name),
+          avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${elevenLabsVoice.id}`,
+          audioSample: elevenLabsVoice.previewUrl || ''
+        };
+      }
+    }
+
+    // Then check in legacy hardcoded voices
     for (const provider in VOICE_PROVIDERS) {
       for (const voiceName in VOICE_PROVIDERS[provider as keyof typeof VOICE_PROVIDERS]) {
         const voiceObj = VOICE_PROVIDERS[provider as keyof typeof VOICE_PROVIDERS][voiceName];
@@ -298,7 +320,7 @@ const AgentConfigSettings: React.FC<AgentConfigSettingsProps> = ({ agent, onAgen
         }
       }
     }
-    
+
     // Default to first voice if not found
     const firstProvider = Object.keys(VOICE_PROVIDERS)[0] as keyof typeof VOICE_PROVIDERS;
     const firstVoiceName = Object.keys(VOICE_PROVIDERS[firstProvider])[0];
@@ -357,9 +379,9 @@ const AgentConfigSettings: React.FC<AgentConfigSettingsProps> = ({ agent, onAgen
     <div className="space-y-8">
       <Card>
         <CardHeader>
-          <CardTitle className="text-xl">Agent Identity</CardTitle>
+          <CardTitle className="text-xl">Identité de l'agent</CardTitle>
           <CardDescription>
-            Configure how your agent appears to users
+            Configurez comment votre agent apparaît aux utilisateurs
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -400,34 +422,34 @@ const AgentConfigSettings: React.FC<AgentConfigSettingsProps> = ({ agent, onAgen
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
                   <User className="h-4 w-4 text-primary" />
-                  <Label htmlFor="agent-name">Agent Name</Label>
+                  <Label htmlFor="agent-name">Nom de l'agent</Label>
                 </div>
                 <Input
                   id="agent-name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="Enter agent name"
+                  placeholder="Entrez le nom de l'agent"
                   className="w-full"
                 />
                 <p className="text-xs text-fgMuted">
-                  This name will be displayed to users when they interact with your agent
+                  Ce nom sera affiché aux utilisateurs lorsqu'ils interagissent avec votre agent
                 </p>
               </div>
-              
+
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
                   <Target className="h-4 w-4 text-primary" />
-                  <Label htmlFor="agent-purpose">Agent Purpose</Label>
+                  <Label htmlFor="agent-purpose">Objectif de l'agent</Label>
                 </div>
                 <Textarea
                   id="agent-purpose"
                   value={purpose}
                   onChange={(e) => setPurpose(e.target.value)}
-                  placeholder="Describe what this agent is designed to do"
+                  placeholder="Décrivez ce que cet agent est conçu pour faire"
                   className="min-h-[100px] w-full"
                 />
                 <p className="text-xs text-fgMuted">
-                  A clear description of your agent's role and primary responsibilities
+                  Une description claire du rôle et des responsabilités principales de votre agent
                 </p>
               </div>
             </div>
@@ -437,11 +459,11 @@ const AgentConfigSettings: React.FC<AgentConfigSettingsProps> = ({ agent, onAgen
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <Brain className="h-4 w-4 text-primary" />
-                <Label htmlFor="agent-model">AI Model</Label>
+                <Label htmlFor="agent-model">Modèle IA</Label>
               </div>
               <Select value={model} onValueChange={setModel}>
                 <SelectTrigger id="agent-model" className="w-full">
-                  <SelectValue placeholder="Select a model" />
+                  <SelectValue placeholder="Sélectionnez un modèle" />
                 </SelectTrigger>
                 <SelectContent>
                   {AI_MODELS.map((aiModel) => (
@@ -452,14 +474,14 @@ const AgentConfigSettings: React.FC<AgentConfigSettingsProps> = ({ agent, onAgen
                 </SelectContent>
               </Select>
               <p className="text-xs text-fgMuted">
-                The AI model that powers your agent's intelligence
+                Le modèle IA qui alimente l'intelligence de votre agent
               </p>
             </div>
-            
+
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <Volume2 className="h-4 w-4 text-primary" />
-                <Label htmlFor="agent-voice">Voice</Label>
+                <Label htmlFor="agent-voice">Voix</Label>
               </div>
 
               <Button 
@@ -475,7 +497,7 @@ const AgentConfigSettings: React.FC<AgentConfigSettingsProps> = ({ agent, onAgen
               </Button>
               
               <p className="text-xs text-fgMuted">
-                The voice your agent will use when speaking to users
+                La voix que votre agent utilisera pour parler aux utilisateurs
               </p>
             </div>
           </div>
@@ -483,13 +505,20 @@ const AgentConfigSettings: React.FC<AgentConfigSettingsProps> = ({ agent, onAgen
       </Card>
 
       {/* Base de connaissances */}
-      <KnowledgeBaseCardConnected agent={agent} />
+      <KnowledgeBaseCardConnected
+        agentId={agent.id}
+        currentPrompt={agent.prompt || ""}
+        onPromptUpdate={(newPrompt) => {
+          // Update local agent state
+          setFormData(prev => ({ ...prev, prompt: newPrompt }));
+        }}
+      />
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-xl">Agent Classification</CardTitle>
+          <CardTitle className="text-xl">Classification de l'agent</CardTitle>
           <CardDescription>
-            Define the industry and function of your agent
+            Définissez l'industrie et la fonction de votre agent
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -497,7 +526,7 @@ const AgentConfigSettings: React.FC<AgentConfigSettingsProps> = ({ agent, onAgen
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <Building className="h-4 w-4 text-primary" />
-                <Label>Industry</Label>
+                <Label>Industrie</Label>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
                 {INDUSTRIES.map((ind) => (
@@ -513,26 +542,26 @@ const AgentConfigSettings: React.FC<AgentConfigSettingsProps> = ({ agent, onAgen
                   </Button>
                 ))}
               </div>
-              
+
               {industry === 'other' && (
                 <div className="mt-2">
                   <Input
                     value={customIndustry}
                     onChange={(e) => setCustomIndustry(e.target.value)}
-                    placeholder="Enter custom industry"
+                    placeholder="Entrez une industrie personnalisée"
                     className="w-full"
                   />
                 </div>
               )}
               <p className="text-xs text-fgMuted">
-                The industry context your agent operates in
+                Le contexte industriel dans lequel votre agent opère
               </p>
             </div>
 
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <Briefcase className="h-4 w-4 text-primary" />
-                <Label>Bot Function</Label>
+                <Label>Fonction de l'agent</Label>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 {BOT_FUNCTIONS.map((func) => (
@@ -554,13 +583,13 @@ const AgentConfigSettings: React.FC<AgentConfigSettingsProps> = ({ agent, onAgen
                   <Input
                     value={customFunction}
                     onChange={(e) => setCustomFunction(e.target.value)}
-                    placeholder="Enter custom function"
+                    placeholder="Entrez une fonction personnalisée"
                     className="w-full"
                   />
                 </div>
               )}
               <p className="text-xs text-fgMuted">
-                The primary function your agent serves
+                La fonction principale que votre agent remplit
               </p>
             </div>
           </div>
@@ -569,9 +598,9 @@ const AgentConfigSettings: React.FC<AgentConfigSettingsProps> = ({ agent, onAgen
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-xl">Channel Configuration</CardTitle>
+          <CardTitle className="text-xl">Configuration des canaux</CardTitle>
           <CardDescription>
-            Configure the channels through which users can interact with your agent
+            Configurez les canaux par lesquels les utilisateurs peuvent interagir avec votre agent
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -584,9 +613,9 @@ const AgentConfigSettings: React.FC<AgentConfigSettingsProps> = ({ agent, onAgen
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-xl">Agent Instructions</CardTitle>
+          <CardTitle className="text-xl">Instructions de l'agent</CardTitle>
           <CardDescription>
-            Define how your agent behaves and responds
+            Définissez comment votre agent se comporte et répond
           </CardDescription>
         </CardHeader>
         <CardContent>

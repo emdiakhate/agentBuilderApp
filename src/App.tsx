@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider } from "@/hooks/useTheme";
 import AgentsLayout from "./layouts/AgentsLayout";
+import { HomePage } from "./pages/HomePage";
 import Dashboard from "./pages/Dashboard";
 import AgentsDashboard from "./pages/AgentsDashboard";
 import AgentDetails from "./pages/AgentDetails";
@@ -14,6 +15,7 @@ import Analytics from "./pages/Analytics";
 import VoiceLibrary from "./pages/VoiceLibrary";
 import Settings from "./pages/Settings";
 import Integrations from "./pages/Integrations";
+import ConversationsPage from "./pages/ConversationsPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient({
@@ -38,12 +40,13 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/" element={<HomePage />} />
             <Route element={<AgentsLayout />}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/agents" element={<AgentsDashboard />} />
               <Route path="/agents/create" element={<AgentCreate />} />
               <Route path="/agents/:agentId" element={<AgentDetails />} />
+              <Route path="/conversations" element={<ConversationsPage />} />
               <Route path="/voice-library" element={<VoiceLibrary />} />
               <Route path="/integrations" element={<Integrations />} />
               <Route path="/analytics" element={<Analytics />} />

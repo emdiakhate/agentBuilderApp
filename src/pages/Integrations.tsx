@@ -290,21 +290,21 @@ const Integrations = () => {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Intégrations</h1>
-        <p className="text-muted-foreground mt-1">
+        <h1 className="text-3xl font-bold tracking-tight text-white">Intégrations</h1>
+        <p className="text-gray-400 mt-1">
           Connectez vos outils et services favoris avec Vapi
         </p>
       </div>
 
       {/* Search */}
       <div className="relative max-w-md">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
         <Input
           type="text"
           placeholder="Search integrations..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-10"
+          className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-gray-500"
         />
       </div>
 
@@ -314,17 +314,17 @@ const Integrations = () => {
           const isExpanded = expandedSections.has(category.id);
 
           return (
-            <Card key={category.id}>
+            <Card key={category.id} className="bg-white/5 border-white/10">
               <CardHeader
-                className="cursor-pointer hover:bg-accent/50 transition-colors"
+                className="cursor-pointer hover:bg-white/10 transition-colors"
                 onClick={() => toggleSection(category.id)}
               >
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg">{category.title}</CardTitle>
+                  <CardTitle className="text-lg text-white">{category.title}</CardTitle>
                   {isExpanded ? (
-                    <ChevronUp className="h-5 w-5 text-muted-foreground" />
+                    <ChevronUp className="h-5 w-5 text-gray-400" />
                   ) : (
-                    <ChevronDown className="h-5 w-5 text-muted-foreground" />
+                    <ChevronDown className="h-5 w-5 text-gray-400" />
                   )}
                 </div>
               </CardHeader>
@@ -338,13 +338,13 @@ const Integrations = () => {
                       return (
                         <div
                           key={integration.id}
-                          className="border rounded-lg p-4 hover:border-primary/50 hover:shadow-md transition-all cursor-pointer group relative"
+                          className="border border-white/10 bg-white/5 rounded-lg p-4 hover:border-purple-500/50 hover:shadow-md transition-all cursor-pointer group relative"
                           onClick={() => handleIntegrationClick(integration)}
                         >
                           <div className="flex items-start justify-between mb-3">
                             <div className="flex items-center gap-3">
                               {integration.logo && (
-                                <div className="w-10 h-10 rounded-lg bg-white dark:bg-gray-800 border flex items-center justify-center p-1.5">
+                                <div className="w-10 h-10 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center p-1.5">
                                   <img
                                     src={integration.logo}
                                     alt={integration.name}
@@ -356,10 +356,10 @@ const Integrations = () => {
                                   />
                                 </div>
                               )}
-                              <h3 className="font-semibold">{integration.name}</h3>
+                              <h3 className="font-semibold text-white">{integration.name}</h3>
                             </div>
                             {integration.badge && (
-                              <span className="text-xs px-2 py-1 rounded-full bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400">
+                              <span className="text-xs px-2 py-1 rounded-full bg-blue-500/20 text-blue-400">
                                 {integration.badge}
                               </span>
                             )}
@@ -371,7 +371,7 @@ const Integrations = () => {
                               </div>
                             )}
                           </div>
-                          <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
+                          <p className="text-sm text-gray-400 line-clamp-2 mb-3">
                             {integration.description}
                           </p>
                           <div className="flex gap-2 mt-auto">

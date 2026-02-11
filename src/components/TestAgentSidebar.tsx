@@ -194,7 +194,7 @@ export const TestAgentSidebar: React.FC<TestAgentSidebarProps> = ({
                         <Label htmlFor="mic-input">Microphone</Label>
                         <Select value={selectedMic} onValueChange={setSelectedMic}>
                           <SelectTrigger id="mic-input">
-                            <SelectValue placeholder="Select microphone" />
+                            <SelectValue placeholder="Sélectionner un microphone" />
                           </SelectTrigger>
                           <SelectContent>
                             {availableMics.map((mic) => (
@@ -210,7 +210,7 @@ export const TestAgentSidebar: React.FC<TestAgentSidebarProps> = ({
                         <Label htmlFor="speaker-output">Speaker</Label>
                         <Select value={selectedSpeaker} onValueChange={setSelectedSpeaker}>
                           <SelectTrigger id="speaker-output">
-                            <SelectValue placeholder="Select speaker" />
+                            <SelectValue placeholder="Sélectionner un haut-parleur" />
                           </SelectTrigger>
                           <SelectContent>
                             {availableSpeakers.map((speaker) => (
@@ -252,7 +252,7 @@ export const TestAgentSidebar: React.FC<TestAgentSidebarProps> = ({
                         <Label htmlFor="mic-input">Microphone</Label>
                         <Select value={selectedMic} onValueChange={setSelectedMic}>
                           <SelectTrigger id="mic-input">
-                            <SelectValue placeholder="Select microphone" />
+                            <SelectValue placeholder="Sélectionner un microphone" />
                           </SelectTrigger>
                           <SelectContent>
                             {availableMics.map((mic) => (
@@ -268,7 +268,7 @@ export const TestAgentSidebar: React.FC<TestAgentSidebarProps> = ({
                         <Label htmlFor="speaker-output">Speaker</Label>
                         <Select value={selectedSpeaker} onValueChange={setSelectedSpeaker}>
                           <SelectTrigger id="speaker-output">
-                            <SelectValue placeholder="Select speaker" />
+                            <SelectValue placeholder="Sélectionner un haut-parleur" />
                           </SelectTrigger>
                           <SelectContent>
                             {availableSpeakers.map((speaker) => (

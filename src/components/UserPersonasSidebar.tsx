@@ -360,7 +360,7 @@ export const UserPersonasSidebar: React.FC<UserPersonasSidebarProps> = ({
                     <Label className="text-gray-700 dark:text-gray-300">Microphone</Label>
                     <Select value={selectedMic} onValueChange={setSelectedMic}>
                       <SelectTrigger className="bg-white dark:bg-[#111827] border-gray-300 dark:border-[#1E293B] text-gray-900 dark:text-white">
-                        <SelectValue placeholder="Select microphone" />
+                        <SelectValue placeholder="Sélectionner un microphone" />
                       </SelectTrigger>
                       <SelectContent>
                         {availableMics.map((device) => (
@@ -376,7 +376,7 @@ export const UserPersonasSidebar: React.FC<UserPersonasSidebarProps> = ({
                     <Label className="text-gray-700 dark:text-gray-300">Speaker</Label>
                     <Select value={selectedSpeaker} onValueChange={setSelectedSpeaker}>
                       <SelectTrigger className="bg-white dark:bg-[#111827] border-gray-300 dark:border-[#1E293B] text-gray-900 dark:text-white">
-                        <SelectValue placeholder="Select speaker" />
+                        <SelectValue placeholder="Sélectionner un haut-parleur" />
                       </SelectTrigger>
                       <SelectContent>
                         {availableSpeakers.map((device) => (

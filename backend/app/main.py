@@ -4,7 +4,7 @@ from loguru import logger
 
 from app.core.config import settings
 from app.core.database import init_db
-from app.api.endpoints import auth, agents, vapi, chat, generate, templates, tools, vapi_webhooks, oauth, tool_webhooks, agent_tools, analytics, voice_library
+from app.api.endpoints import auth, agents, vapi, chat, generate, templates, tools, vapi_webhooks, oauth, tool_webhooks, agent_tools, analytics, voice_library, conversations, voices
 
 # Create FastAPI app
 app = FastAPI(
@@ -37,6 +37,8 @@ app.include_router(tool_webhooks.router, prefix="/api/tool-webhooks", tags=["Too
 app.include_router(agent_tools.router, prefix="/api/agent-tools", tags=["Agent Tools"])
 app.include_router(analytics.router, prefix="/api/analytics", tags=["Analytics"])
 app.include_router(voice_library.router, prefix="/api/voice-library", tags=["Voice Library"])
+app.include_router(conversations.router, prefix="/api/conversations", tags=["Conversations"])
+app.include_router(voices.router, prefix="/api/voices", tags=["Voices"])
 
 
 @app.on_event("startup")
@@ -48,6 +50,30 @@ async def startup_event():
     # Initialize database
     init_db()
     logger.info("Database initialized")
+
+    # Run migration: Fix avatar column size to support base64 images
+    try:
+        from app.core.database import engine
+        from sqlalchemy import text
+
+        with engine.connect() as conn:
+            # Check if avatar column is VARCHAR(500) and needs migration
+            result = conn.execute(text("""
+                SELECT character_maximum_length
+                FROM information_schema.columns
+                WHERE table_name = 'agents' AND column_name = 'avatar'
+            """))
+            row = result.fetchone()
+
+            if row and row[0] == 500:
+                logger.info("Running migration: Changing avatar column to TEXT...")
+                conn.execute(text("ALTER TABLE agents ALTER COLUMN avatar TYPE TEXT;"))
+                conn.commit()
+                logger.info("✅ Avatar column migration completed")
+            else:
+                logger.info("Avatar column migration not needed (already TEXT)")
+    except Exception as e:
+        logger.warning(f"Avatar column migration skipped: {e}")
 
     # Create dev user in development mode
     if settings.ENVIRONMENT == "development":

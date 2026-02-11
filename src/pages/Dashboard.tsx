@@ -21,8 +21,8 @@ const Dashboard = () => {
       description: "Agents actifs",
       icon: Bot,
       trend: "+12%",
-      color: "text-blue-600 dark:text-blue-400",
-      bgColor: "bg-blue-100 dark:bg-blue-900/20",
+      color: "text-blue-400",
+      bgColor: "bg-blue-500/20",
     },
     {
       title: "Appels ce mois",
@@ -30,8 +30,8 @@ const Dashboard = () => {
       description: "Appels totaux",
       icon: Phone,
       trend: "+8%",
-      color: "text-green-600 dark:text-green-400",
-      bgColor: "bg-green-100 dark:bg-green-900/20",
+      color: "text-green-400",
+      bgColor: "bg-green-500/20",
     },
     {
       title: "Taux de réussite",
@@ -39,8 +39,8 @@ const Dashboard = () => {
       description: "Conversations réussies",
       icon: TrendingUp,
       trend: "+2.4%",
-      color: "text-purple-600 dark:text-purple-400",
-      bgColor: "bg-purple-100 dark:bg-purple-900/20",
+      color: "text-purple-400",
+      bgColor: "bg-purple-500/20",
     },
     {
       title: "Utilisateurs",
@@ -48,8 +48,8 @@ const Dashboard = () => {
       description: "Utilisateurs uniques",
       icon: Users,
       trend: "+15%",
-      color: "text-orange-600 dark:text-orange-400",
-      bgColor: "bg-orange-100 dark:bg-orange-900/20",
+      color: "text-orange-400",
+      bgColor: "bg-orange-500/20",
     },
   ];
 
@@ -60,12 +60,15 @@ const Dashboard = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-muted-foreground mt-1">
+          <h1 className="text-3xl font-bold tracking-tight text-white">Dashboard</h1>
+          <p className="text-gray-400 mt-1">
             Vue d'ensemble de votre plateforme d'agents vocaux
           </p>
         </div>
-        <Button onClick={() => navigate("/agents/create")} className="gap-2">
+        <Button
+          onClick={() => navigate("/agents/create")}
+          className="gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+        >
           <Plus className="h-4 w-4" />
           Nouvel Agent
         </Button>
@@ -74,23 +77,23 @@ const Dashboard = () => {
       {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat) => (
-          <Card key={stat.title}>
+          <Card key={stat.title} className="bg-white/5 border-white/10">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
+              <CardTitle className="text-sm font-medium text-white">{stat.title}</CardTitle>
               <div className={`p-2 rounded-lg ${stat.bgColor}`}>
                 <stat.icon className={`h-4 w-4 ${stat.color}`} />
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
-              <p className="text-xs text-muted-foreground mt-1">
+              <div className="text-2xl font-bold text-white">{stat.value}</div>
+              <p className="text-xs text-gray-400 mt-1">
                 {stat.description}
               </p>
               <div className="flex items-center gap-1 mt-2">
                 <span className={`text-xs font-medium ${stat.color}`}>
                   {stat.trend}
                 </span>
-                <span className="text-xs text-muted-foreground">vs mois dernier</span>
+                <span className="text-xs text-gray-400">vs mois dernier</span>
               </div>
             </CardContent>
           </Card>
@@ -98,14 +101,14 @@ const Dashboard = () => {
       </div>
 
       {/* Recent Agents */}
-      <Card>
+      <Card className="bg-white/5 border-white/10">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>Agents Récents</CardTitle>
-              <CardDescription>Vos derniers agents créés</CardDescription>
+              <CardTitle className="text-white">Agents Récents</CardTitle>
+              <CardDescription className="text-gray-400">Vos derniers agents créés</CardDescription>
             </div>
-            <Button variant="ghost" onClick={() => navigate("/agents")} className="gap-2">
+            <Button variant="ghost" onClick={() => navigate("/agents")} className="gap-2 text-gray-400 hover:text-white hover:bg-white/10">
               Voir tout
               <ArrowRight className="h-4 w-4" />
             </Button>
@@ -116,10 +119,10 @@ const Dashboard = () => {
             <div className="space-y-4">
               {[1, 2, 3].map((i) => (
                 <div key={i} className="flex items-center gap-4">
-                  <Skeleton className="h-12 w-12 rounded-lg" />
+                  <Skeleton className="h-12 w-12 rounded-lg bg-white/10" />
                   <div className="flex-1 space-y-2">
-                    <Skeleton className="h-4 w-[200px]" />
-                    <Skeleton className="h-3 w-[300px]" />
+                    <Skeleton className="h-4 w-[200px] bg-white/10" />
+                    <Skeleton className="h-3 w-[300px] bg-white/10" />
                   </div>
                 </div>
               ))}
@@ -129,30 +132,30 @@ const Dashboard = () => {
               {recentAgents.map((agent) => (
                 <div
                   key={agent.id}
-                  className="flex items-center gap-4 p-4 rounded-lg border hover:bg-accent cursor-pointer transition-colors"
+                  className="flex items-center gap-4 p-4 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 cursor-pointer transition-colors"
                   onClick={() => navigate(`/agents/${agent.id}`)}
                 >
-                  <div className="p-3 rounded-lg bg-primary/10">
-                    <Bot className="h-6 w-6 text-primary" />
+                  <div className="p-3 rounded-lg bg-purple-500/20">
+                    <Bot className="h-6 w-6 text-purple-400" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-medium truncate">{agent.name}</h3>
-                    <p className="text-sm text-muted-foreground truncate">
+                    <h3 className="font-medium truncate text-white">{agent.name}</h3>
+                    <p className="text-sm text-gray-400 truncate">
                       {agent.description || "Aucune description"}
                     </p>
                   </div>
-                  <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                  <ArrowRight className="h-4 w-4 text-gray-400" />
                 </div>
               ))}
             </div>
           ) : (
             <div className="text-center py-12">
-              <Bot className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-medium mb-2">Aucun agent</h3>
-              <p className="text-sm text-muted-foreground mb-4">
+              <Bot className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium mb-2 text-white">Aucun agent</h3>
+              <p className="text-sm text-gray-400 mb-4">
                 Créez votre premier agent pour commencer
               </p>
-              <Button onClick={() => navigate("/agents/create")} className="gap-2">
+              <Button onClick={() => navigate("/agents/create")} className="gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white">
                 <Plus className="h-4 w-4" />
                 Créer un Agent
               </Button>
@@ -163,25 +166,25 @@ const Dashboard = () => {
 
       {/* Quick Actions */}
       <div className="grid gap-4 md:grid-cols-2">
-        <Card className="cursor-pointer hover:bg-accent transition-colors" onClick={() => navigate("/agents")}>
+        <Card className="cursor-pointer bg-white/5 border-white/10 hover:bg-white/10 transition-colors" onClick={() => navigate("/agents")}>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Bot className="h-5 w-5" />
+            <CardTitle className="flex items-center gap-2 text-white">
+              <Bot className="h-5 w-5 text-purple-400" />
               Gérer les Agents
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-gray-400">
               Consulter et modifier vos agents existants
             </CardDescription>
           </CardHeader>
         </Card>
 
-        <Card className="cursor-pointer hover:bg-accent transition-colors" onClick={() => navigate("/analytics")}>
+        <Card className="cursor-pointer bg-white/5 border-white/10 hover:bg-white/10 transition-colors" onClick={() => navigate("/analytics")}>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5" />
+            <CardTitle className="flex items-center gap-2 text-white">
+              <TrendingUp className="h-5 w-5 text-pink-400" />
               Voir Analytics
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-gray-400">
               Analyser les performances de vos agents
             </CardDescription>
           </CardHeader>
