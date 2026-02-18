@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, Link, useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowLeft, Bot, Trash2, AlertCircle, Loader2, History, Cpu, Calendar, Mic, Volume2, MessageSquare, Plus, Play, Pause, Phone, Copy, PhoneOutgoing, PhoneIncoming, Mail, Send, MoreVertical, Archive, UserMinus, PenSquare, Cog, Camera, BarChart3 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -163,6 +163,7 @@ const AgentDetails = () => {
     agentId: string;
   }>();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const {
     toast
   } = useToast();
@@ -197,6 +198,14 @@ const AgentDetails = () => {
   const [isTestAgentSidebarOpen, setIsTestAgentSidebarOpen] = useState(false);
   const [isGoogleCalendarModalOpen, setIsGoogleCalendarModalOpen] = useState(false);
   const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (agent && searchParams.get('test') === 'true') {
+      setIsTestAgentSidebarOpen(true);
+      searchParams.delete('test');
+      setSearchParams(searchParams, { replace: true });
+    }
+  }, [agent]);
 
   useEffect(() => {
     if (agent) {
@@ -619,7 +628,7 @@ const AgentDetails = () => {
         </Link>
       </div>
       
-      <Card className="mb-6 overflow-hidden bg-gray-800/50 border-gray-700">
+      <Card className="mb-6 overflow-hidden bg-white dark:bg-gray-800/50 border-gray-200 dark:border-gray-700">
         <CardHeader className="pb-3">
           <div className="grid grid-cols-1 md:grid-cols-[auto_1fr_auto] gap-4 items-start">
             <div className="relative group">
@@ -646,13 +655,13 @@ const AgentDetails = () => {
                 <h1 className="text-2xl font-bold">
                   {agent.name}
                 </h1>
-                {isActive ? <Badge variant="outline" className="border-green-500/30 text-green-500 bg-green-500/10">
+                {isActive ? <Badge variant="outline" className="border-green-500/30 text-green-600 dark:text-green-500 bg-green-500/10">
                     <span className="flex items-center gap-1.5">
                       <span className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse"></span>
                       Actif
                     </span>
-                  </Badge> : <Badge variant="outline" className="border-border">
-                    {agent.type}
+                  </Badge> : <Badge variant="outline" className="border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700/50">
+                    Inactif
                   </Badge>}
               </div>
               <p className="text-muted-foreground mt-1.5 max-w-2xl">{agent.description}</p>
@@ -755,24 +764,24 @@ const AgentDetails = () => {
 
       {/* Performance Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
-        <Card className="bg-gray-800/50 border-gray-700">
+        <Card className="bg-white dark:bg-gray-800/50 border-gray-200 dark:border-gray-700">
           <CardHeader className="pb-2">
-            <CardDescription className="text-xs text-gray-400">AVM</CardDescription>
+            <CardDescription className="text-xs text-gray-500 dark:text-gray-400">AVM</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex items-baseline gap-1">
-              <span className="text-2xl font-bold text-white">{agent.avm_score || 7.8}</span>
-              <span className="text-sm text-gray-400">/10</span>
+              <span className="text-2xl font-bold text-gray-900 dark:text-white">{agent.avm_score || 7.8}</span>
+              <span className="text-sm text-gray-500 dark:text-gray-400">/10</span>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gray-800/50 border-gray-700">
+        <Card className="bg-white dark:bg-gray-800/50 border-gray-200 dark:border-gray-700">
           <CardHeader className="pb-2">
-            <CardDescription className="text-xs text-gray-400">Interactions</CardDescription>
+            <CardDescription className="text-xs text-gray-500 dark:text-gray-400">Interactions</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">
+            <div className="text-2xl font-bold text-gray-900 dark:text-white">
               {agent.interactions >= 1000
                 ? `${(agent.interactions / 1000).toFixed(1)}k`
                 : agent.interactions || '1.3k'}
@@ -780,21 +789,21 @@ const AgentDetails = () => {
           </CardContent>
         </Card>
 
-        <Card className="bg-gray-800/50 border-gray-700">
+        <Card className="bg-white dark:bg-gray-800/50 border-gray-200 dark:border-gray-700">
           <CardHeader className="pb-2">
-            <CardDescription className="text-xs text-gray-400">CSAT</CardDescription>
+            <CardDescription className="text-xs text-gray-500 dark:text-gray-400">CSAT</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">{agent.csat || 85}%</div>
+            <div className="text-2xl font-bold text-gray-900 dark:text-white">{agent.csat || 85}%</div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gray-800/50 border-gray-700">
+        <Card className="bg-white dark:bg-gray-800/50 border-gray-200 dark:border-gray-700">
           <CardHeader className="pb-2">
-            <CardDescription className="text-xs text-gray-400">Performance</CardDescription>
+            <CardDescription className="text-xs text-gray-500 dark:text-gray-400">Performance</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">{agent.performance || 92}%</div>
+            <div className="text-2xl font-bold text-gray-900 dark:text-white">{agent.performance || 92}%</div>
           </CardContent>
         </Card>
       </div>

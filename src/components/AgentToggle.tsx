@@ -10,13 +10,13 @@ interface AgentToggleProps {
 export const AgentToggle: React.FC<AgentToggleProps> = ({ isActive, onToggle }) => {
   return (
     <div className="flex items-center space-x-2" onClick={(e) => e.preventDefault()}>
-      <Switch 
-        checked={isActive} 
-        onCheckedChange={(checked) => {}} 
+      <Switch
+        checked={isActive}
+        onCheckedChange={(checked) => {}}
         onClick={onToggle}
-        className="data-[state=checked]:bg-brand-purple"
+        className="data-[state=checked]:bg-purple-600 data-[state=unchecked]:bg-gray-300 dark:data-[state=unchecked]:bg-gray-600"
       />
-      <span className={`text-sm font-medium ${isActive ? 'text-fg' : 'text-fg-muted'}`}>
+      <span className={`text-sm font-medium ${isActive ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'}`}>
         {isActive ? 'Actif' : 'Inactif'}
       </span>
     </div>

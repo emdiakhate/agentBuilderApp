@@ -13,10 +13,13 @@ import {
   ChevronRight,
   Menu,
   X,
+  Sun,
+  Moon,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import { useTheme } from '@/hooks/useTheme';
 
 interface NavItem {
   label: string;
@@ -43,6 +46,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ className }) => {
   const location = useLocation();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const { theme, setTheme } = useTheme();
+
+  const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
 
   // Get user info (from localStorage or context)
   const userName = localStorage.getItem('user_name') || 'Malik';
@@ -54,10 +60,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ className }) => {
     setIsMobileOpen(false);
   };
 
+  const toggleTheme = () => {
+    setTheme(isDark ? 'light' : 'dark');
+  };
+
   const sidebarContent = (
-    <div className="flex flex-col h-full bg-[#1a1a2e] text-white">
+    <div className="flex flex-col h-full bg-white dark:bg-[#1a1a2e] text-gray-900 dark:text-white border-r border-gray-200 dark:border-transparent transition-colors duration-300">
       {/* Logo / Brand */}
-      <div className="p-6 border-b border-white/10">
+      <div className="p-6 border-b border-gray-200 dark:border-white/10">
         <div className="flex items-center justify-between">
           {!isCollapsed && (
             <motion.div
@@ -70,8 +80,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ className }) => {
                 <Bot size={24} className="text-white" />
               </div>
               <div>
-                <h1 className="text-lg font-bold">AgentBuilder</h1>
-                <p className="text-xs text-gray-400">AI Voice Agents</p>
+                <h1 className="text-lg font-bold text-gray-900 dark:text-white">AgentBuilder</h1>
+                <p className="text-xs text-gray-500 dark:text-gray-400">AI Voice Agents</p>
               </div>
             </motion.div>
           )}
@@ -79,7 +89,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ className }) => {
           {/* Desktop collapse toggle */}
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="hidden lg:block p-2 hover:bg-white/5 rounded-lg transition-colors"
+            className="hidden lg:block p-2 hover:bg-gray-100 dark:hover:bg-white/5 rounded-lg transition-colors"
           >
             {isCollapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
           </button>
@@ -97,14 +107,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ className }) => {
               onClick={() => handleNavigation(item.path)}
               className={cn(
                 'w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200',
-                'hover:bg-white/5',
-                isActive && 'bg-white/10 border-l-4 border-purple-500',
+                'hover:bg-gray-100 dark:hover:bg-white/5',
+                isActive && 'bg-purple-50 dark:bg-white/10 border-l-4 border-purple-500',
                 !isActive && 'border-l-4 border-transparent'
               )}
             >
               <span className={cn(
                 'flex-shrink-0',
-                isActive ? 'text-purple-400' : 'text-gray-400'
+                isActive ? 'text-purple-500 dark:text-purple-400' : 'text-gray-500 dark:text-gray-400'
               )}>
                 {item.icon}
               </span>
@@ -116,7 +126,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ className }) => {
                   exit={{ opacity: 0 }}
                   className={cn(
                     'text-sm font-medium',
-                    isActive ? 'text-white' : 'text-gray-300'
+                    isActive ? 'text-purple-700 dark:text-white' : 'text-gray-600 dark:text-gray-300'
                   )}
                 >
                   {item.label}
@@ -127,21 +137,46 @@ export const Sidebar: React.FC<SidebarProps> = ({ className }) => {
         })}
       </nav>
 
-      {/* User Profile */}
-      <div className="p-4 border-t border-white/10">
+      {/* Theme Toggle + User Profile */}
+      <div className="p-4 border-t border-gray-200 dark:border-white/10 space-y-3">
+        {/* Theme Toggle */}
+        <button
+          onClick={toggleTheme}
+          className={cn(
+            'w-full flex items-center space-x-3 px-4 py-2.5 rounded-lg transition-all duration-200',
+            'hover:bg-gray-100 dark:hover:bg-white/5',
+            isCollapsed && 'justify-center'
+          )}
+        >
+          <span className="flex-shrink-0 text-gray-500 dark:text-gray-400">
+            {isDark ? <Sun size={20} /> : <Moon size={20} />}
+          </span>
+          {!isCollapsed && (
+            <motion.span
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="text-sm font-medium text-gray-600 dark:text-gray-300"
+            >
+              {isDark ? 'Mode clair' : 'Mode sombre'}
+            </motion.span>
+          )}
+        </button>
+
+        {/* User Profile */}
         {!isCollapsed ? (
-          <div className="flex items-center space-x-3 p-3 rounded-lg bg-white/5">
+          <div className="flex items-center space-x-3 p-3 rounded-lg bg-gray-100 dark:bg-white/5">
             <Avatar className="h-10 w-10">
               <AvatarImage src={`https://i.pravatar.cc/100?u=${userName}`} />
-              <AvatarFallback className="bg-purple-500">
+              <AvatarFallback className="bg-purple-500 text-white">
                 {userName.slice(0, 2).toUpperCase()}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-white truncate">{userName}</p>
-              <p className="text-xs text-gray-400 truncate">{userEmail}</p>
+              <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{userName}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{userEmail}</p>
             </div>
-            <span className="px-2 py-1 text-xs bg-purple-500/20 text-purple-300 rounded-full">
+            <span className="px-2 py-1 text-xs bg-purple-100 dark:bg-purple-500/20 text-purple-600 dark:text-purple-300 rounded-full">
               {userPlan}
             </span>
           </div>
@@ -149,7 +184,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ className }) => {
           <div className="flex justify-center">
             <Avatar className="h-10 w-10">
               <AvatarImage src={`https://i.pravatar.cc/100?u=${userName}`} />
-              <AvatarFallback className="bg-purple-500">
+              <AvatarFallback className="bg-purple-500 text-white">
                 {userName.slice(0, 2).toUpperCase()}
               </AvatarFallback>
             </Avatar>
@@ -164,7 +199,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ className }) => {
       {/* Mobile Menu Button */}
       <button
         onClick={() => setIsMobileOpen(!isMobileOpen)}
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-[#1a1a2e] text-white rounded-lg shadow-lg"
+        className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-white dark:bg-[#1a1a2e] text-gray-900 dark:text-white rounded-lg shadow-lg"
       >
         {isMobileOpen ? <X size={24} /> : <Menu size={24} />}
       </button>
