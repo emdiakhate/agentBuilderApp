@@ -30,6 +30,12 @@ class AddToolsToAgentRequest(BaseModel):
     update_system_prompt: bool = True
 
 
+class AddGoogleCalendarToolsRequest(BaseModel):
+    """Request to add Google Calendar tools to an agent"""
+    tool_types: List[str] = ["google.calendar.event.create", "google.calendar.availability.check"]
+    update_system_prompt: bool = True
+
+
 @router.get("/vapi/tools")
 async def get_vapi_tools(
     current_user: User = Depends(get_current_user_optional)
@@ -108,6 +114,140 @@ async def create_google_calendar_tools(
         raise HTTPException(
             status_code=500,
             detail=f"Failed to create Google Calendar tools: {str(e)}"
+        )
+
+
+@router.post("/agents/{agent_id}/tools/google-calendar")
+async def add_google_calendar_tools_to_agent(
+    agent_id: str,
+    request: AddGoogleCalendarToolsRequest = AddGoogleCalendarToolsRequest(),
+    current_user: User = Depends(get_current_user_optional),
+    db: Session = Depends(get_db)
+):
+    """
+    Add Google Calendar native tools directly to an agent.
+    No intermediate tool creation needed — adds native tool types to the assistant.
+    """
+    try:
+        from app.models.agent import Agent
+
+        agent = db.query(Agent).filter(
+            Agent.id == agent_id,
+            Agent.user_id == current_user.id
+        ).first()
+
+        if not agent:
+            raise HTTPException(status_code=404, detail="Agent not found")
+
+        vapi_assistant_id = agent.vapi_assistant_id
+        if not vapi_assistant_id:
+            raise HTTPException(
+                status_code=400,
+                detail="Agent not synced with Vapi. Please recreate the agent or sync it first."
+            )
+
+        # Get current assistant configuration
+        assistant_config = await vapi_service.get_assistant(vapi_assistant_id)
+
+        current_tools = assistant_config.get("model", {}).get("tools", [])
+
+        # Build native Google Calendar tool configurations
+        NATIVE_TOOL_CONFIGS = {
+            "google.calendar.event.create": {
+                "type": "google.calendar.event.create",
+                "name": "scheduleAppointment",
+                "description": "Use this tool to schedule appointments and create calendar events. Notes: - All appointments are 30 mins.",
+                "enabled": True
+            },
+            "google.calendar.availability.check": {
+                "type": "google.calendar.availability.check",
+                "name": "checkAvailability",
+                "description": "Use this tool to check calendar availability.",
+                "enabled": True
+            }
+        }
+
+        new_tools = []
+        for tool_type in request.tool_types:
+            if tool_type in NATIVE_TOOL_CONFIGS:
+                # Skip if tool type already exists on the assistant
+                already_exists = any(
+                    t.get("type") == tool_type for t in current_tools
+                )
+                if not already_exists:
+                    new_tools.append(NATIVE_TOOL_CONFIGS[tool_type])
+            else:
+                logger.warning(f"Unknown Google Calendar tool type: {tool_type}")
+
+        if not new_tools:
+            return {
+                "success": True,
+                "message": "Google Calendar tools already configured on this agent",
+                "agent": assistant_config
+            }
+
+        updated_tools = current_tools + new_tools
+
+        update_payload = {
+            "model": {
+                **assistant_config.get("model", {}),
+                "tools": updated_tools
+            }
+        }
+
+        # Update system prompt if requested
+        if request.update_system_prompt:
+            calendar_instructions = """
+
+You are a scheduling assistant. When users want to schedule an appointment, first check their availability using the Check Availability tool, then use the Create Event tool to schedule the event if they're available.
+
+- Gather date and time range to check availability.
+- To book an appointment, gather the purpose of the appointment, ex: general checkup, dental cleaning and etc.
+
+Notes:
+- Use the purpose as summary for booking appointment.
+- Current date: {{now}}"""
+
+            current_messages = assistant_config.get("model", {}).get("messages", [])
+
+            system_message_found = False
+            for msg in current_messages:
+                if msg.get("role") == "system":
+                    if "scheduleAppointment" not in msg.get("content", ""):
+                        msg["content"] = msg["content"] + calendar_instructions
+                    system_message_found = True
+                    break
+
+            if not system_message_found:
+                current_messages.insert(0, {
+                    "role": "system",
+                    "content": calendar_instructions.strip()
+                })
+
+            update_payload["model"]["messages"] = current_messages
+
+        # Update assistant in Vapi
+        updated_assistant = await vapi_service.update_assistant(
+            vapi_assistant_id,
+            **update_payload
+        )
+
+        logger.info(f"Added Google Calendar tools to agent {agent_id}")
+
+        return {
+            "success": True,
+            "agent": updated_assistant,
+            "tools_added": [t["type"] for t in new_tools],
+            "message": f"Added {len(new_tools)} Google Calendar tools to agent successfully"
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error adding Google Calendar tools to agent: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to add Google Calendar tools: {str(e)}"
         )
 
 
