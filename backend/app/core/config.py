@@ -19,7 +19,7 @@ class Settings(BaseSettings):
     DEBUG: bool = True
 
     # Database
-    DATABASE_URL: str = "postgresql://agent_user:agent_password@localhost:5432/agent_saas_db"
+    DATABASE_URL: str = "postgresql+psycopg://agent_user:agent_password@localhost:5432/agent_saas_db"
 
     # JWT Authentication
     SECRET_KEY: str = "your-super-secret-jwt-key-change-this-in-production"
