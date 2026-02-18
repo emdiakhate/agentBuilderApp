@@ -254,11 +254,24 @@ class VapiService:
             Updated assistant data
         """
         try:
+            # Remove read-only fields that Vapi rejects on update
+            readonly_fields = {"id", "orgId", "createdAt", "updatedAt", "isServerUrlSecretSet"}
+            cleaned_updates = {k: v for k, v in updates.items() if k not in readonly_fields}
+
+            # Also clean read-only fields from nested model object
+            if "model" in cleaned_updates and isinstance(cleaned_updates["model"], dict):
+                cleaned_updates["model"] = {
+                    k: v for k, v in cleaned_updates["model"].items()
+                    if k not in readonly_fields
+                }
+
+            logger.debug(f"Updating Vapi assistant {assistant_id} with keys: {list(cleaned_updates.keys())}")
+
             async with httpx.AsyncClient() as client:
                 response = await client.patch(
                     f"{self.base_url}/assistant/{assistant_id}",
                     headers=self.headers,
-                    json=updates,
+                    json=cleaned_updates,
                     timeout=30.0
                 )
                 response.raise_for_status()

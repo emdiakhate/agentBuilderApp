@@ -148,6 +148,7 @@ async def add_google_calendar_tools_to_agent(
 
         # Get current assistant configuration
         assistant_config = await vapi_service.get_assistant(vapi_assistant_id)
+        logger.info(f"Current assistant model keys: {list(assistant_config.get('model', {}).keys())}")
 
         current_tools = assistant_config.get("model", {}).get("tools", [])
 
@@ -188,12 +189,17 @@ async def add_google_calendar_tools_to_agent(
 
         updated_tools = current_tools + new_tools
 
-        update_payload = {
-            "model": {
-                **assistant_config.get("model", {}),
-                "tools": updated_tools
-            }
+        # Build a clean model update — only include mutable fields
+        # Vapi rejects read-only fields (id, orgId, createdAt, etc.) if sent back
+        current_model = assistant_config.get("model", {})
+        model_update = {
+            "tools": updated_tools,
         }
+
+        # Preserve essential model fields
+        for key in ["provider", "model", "systemPrompt", "messages", "toolIds", "temperature", "maxTokens"]:
+            if key in current_model:
+                model_update[key] = current_model[key]
 
         # Update system prompt if requested
         if request.update_system_prompt:
@@ -208,7 +214,7 @@ Notes:
 - Use the purpose as summary for booking appointment.
 - Current date: {{now}}"""
 
-            current_messages = assistant_config.get("model", {}).get("messages", [])
+            current_messages = model_update.get("messages", [])
 
             system_message_found = False
             for msg in current_messages:
@@ -224,7 +230,10 @@ Notes:
                     "content": calendar_instructions.strip()
                 })
 
-            update_payload["model"]["messages"] = current_messages
+            model_update["messages"] = current_messages
+
+        update_payload = {"model": model_update}
+        logger.info(f"Sending update to Vapi with model keys: {list(model_update.keys())}")
 
         # Update assistant in Vapi
         updated_assistant = await vapi_service.update_assistant(
