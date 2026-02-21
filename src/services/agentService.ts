@@ -177,9 +177,11 @@ export async function createAgent(data: CreateAgentData): Promise<AgentType> {
   try {
     const agent = await apiClient.post<BackendAgent>('/api/agents', data);
     return mapBackendAgentToFrontend(agent);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error creating agent:', error);
-    throw new Error('Impossible de créer l\'agent');
+    // Pass through detailed error message from backend
+    const detail = error?.data?.detail || error?.message || 'Impossible de créer l\'agent';
+    throw new Error(detail);
   }
 }
 

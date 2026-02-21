@@ -430,11 +430,12 @@ const AgentCreate = () => {
 
       // Rediriger vers la liste des agents
       navigate("/agents");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Erreur lors de la création:", error);
+      const errorMsg = error?.message || "Impossible de créer l'agent. Vérifiez votre connexion.";
       toast({
-        title: "Erreur",
-        description: "Impossible de créer l'agent. Vérifiez votre connexion.",
+        title: "Erreur de création",
+        description: errorMsg.length > 200 ? errorMsg.substring(0, 200) + '...' : errorMsg,
         variant: "destructive",
       });
     } finally {

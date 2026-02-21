@@ -220,8 +220,11 @@ async def update_agent(
                 bg_sound = update_data["background_sound"]
                 # Use custom URLs for environments or Vapi built-in sounds
                 background_sound_url = get_background_sound_url(bg_sound)
-                vapi_updates["backgroundSound"] = background_sound_url
-                logger.info(f"Updating background sound: {bg_sound} -> {background_sound_url}")
+                if background_sound_url and background_sound_url != "off":
+                    vapi_updates["backgroundSound"] = background_sound_url
+                    logger.info(f"Updating background sound: {bg_sound} -> {background_sound_url}")
+                else:
+                    logger.info(f"Background sound set to off (removed from Vapi payload)")
 
             # Handle background denoising
             if "background_denoising_enabled" in update_data:

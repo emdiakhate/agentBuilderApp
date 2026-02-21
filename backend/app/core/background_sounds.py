@@ -1,51 +1,49 @@
 """
 Background Sound Configuration
 Maps user-friendly environment names to audio file URLs for Vapi
+
+IMPORTANT: Pour ajouter vos propres sons ambiants :
+1. Téléchargez des sons gratuits depuis :
+   - https://pixabay.com/sound-effects/search/restaurant-ambience/
+   - https://mixkit.co/free-sound-effects/ambience/
+   - https://freesound.org/ (inscription requise)
+   - https://www.zapsplat.com/sound-effect-category/ambient/
+2. Hébergez les fichiers MP3 sur un CDN accessible publiquement
+   (ex: AWS S3, Cloudflare R2, ou un serveur statique)
+3. Remplacez les URLs ci-dessous par vos URLs hébergées
+4. Les URLs doivent être accessibles sans authentification (HTTPS direct)
+
+Note: "office" est un son intégré à Vapi (pas d'URL nécessaire).
+Les autres sons nécessitent des URLs publiques pour fonctionner
+à la fois en preview (frontend) et en appel réel (via Vapi).
 """
 
 # Background sound URLs mapping
-# Replace these URLs with your hosted audio files
+# "office" is a Vapi built-in sound (just pass the string "office")
+# For custom sounds, use publicly accessible HTTPS URLs to MP3/WAV files
 BACKGROUND_SOUND_URLS = {
-    "off": "off",  # No background sound
-    "office": "office",  # Vapi built-in office sound
+    "off": "off",      # No background sound
+    "office": "office", # Vapi built-in office sound (works out of the box)
 
-    # Custom sounds - Replace with your hosted audio file URLs
-    # Audio files should be:
-    # - Format: MP3, WAV, or OGG
-    # - Loopable (seamless loop for continuous playback)
-    # - Low volume (subtle ambient sound)
-    # - Publicly accessible HTTPS URL
-
-    # IMPORTANT: GitHub Raw URLs don't work with Vapi/Daily.co!
-    # See AUDIO_CDN_SETUP.md for proper CDN setup instructions
-    # Using Pixabay temporarily until you upload restaurant-1.mp3 to a CDN
-    "restaurant": "https://cdn.pixabay.com/download/audio/2022/03/15/audio_c84c5b3f3f.mp3",  # TEMP - Replace with CDN URL
-    "clinic": "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3",  # Hospital/clinic ambient
-    "noisy": "https://cdn.pixabay.com/download/audio/2022/03/10/audio_4d8b2e1e46.mp3",  # Call center / busy office
-    "home": "https://cdn.pixabay.com/download/audio/2021/08/04/audio_12b0c7443c.mp3",  # Home ambient with TV
-    "cafe": "https://cdn.pixabay.com/download/audio/2022/03/15/audio_c84c5b3f3f.mp3",  # Cafe ambient
+    # === SONS PERSONNALISÉS ===
+    # Remplacez ces URLs par vos propres fichiers MP3 hébergés sur un CDN
+    # Les URLs actuelles sont des exemples de Pixabay (peuvent ne pas fonctionner directement)
+    "restaurant": "https://cdn.pixabay.com/audio/2022/03/15/audio_115fb58836.mp3",
+    "cafe": "https://cdn.pixabay.com/audio/2024/11/04/audio_65b2ea5101.mp3",
+    "noisy": "https://cdn.pixabay.com/audio/2022/10/30/audio_f5bd819213.mp3",
+    "home": "https://cdn.pixabay.com/audio/2022/01/20/audio_7d8e741664.mp3",
+    "clinic": "https://cdn.pixabay.com/audio/2024/06/06/audio_7a3361a00e.mp3",
 }
 
 # Display names for UI (French)
 BACKGROUND_SOUND_LABELS = {
-    "off": "🔇 Aucun - Pas de bruit de fond",
-    "office": "🏢 Bureau - Environnement de bureau calme",
-    "restaurant": "🍽️ Restaurant - Ambiance avec conversations",
-    "clinic": "🏥 Clinique - Environnement médical",
-    "noisy": "📢 Bruyant - Centre d'appels, environnement très bruyant",
-    "home": "🏠 Domestique - Maison avec TV/musique",
-    "cafe": "☕ Café - Ambiance café avec discussions",
-}
-
-# Descriptions for each environment
-BACKGROUND_SOUND_DESCRIPTIONS = {
-    "off": "Aucun bruit de fond, silence complet",
-    "office": "Bruit de bureau léger avec claviers et conversations lointaines",
-    "restaurant": "Ambiance de restaurant avec conversations et couverts",
-    "clinic": "Environnement médical calme avec bruits d'équipement",
-    "noisy": "Environnement très bruyant avec multiples conversations",
-    "home": "Ambiance domestique avec télévision ou musique de fond",
-    "cafe": "Ambiance de café avec machine à café et conversations",
+    "off": "Aucun - Pas de bruit de fond",
+    "office": "Bureau - Environnement de bureau calme",
+    "restaurant": "Restaurant - Ambiance avec conversations",
+    "clinic": "Clinique / Hôpital - Environnement médical",
+    "noisy": "Centre d'appels - Environnement très bruyant",
+    "home": "Domestique - Maison avec TV/musique",
+    "cafe": "Café - Ambiance café avec discussions",
 }
 
 
@@ -62,14 +60,19 @@ def get_background_sound_url(environment: str) -> str:
     return BACKGROUND_SOUND_URLS.get(environment, "off")
 
 
-def is_custom_background_sound(environment: str) -> bool:
+def get_all_background_sounds() -> dict:
     """
-    Check if the environment uses a custom audio file (not Vapi built-in)
-
-    Args:
-        environment: Environment name
+    Get all background sounds with their URLs and labels for debugging/testing
 
     Returns:
-        True if custom audio file, False if Vapi built-in
+        Dict with sound name, URL, and label for each environment
     """
-    return environment not in ["off", "office"]
+    result = {}
+    for key, url in BACKGROUND_SOUND_URLS.items():
+        result[key] = {
+            "url": url,
+            "label": BACKGROUND_SOUND_LABELS.get(key, key),
+            "is_builtin": key in ("off", "office"),
+            "is_custom_url": key not in ("off", "office"),
+        }
+    return result

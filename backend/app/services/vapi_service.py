@@ -4,6 +4,7 @@ Vapi Service - Integration with Vapi.ai API
 
 from typing import Dict, Any, List, Optional
 import httpx
+import json
 import mimetypes
 from loguru import logger
 
@@ -169,10 +170,14 @@ class VapiService:
 
             # Add background sound configuration
             # Use custom URLs for environments (restaurant, clinic, etc.)
-            # or Vapi built-in sounds ("off", "office")
+            # or Vapi built-in sounds ("office")
+            # Only include backgroundSound if it's not "off"
             background_sound_url = get_background_sound_url(background_sound)
-            payload["backgroundSound"] = background_sound_url
-            logger.info(f"Background sound configured: {background_sound} -> {background_sound_url}")
+            if background_sound_url and background_sound_url != "off":
+                payload["backgroundSound"] = background_sound_url
+                logger.info(f"Background sound configured: {background_sound} -> {background_sound_url}")
+            else:
+                logger.info(f"Background sound: off (not included in payload)")
 
             # Add background speech denoising if enabled
             if background_denoising_enabled:
@@ -218,6 +223,13 @@ class VapiService:
 
                 payload["backgroundSpeechDenoisingPlan"] = denoising_config
 
+            # Log payload for debugging (truncate long prompts)
+            debug_payload = payload.copy()
+            if "model" in debug_payload and "systemPrompt" in debug_payload.get("model", {}):
+                prompt_preview = debug_payload["model"]["systemPrompt"][:200] + "..."
+                debug_payload["model"] = {**debug_payload["model"], "systemPrompt": prompt_preview}
+            logger.info(f"Creating Vapi assistant with payload: {json.dumps(debug_payload, indent=2, default=str)}")
+
             async with httpx.AsyncClient() as client:
                 response = await client.post(
                     f"{self.base_url}/assistant",
@@ -232,8 +244,10 @@ class VapiService:
             return result
 
         except httpx.HTTPStatusError as e:
-            logger.error(f"Error creating assistant: {e.response.status_code} - {e.response.text}")
-            raise
+            error_detail = e.response.text
+            logger.error(f"Error creating assistant: {e.response.status_code} - {error_detail}")
+            # Re-raise with detailed message so the API endpoint can show it
+            raise Exception(f"Vapi API error ({e.response.status_code}): {error_detail}")
         except Exception as e:
             logger.error(f"Error creating assistant: {e}")
             raise
