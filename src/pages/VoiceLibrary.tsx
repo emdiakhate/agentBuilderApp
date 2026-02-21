@@ -174,7 +174,7 @@ const VoiceLibrary: React.FC = () => {
     switch (provider.toLowerCase()) {
       case 'elevenlabs':
       case '11labs':
-        return 'bg-purple-100 text-purple-800 dark:bg-purple-950/20 dark:text-purple-400';
+        return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/20 dark:text-emerald-400';
       case 'cartesia':
         return 'bg-blue-100 text-blue-800 dark:bg-blue-950/20 dark:text-blue-400';
       case 'playht':
@@ -203,7 +203,7 @@ const VoiceLibrary: React.FC = () => {
             Gérez et personnalisez vos voix pour vos agents
           </p>
         </div>
-        <Button onClick={() => setShowCloneModal(true)} className="gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white">
+        <Button onClick={() => setShowCloneModal(true)} className="gap-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white">
           <Plus className="h-4 w-4" />
           Cloner une Voix
         </Button>
@@ -292,7 +292,7 @@ const VoiceLibrary: React.FC = () => {
       {/* Loading State */}
       {loading && (
         <div className="flex items-center justify-center h-64">
-          <Loader2 className="h-8 w-8 animate-spin text-purple-500" />
+          <Loader2 className="h-8 w-8 animate-spin text-emerald-500" />
         </div>
       )}
 
@@ -307,7 +307,7 @@ const VoiceLibrary: React.FC = () => {
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-2">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-lg">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-teal-500 flex items-center justify-center text-white text-lg">
                       {getProviderIcon(voice.provider)}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -393,7 +393,7 @@ const VoiceLibrary: React.FC = () => {
                 : 'Commencez par cloner une voix pour votre bibliothèque.'}
             </p>
             {!searchQuery && providerFilter === 'all' && languageFilter === 'all' && (
-              <Button onClick={() => setShowCloneModal(true)} className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white">
+              <Button onClick={() => setShowCloneModal(true)} className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white">
                 <Plus className="h-4 w-4 mr-2" />
                 Cloner une Voix
               </Button>

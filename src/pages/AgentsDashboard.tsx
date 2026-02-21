@@ -47,7 +47,7 @@ const AgentsDashboard: React.FC = () => {
       <div className="p-6">
         <div className="text-center py-12">
           <p className="text-red-500 dark:text-red-400 mb-4">{error}</p>
-          <Button onClick={() => window.location.reload()} className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white">Réessayer</Button>
+          <Button onClick={() => window.location.reload()} className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white">Réessayer</Button>
         </div>
       </div>
     );
@@ -123,7 +123,7 @@ const AgentsDashboard: React.FC = () => {
           </div>
           <Button
             onClick={() => navigate('/agents/create')}
-            className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+            className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white"
           >
             <Plus className="mr-2 h-4 w-4" />
             Nouvel Agent
@@ -172,7 +172,7 @@ const AgentsDashboard: React.FC = () => {
               {agents.map((agent) => (
                 <Card
                   key={agent.id}
-                  className="bg-white dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-200 cursor-pointer group hover:border-purple-500/50"
+                  className="bg-white dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-200 cursor-pointer group hover:border-emerald-500/50"
                   onClick={() => navigate(`/agents/${agent.id}`)}
                 >
                   <CardHeader className="pb-3">
@@ -183,12 +183,12 @@ const AgentsDashboard: React.FC = () => {
                             src={agent.avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${agent.id}`}
                             alt={agent.name}
                           />
-                          <AvatarFallback className="bg-purple-500/20 text-purple-600 dark:text-blue-400 font-semibold">
+                          <AvatarFallback className="bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-semibold">
                             {agent.name.charAt(0)}
                           </AvatarFallback>
                         </Avatar>
                         <div>
-                          <CardTitle className="text-lg text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-blue-400 transition-colors">
+                          <CardTitle className="text-lg text-gray-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
                             {agent.name}
                           </CardTitle>
                           <div className="flex items-center gap-2 mt-1">
@@ -227,7 +227,7 @@ const AgentsDashboard: React.FC = () => {
                     <div className="flex gap-2 pt-2 border-t border-gray-200 dark:border-gray-700">
                       <Button
                         size="sm"
-                        className="flex-1 bg-purple-500/20 border border-purple-500/30 text-purple-700 dark:text-purple-200 hover:bg-purple-500/30"
+                        className="flex-1 bg-emerald-500/20 border border-emerald-500/30 text-emerald-700 dark:text-emerald-200 hover:bg-emerald-500/30"
                         onClick={(e) => handleTestAgent(e, agent.id)}
                       >
                         <Rocket className="mr-2 h-3 w-3" />
@@ -235,7 +235,7 @@ const AgentsDashboard: React.FC = () => {
                       </Button>
                       <Button
                         size="sm"
-                        className="flex-1 bg-purple-500/20 border border-purple-500/30 text-purple-700 dark:text-purple-200 hover:bg-purple-500/30"
+                        className="flex-1 bg-emerald-500/20 border border-emerald-500/30 text-emerald-700 dark:text-emerald-200 hover:bg-emerald-500/30"
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
@@ -264,7 +264,7 @@ const AgentsDashboard: React.FC = () => {
             </p>
             <Button
               onClick={() => navigate('/agents/create')}
-              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+              className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white"
             >
               <Plus className="mr-2 h-4 w-4" />
               Créer un Agent

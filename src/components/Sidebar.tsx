@@ -65,7 +65,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ className }) => {
   };
 
   const sidebarContent = (
-    <div className="flex flex-col h-full bg-white dark:bg-[#1a1a2e] text-gray-900 dark:text-white border-r border-gray-200 dark:border-transparent transition-colors duration-300">
+    <div className="flex flex-col h-full bg-white dark:bg-[#0c1520] text-gray-900 dark:text-white border-r border-gray-200 dark:border-transparent transition-colors duration-300">
       {/* Logo / Brand */}
       <div className="p-6 border-b border-gray-200 dark:border-white/10">
         <div className="flex items-center justify-between">
@@ -76,7 +76,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ className }) => {
               exit={{ opacity: 0 }}
               className="flex items-center space-x-3"
             >
-              <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+              <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center">
                 <Bot size={24} className="text-white" />
               </div>
               <div>
@@ -108,13 +108,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ className }) => {
               className={cn(
                 'w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200',
                 'hover:bg-gray-100 dark:hover:bg-white/5',
-                isActive && 'bg-purple-50 dark:bg-white/10 border-l-4 border-purple-500',
+                isActive && 'bg-emerald-50 dark:bg-emerald-500/10 border-l-4 border-emerald-500',
                 !isActive && 'border-l-4 border-transparent'
               )}
             >
               <span className={cn(
                 'flex-shrink-0',
-                isActive ? 'text-purple-500 dark:text-purple-400' : 'text-gray-500 dark:text-gray-400'
+                isActive ? 'text-emerald-500 dark:text-emerald-400' : 'text-gray-500 dark:text-gray-400'
               )}>
                 {item.icon}
               </span>
@@ -126,7 +126,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ className }) => {
                   exit={{ opacity: 0 }}
                   className={cn(
                     'text-sm font-medium',
-                    isActive ? 'text-purple-700 dark:text-white' : 'text-gray-600 dark:text-gray-300'
+                    isActive ? 'text-emerald-700 dark:text-white' : 'text-gray-600 dark:text-gray-300'
                   )}
                 >
                   {item.label}
@@ -168,7 +168,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ className }) => {
           <div className="flex items-center space-x-3 p-3 rounded-lg bg-gray-100 dark:bg-white/5">
             <Avatar className="h-10 w-10">
               <AvatarImage src={`https://i.pravatar.cc/100?u=${userName}`} />
-              <AvatarFallback className="bg-purple-500 text-white">
+              <AvatarFallback className="bg-emerald-500 text-white">
                 {userName.slice(0, 2).toUpperCase()}
               </AvatarFallback>
             </Avatar>
@@ -176,7 +176,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ className }) => {
               <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{userName}</p>
               <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{userEmail}</p>
             </div>
-            <span className="px-2 py-1 text-xs bg-purple-100 dark:bg-purple-500/20 text-purple-600 dark:text-purple-300 rounded-full">
+            <span className="px-2 py-1 text-xs bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 rounded-full">
               {userPlan}
             </span>
           </div>
@@ -184,7 +184,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ className }) => {
           <div className="flex justify-center">
             <Avatar className="h-10 w-10">
               <AvatarImage src={`https://i.pravatar.cc/100?u=${userName}`} />
-              <AvatarFallback className="bg-purple-500 text-white">
+              <AvatarFallback className="bg-emerald-500 text-white">
                 {userName.slice(0, 2).toUpperCase()}
               </AvatarFallback>
             </Avatar>
@@ -199,7 +199,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ className }) => {
       {/* Mobile Menu Button */}
       <button
         onClick={() => setIsMobileOpen(!isMobileOpen)}
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-white dark:bg-[#1a1a2e] text-gray-900 dark:text-white rounded-lg shadow-lg"
+        className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-white dark:bg-[#0c1520] text-gray-900 dark:text-white rounded-lg shadow-lg"
       >
         {isMobileOpen ? <X size={24} /> : <Menu size={24} />}
       </button>

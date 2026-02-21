@@ -371,7 +371,7 @@ export const AgentAnalyticsTab: React.FC<AgentAnalyticsTabProps> = ({ agent }) =
                       <div className={`w-3 h-3 rounded ${
                         reason === 'customer-ended-call' ? 'bg-blue-500' :
                         reason === 'silence-timed-out' ? 'bg-cyan-500' :
-                        reason === 'assistant-ended-call' ? 'bg-purple-500' :
+                        reason === 'assistant-ended-call' ? 'bg-emerald-500' :
                         'bg-orange-500'
                       }`}></div>
                       <span>{reason}</span>

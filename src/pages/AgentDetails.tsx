@@ -53,7 +53,7 @@ const voiceSamples: Record<string, Record<string, VoiceDefinition>> = {
         color: "bg-blue-100 text-blue-800"
       }, {
         name: "Professional",
-        color: "bg-purple-100 text-purple-800"
+        color: "bg-emerald-100 text-emerald-800"
       }],
       avatar: "/voices/avatars/emma.jpg",
       audioSample: "/voices/eleven-emma.mp3"
@@ -107,7 +107,7 @@ const voiceSamples: Record<string, Record<string, VoiceDefinition>> = {
         color: "bg-red-100 text-red-800"
       }, {
         name: "Professional",
-        color: "bg-purple-100 text-purple-800"
+        color: "bg-emerald-100 text-emerald-800"
       }],
       avatar: "/voices/avatars/joanna.jpg",
       audioSample: "/voices/polly-joanna.mp3"

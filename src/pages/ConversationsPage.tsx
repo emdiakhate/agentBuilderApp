@@ -158,7 +158,7 @@ export const ConversationsPage: React.FC = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-[#0a0a1a]">
+    <div className="flex min-h-screen bg-[#0f1923]">
       <Sidebar />
 
       <main className="flex-1 lg:ml-[240px] transition-all duration-300 p-8">
@@ -177,7 +177,7 @@ export const ConversationsPage: React.FC = () => {
             <Button
               onClick={handleExportCSV}
               disabled={exporting || conversations.length === 0}
-              className="bg-purple-600 hover:bg-purple-700 text-white"
+              className="bg-emerald-500 hover:bg-emerald-600 text-white"
             >
               {exporting ? (
                 <>
@@ -210,7 +210,7 @@ export const ConversationsPage: React.FC = () => {
                   <SelectTrigger className="bg-white/10 border-white/20 text-white">
                     <SelectValue placeholder="Tous les agents" />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#1a1a2e] border-white/10">
+                  <SelectContent className="bg-[#0c1520] border-white/10">
                     <SelectItem value="all" className="text-white">Tous les agents</SelectItem>
                     {agents?.map(agent => (
                       <SelectItem key={agent.id} value={agent.vapi_assistant_id || agent.id} className="text-white">
@@ -243,7 +243,7 @@ export const ConversationsPage: React.FC = () => {
                   <SelectTrigger className="bg-white/10 border-white/20 text-white">
                     <SelectValue placeholder="Tous les statuts" />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#1a1a2e] border-white/10">
+                  <SelectContent className="bg-[#0c1520] border-white/10">
                     <SelectItem value="all" className="text-white">Tous les statuts</SelectItem>
                     <SelectItem value="ended" className="text-white">Terminé</SelectItem>
                     <SelectItem value="in-progress" className="text-white">En cours</SelectItem>
@@ -258,7 +258,7 @@ export const ConversationsPage: React.FC = () => {
                   <SelectTrigger className="bg-white/10 border-white/20 text-white">
                     <SelectValue placeholder="Tous les sentiments" />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#1a1a2e] border-white/10">
+                  <SelectContent className="bg-[#0c1520] border-white/10">
                     <SelectItem value="all" className="text-white">Tous les sentiments</SelectItem>
                     <SelectItem value="positive" className="text-white">Positif</SelectItem>
                     <SelectItem value="neutral" className="text-white">Neutre</SelectItem>
@@ -323,7 +323,7 @@ export const ConversationsPage: React.FC = () => {
                         className={`
                           p-4 rounded-lg cursor-pointer transition-all
                           ${selectedConversation?.id === conversation.id
-                            ? 'bg-purple-500/20 border-purple-500/50'
+                            ? 'bg-emerald-500/20 border-emerald-500/50'
                             : 'bg-white/5 hover:bg-white/10 border-white/10'
                           }
                           border
@@ -470,7 +470,7 @@ export const ConversationsPage: React.FC = () => {
                           href={selectedConversation.recordingUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-purple-400 hover:text-purple-300 text-sm mt-2 inline-block"
+                          className="text-emerald-400 hover:text-emerald-300 text-sm mt-2 inline-block"
                         >
                           Ouvrir dans un nouvel onglet →
                         </a>
@@ -489,7 +489,7 @@ export const ConversationsPage: React.FC = () => {
                               key={idx}
                               className={`p-3 rounded-lg ${
                                 msg.role === 'assistant'
-                                  ? 'bg-purple-500/10 border-l-4 border-purple-500'
+                                  ? 'bg-emerald-500/10 border-l-4 border-emerald-500'
                                   : 'bg-blue-500/10 border-l-4 border-blue-500'
                               }`}
                             >

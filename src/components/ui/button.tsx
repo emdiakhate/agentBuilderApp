@@ -24,9 +24,9 @@ const buttonVariants = cva(
         // Updated contrast variant to ensure text visibility in both light and dark modes
         contrast: "bg-slate-800 text-white hover:bg-slate-700 dark:bg-white dark:text-slate-800 dark:hover:bg-gray-200",
         // New brand variant using the brand colors
-        brand: "bg-brandPurple text-white hover:bg-brandPurple/90 focus-visible:ring-focusRing",
+        brand: "bg-primary text-white hover:bg-primary/90 focus-visible:ring-focusRing",
         // Brand gradient variant
-        brandGradient: "bg-gradient-to-r from-brandBlue to-brandPink text-white hover:opacity-90 focus-visible:ring-focusRing",
+        brandGradient: "bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:opacity-90 focus-visible:ring-focusRing",
       },
       size: {
         default: "h-10 px-4 py-2",

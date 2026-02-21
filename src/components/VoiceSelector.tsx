@@ -215,7 +215,7 @@ export const VoiceSelector: React.FC<VoiceSelectorProps> = ({
 
         {/* Selected Voice Preview */}
         {selectedVoice && (
-          <div className="p-4 bg-purple-500/10 border border-purple-500/30 rounded-lg">
+          <div className="p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-lg">
             <div className="flex items-center justify-between">
               <div>
                 <h4 className="text-white font-semibold">{selectedVoice.name}</h4>
@@ -224,7 +224,7 @@ export const VoiceSelector: React.FC<VoiceSelectorProps> = ({
                     {selectedVoice.gender}
                   </Badge>
                   <Badge className="bg-white/10 text-white">{selectedVoice.accent}</Badge>
-                  <Badge className="bg-purple-500/20 text-purple-300">{selectedVoice.provider}</Badge>
+                  <Badge className="bg-emerald-500/20 text-emerald-300">{selectedVoice.provider}</Badge>
                 </div>
                 <p className="text-sm text-gray-400 mt-2">
                   {selectedVoice.characteristics.slice(0, 3).join(', ')}
@@ -257,7 +257,7 @@ export const VoiceSelector: React.FC<VoiceSelectorProps> = ({
               className={`
                 p-4 rounded-lg cursor-pointer transition-all border
                 ${selectedVoice?.id === voice.id
-                  ? 'bg-purple-500/20 border-purple-500/50'
+                  ? 'bg-emerald-500/20 border-emerald-500/50'
                   : 'bg-white/5 hover:bg-white/10 border-white/10'
                 }
               `}

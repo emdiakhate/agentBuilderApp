@@ -78,9 +78,9 @@ export const AvatarSelector: React.FC<AvatarSelectorProps> = ({
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <button className="group relative">
-          <Avatar className="h-24 w-24 border-4 border-white/20 group-hover:border-purple-500 transition-all cursor-pointer">
+          <Avatar className="h-24 w-24 border-4 border-white/20 group-hover:border-emerald-500 transition-all cursor-pointer">
             <AvatarImage src={currentAvatar} alt={agentName} />
-            <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white text-2xl">
+            <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-teal-500 text-white text-2xl">
               {agentName.slice(0, 2).toUpperCase()}
             </AvatarFallback>
           </Avatar>
@@ -134,7 +134,7 @@ export const AvatarSelector: React.FC<AvatarSelectorProps> = ({
                   >
                     <div className={`
                       relative rounded-full overflow-hidden border-4 transition-all
-                      ${isSelected ? 'border-purple-500' : 'border-white/20 group-hover:border-white/40'}
+                      ${isSelected ? 'border-emerald-500' : 'border-white/20 group-hover:border-white/40'}
                     `}>
                       <img
                         src={avatarUrl}
@@ -149,7 +149,7 @@ export const AvatarSelector: React.FC<AvatarSelectorProps> = ({
                             initial={{ opacity: 0, scale: 0.5 }}
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.5 }}
-                            className="absolute inset-0 bg-purple-500/50 flex items-center justify-center"
+                            className="absolute inset-0 bg-emerald-500/50 flex items-center justify-center"
                           >
                             <Check className="text-white" size={24} />
                           </motion.div>
@@ -178,7 +178,7 @@ export const AvatarSelector: React.FC<AvatarSelectorProps> = ({
                   <img
                     src={uploadedImage}
                     alt="Uploaded avatar"
-                    className="w-48 h-48 rounded-full object-cover border-4 border-purple-500"
+                    className="w-48 h-48 rounded-full object-cover border-4 border-emerald-500"
                   />
                   <button
                     onClick={() => {
@@ -193,9 +193,9 @@ export const AvatarSelector: React.FC<AvatarSelectorProps> = ({
               ) : (
                 <button
                   onClick={() => fileInputRef.current?.click()}
-                  className="w-48 h-48 rounded-full border-4 border-dashed border-white/20 hover:border-purple-500 transition-all flex flex-col items-center justify-center space-y-2 group"
+                  className="w-48 h-48 rounded-full border-4 border-dashed border-white/20 hover:border-emerald-500 transition-all flex flex-col items-center justify-center space-y-2 group"
                 >
-                  <Upload size={48} className="text-gray-400 group-hover:text-purple-500 transition-colors" />
+                  <Upload size={48} className="text-gray-400 group-hover:text-emerald-500 transition-colors" />
                   <span className="text-gray-400 group-hover:text-white transition-colors text-sm">
                     Cliquez pour importer
                   </span>
@@ -226,7 +226,7 @@ export const AvatarSelector: React.FC<AvatarSelectorProps> = ({
           <Button
             onClick={handleSave}
             disabled={!selectedAvatar}
-            className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+            className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white"
           >
             Enregistrer
           </Button>

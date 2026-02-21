@@ -23,7 +23,7 @@ export const QuickActions: React.FC = () => {
       label: 'Bibliothèque de voix',
       icon: <Mic2 className="h-4 w-4" />,
       onClick: () => navigate('/voice-library'),
-      color: 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600',
+      color: 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600',
     },
     {
       label: 'Templates',

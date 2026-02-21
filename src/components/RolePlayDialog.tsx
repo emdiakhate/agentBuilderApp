@@ -522,7 +522,7 @@ export const RolePlayDialog = ({
               </Button>
               <Button
                 onClick={handleStartRolePlay}
-                className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white"
+                className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white"
               >
                 Start Role-Play Call
               </Button>

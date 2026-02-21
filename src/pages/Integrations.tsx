@@ -338,7 +338,7 @@ const Integrations = () => {
                       return (
                         <div
                           key={integration.id}
-                          className="border border-white/10 bg-white/5 rounded-lg p-4 hover:border-purple-500/50 hover:shadow-md transition-all cursor-pointer group relative"
+                          className="border border-white/10 bg-white/5 rounded-lg p-4 hover:border-emerald-500/50 hover:shadow-md transition-all cursor-pointer group relative"
                           onClick={() => handleIntegrationClick(integration)}
                         >
                           <div className="flex items-start justify-between mb-3">

@@ -334,7 +334,7 @@ const AgentCreate = () => {
         </Link>
 
         <div className="flex items-center space-x-3">
-          <Bot className="h-8 w-8 text-purple-500" />
+          <Bot className="h-8 w-8 text-emerald-500" />
           <div>
             <h1 className="text-3xl font-semibold text-white">
               {homepageTemplate ? `Créer ${homepageTemplate.name}` : 'Créer un Nouvel Agent'}
@@ -348,13 +348,13 @@ const AgentCreate = () => {
 
       {/* Template Info Banner */}
       {homepageTemplate && (
-        <Card className="mb-6 bg-purple-500/10 border-purple-500/30">
+        <Card className="mb-6 bg-emerald-500/10 border-emerald-500/30">
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
               <img
                 src={homepageTemplate.image}
                 alt={homepageTemplate.name}
-                className="w-16 h-16 rounded-full object-cover border-2 border-purple-500"
+                className="w-16 h-16 rounded-full object-cover border-2 border-emerald-500"
               />
               <div className="flex-1">
                 <p className="text-sm font-medium text-white">Template appliqué</p>
@@ -439,7 +439,7 @@ const AgentCreate = () => {
                 <SelectTrigger className="bg-white/10 border-white/20 text-white">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-[#1a1a2e] border-white/10">
+                <SelectContent className="bg-[#0c1520] border-white/10">
                   <SelectItem value="customer_support" className="text-white hover:bg-white/10">Support Client</SelectItem>
                   <SelectItem value="sales" className="text-white hover:bg-white/10">Ventes</SelectItem>
                   <SelectItem value="appointment_booking" className="text-white hover:bg-white/10">Prise de RDV</SelectItem>
@@ -466,7 +466,7 @@ const AgentCreate = () => {
                   <SelectTrigger className="bg-white/10 border-white/20 text-white">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#1a1a2e] border-white/10">
+                  <SelectContent className="bg-[#0c1520] border-white/10">
                     <SelectItem value="openai" className="text-white hover:bg-white/10">OpenAI</SelectItem>
                     <SelectItem value="anthropic" className="text-white hover:bg-white/10">Anthropic</SelectItem>
                     <SelectItem value="google" className="text-white hover:bg-white/10">Google</SelectItem>
@@ -480,7 +480,7 @@ const AgentCreate = () => {
                   <SelectTrigger className="bg-white/10 border-white/20 text-white">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#1a1a2e] border-white/10">
+                  <SelectContent className="bg-[#0c1520] border-white/10">
                     <SelectItem value="gpt-4o" className="text-white hover:bg-white/10">GPT-4o</SelectItem>
                     <SelectItem value="gpt-4o-mini" className="text-white hover:bg-white/10">GPT-4o Mini</SelectItem>
                     <SelectItem value="gpt-4-turbo" className="text-white hover:bg-white/10">GPT-4 Turbo</SelectItem>
@@ -532,7 +532,7 @@ const AgentCreate = () => {
                 <SelectTrigger className="bg-white/10 border-white/20 text-white">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-[#1a1a2e] border-white/10">
+                <SelectContent className="bg-[#0c1520] border-white/10">
                   <SelectItem value="assistant-speaks-first" className="text-white hover:bg-white/10">L'assistant parle en premier</SelectItem>
                   <SelectItem value="assistant-waits" className="text-white hover:bg-white/10">L'assistant attend</SelectItem>
                 </SelectContent>
@@ -561,7 +561,7 @@ const AgentCreate = () => {
                   size="sm"
                   onClick={handleGeneratePrompt}
                   disabled={isGeneratingPrompt}
-                  className="bg-purple-500/20 border-purple-500/30 text-white hover:bg-purple-500/30"
+                  className="bg-emerald-500/20 border-emerald-500/30 text-white hover:bg-emerald-500/30"
                 >
                   {isGeneratingPrompt ? (
                     <>
@@ -606,7 +606,7 @@ const AgentCreate = () => {
                 <SelectTrigger className="bg-white/10 border-white/20 text-white">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-[#1a1a2e] border-white/10">
+                <SelectContent className="bg-[#0c1520] border-white/10">
                   <SelectItem value="fr" className="text-white hover:bg-white/10">Français</SelectItem>
                   <SelectItem value="en" className="text-white hover:bg-white/10">English</SelectItem>
                   <SelectItem value="es" className="text-white hover:bg-white/10">Español</SelectItem>
@@ -627,7 +627,7 @@ const AgentCreate = () => {
                 <SelectTrigger className="bg-white/10 border-white/20 text-white">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-[#1a1a2e] border-white/10">
+                <SelectContent className="bg-[#0c1520] border-white/10">
                   <SelectItem value="off" className="text-white hover:bg-white/10">🔇 Aucun - Pas de bruit de fond</SelectItem>
                   <SelectItem value="office" className="text-white hover:bg-white/10">🏢 Bureau - Environnement de bureau calme</SelectItem>
                   <SelectItem value="restaurant" className="text-white hover:bg-white/10">🍽️ Restaurant - Ambiance avec conversations</SelectItem>
@@ -809,7 +809,7 @@ const AgentCreate = () => {
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+            className="flex-1 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white"
           >
             {isSubmitting ? (
               <>

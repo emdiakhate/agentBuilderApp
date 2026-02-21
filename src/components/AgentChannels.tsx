@@ -57,8 +57,8 @@ const CHANNEL_INFO: Record<string, ChannelInfo> = {
   "chat": {
     name: "Chat",
     icon: <MessageSquare className="h-3.5 w-3.5" />,
-    color: "text-purple-500",
-    bgColor: "bg-purple-500",
+    color: "text-emerald-500",
+    bgColor: "bg-emerald-500",
     placeholder: "https://yourwebsite.com/chat"
   },
   "sms": {

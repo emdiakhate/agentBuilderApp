@@ -39,8 +39,8 @@ const Dashboard = () => {
       description: "Conversations réussies",
       icon: TrendingUp,
       trend: "+2.4%",
-      color: "text-purple-400",
-      bgColor: "bg-purple-500/20",
+      color: "text-emerald-400",
+      bgColor: "bg-emerald-500/20",
     },
     {
       title: "Utilisateurs",
@@ -67,7 +67,7 @@ const Dashboard = () => {
         </div>
         <Button
           onClick={() => navigate("/agents/create")}
-          className="gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+          className="gap-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white"
         >
           <Plus className="h-4 w-4" />
           Nouvel Agent
@@ -135,8 +135,8 @@ const Dashboard = () => {
                   className="flex items-center gap-4 p-4 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 cursor-pointer transition-colors"
                   onClick={() => navigate(`/agents/${agent.id}`)}
                 >
-                  <div className="p-3 rounded-lg bg-purple-500/20">
-                    <Bot className="h-6 w-6 text-purple-400" />
+                  <div className="p-3 rounded-lg bg-emerald-500/20">
+                    <Bot className="h-6 w-6 text-emerald-400" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="font-medium truncate text-white">{agent.name}</h3>
@@ -155,7 +155,7 @@ const Dashboard = () => {
               <p className="text-sm text-gray-400 mb-4">
                 Créez votre premier agent pour commencer
               </p>
-              <Button onClick={() => navigate("/agents/create")} className="gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white">
+              <Button onClick={() => navigate("/agents/create")} className="gap-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white">
                 <Plus className="h-4 w-4" />
                 Créer un Agent
               </Button>
@@ -169,7 +169,7 @@ const Dashboard = () => {
         <Card className="cursor-pointer bg-white/5 border-white/10 hover:bg-white/10 transition-colors" onClick={() => navigate("/agents")}>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-white">
-              <Bot className="h-5 w-5 text-purple-400" />
+              <Bot className="h-5 w-5 text-emerald-400" />
               Gérer les Agents
             </CardTitle>
             <CardDescription className="text-gray-400">

@@ -74,7 +74,7 @@ export const WorkflowCard: React.FC<WorkflowCardProps> = ({
   const getIconForApp = (appName: string) => {
     switch (appName.toLowerCase()) {
       case 'chat':
-        return <MessageSquare className="h-5 w-5 text-purple-500" />;
+        return <MessageSquare className="h-5 w-5 text-emerald-500" />;
       case 'email':
         return <Mail className="h-5 w-5 text-blue-500" />;
       case 'database':
@@ -149,7 +149,7 @@ export const WorkflowCard: React.FC<WorkflowCardProps> = ({
                 </p>
                 <div className="flex justify-center gap-4">
                   <Button 
-                    className="gap-2 bg-gradient-to-r from-purple-500 to-indigo-500"
+                    className="gap-2 bg-gradient-to-r from-emerald-500 to-teal-500"
                     onClick={onStart}
                   >
                     <PlusCircle className="h-4 w-4" />
@@ -242,7 +242,7 @@ export const WorkflowCard: React.FC<WorkflowCardProps> = ({
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
                             <div className="flex items-center">
-                              <div className="bg-purple-100 dark:bg-purple-900/20 p-1.5 rounded-full">
+                              <div className="bg-emerald-100 dark:bg-emerald-900/20 p-1.5 rounded-full">
                                 {getIconForApp('chat')}
                               </div>
                               <ArrowRight className="h-4 w-4 text-gray-400 mx-1" />
@@ -387,7 +387,7 @@ export const WorkflowCard: React.FC<WorkflowCardProps> = ({
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
                             <div className="flex items-center">
-                              <div className="bg-purple-100 dark:bg-purple-900/20 p-1.5 rounded-full">
+                              <div className="bg-emerald-100 dark:bg-emerald-900/20 p-1.5 rounded-full">
                                 {getIconForApp('chat')}
                               </div>
                               <ArrowRight className="h-4 w-4 text-gray-400 mx-1" />

@@ -7,7 +7,7 @@ import { Sidebar } from "@/components/Sidebar";
  */
 const AgentsLayout: React.FC = () => {
   return (
-    <div className="flex min-h-screen bg-gray-50 dark:bg-[#0a0a1a] transition-colors duration-300">
+    <div className="flex min-h-screen bg-slate-50 dark:bg-[#0f1923] transition-colors duration-300">
       <Sidebar />
 
       {/* Main Content Area */}

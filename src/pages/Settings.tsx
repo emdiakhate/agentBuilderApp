@@ -24,7 +24,7 @@ const Settings = () => {
       <Card className="bg-white/5 border-white/10">
         <CardHeader>
           <div className="flex items-center gap-2">
-            <Palette className="h-5 w-5 text-purple-400" />
+            <Palette className="h-5 w-5 text-emerald-400" />
             <CardTitle className="text-white">Apparence</CardTitle>
           </div>
           <CardDescription className="text-gray-400">
@@ -64,7 +64,7 @@ const Settings = () => {
             <p className="text-sm text-gray-400 text-center mb-4">
               Connectez Google Calendar, Google Sheets et d'autres services
             </p>
-            <Button onClick={() => navigate("/integrations")} className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white">
+            <Button onClick={() => navigate("/integrations")} className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white">
               Voir les intégrations
             </Button>
           </div>

@@ -31,7 +31,7 @@ const LEGACY_VOICE_PROVIDERS = {
         color: "bg-red-100 text-red-800"
       }, {
         name: "Professional",
-        color: "bg-purple-100 text-purple-800"
+        color: "bg-emerald-100 text-emerald-800"
       }],
       avatar: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158",
       audioSample: "/voices/polly-joanna.mp3"
@@ -132,7 +132,7 @@ const VoiceSelectionModal: React.FC<VoiceSelectionModalProps> = ({
     if (voice.gender) {
       traits.push({
         name: voice.gender,
-        color: "bg-purple-100 text-purple-800"
+        color: "bg-emerald-100 text-emerald-800"
       });
     }
 

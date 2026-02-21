@@ -503,7 +503,7 @@ export const SimulationSteps = ({
                 <CardContent className="pt-6">
                   <div className="text-center">
                     <div className="flex items-center justify-center mb-2">
-                      <BarChart className="h-5 w-5 text-purple-500" />
+                      <BarChart className="h-5 w-5 text-emerald-500" />
                     </div>
                     <div className="text-2xl font-bold text-primary">
                       {totals.performance}%
@@ -575,7 +575,7 @@ export const SimulationSteps = ({
                         <span className="font-medium">+{sim.coverage}%</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <BarChart className="h-3 w-3 text-purple-500" />
+                        <BarChart className="h-3 w-3 text-emerald-500" />
                         <span className="text-muted-foreground">Performance:</span>
                         <span className="font-medium">+{sim.performance}%</span>
                       </div>
@@ -702,7 +702,7 @@ export const SimulationSteps = ({
             <CardContent className="pt-6">
               <div className="text-center">
                 <div className="flex items-center justify-center mb-2">
-                  <BarChart className="h-5 w-5 text-purple-500" />
+                  <BarChart className="h-5 w-5 text-emerald-500" />
                 </div>
                 <div className="text-2xl font-bold text-primary">
                   {initialPerformance || 92}%
@@ -762,7 +762,7 @@ export const SimulationSteps = ({
                       <span className="font-medium">{sim.coverage}%</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <BarChart className="h-3 w-3 text-purple-500" />
+                      <BarChart className="h-3 w-3 text-emerald-500" />
                       <span className="text-muted-foreground">Performance:</span>
                       <span className="font-medium">{sim.performance}%</span>
                     </div>

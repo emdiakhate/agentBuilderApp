@@ -25,7 +25,7 @@ const CARD_GRADIENTS = [
   'from-rose-900/50 to-pink-900/30',
   'from-blue-900/50 to-indigo-900/30',
   'from-teal-900/50 to-cyan-900/30',
-  'from-purple-900/50 to-violet-900/30',
+  'from-emerald-900/50 to-teal-900/30',
   'from-emerald-900/50 to-green-900/30',
   'from-amber-900/50 to-orange-900/30',
   'from-fuchsia-900/50 to-pink-900/30',
@@ -150,7 +150,7 @@ export const AgentCard: React.FC<AgentCardProps> = ({ agent, index, onTest }) =>
                 }}
               />
               {/* Fallback initials */}
-              <div className="absolute inset-0 w-48 h-48 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white text-4xl font-bold opacity-0 [&:has(+img[style*='display: none'])]:opacity-100">
+              <div className="absolute inset-0 w-48 h-48 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center text-white text-4xl font-bold opacity-0 [&:has(+img[style*='display: none'])]:opacity-100">
                 {agent.name.slice(0, 2).toUpperCase()}
               </div>
             </div>

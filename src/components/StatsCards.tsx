@@ -40,7 +40,7 @@ export const StatsCards: React.FC<StatsCardsProps> = ({
       label: "Appels Aujourd'hui",
       value: callsToday.toLocaleString(),
       icon: <Phone className="h-5 w-5" />,
-      color: 'from-purple-500 to-pink-500',
+      color: 'from-emerald-500 to-teal-500',
     },
     {
       label: 'Satisfaction',

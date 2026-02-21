@@ -75,7 +75,7 @@ export const HomePage: React.FC = () => {
   // Loading skeleton
   if (isLoading) {
     return (
-      <div className="flex min-h-screen bg-[#0a0a1a]">
+      <div className="flex min-h-screen bg-[#0f1923]">
         <Sidebar />
         <main className="flex-1 lg:ml-[240px] transition-all duration-300">
           <div className="p-8 space-y-8">
@@ -100,7 +100,7 @@ export const HomePage: React.FC = () => {
   // Error state
   if (error) {
     return (
-      <div className="flex min-h-screen bg-[#0a0a1a]">
+      <div className="flex min-h-screen bg-[#0f1923]">
         <Sidebar />
         <main className="flex-1 lg:ml-[240px] flex items-center justify-center p-8">
           <div className="text-center space-y-4">
@@ -110,7 +110,7 @@ export const HomePage: React.FC = () => {
             <p className="text-gray-400">
               Impossible de charger vos agents. Veuillez réessayer.
             </p>
-            <Button onClick={() => window.location.reload()} className="bg-purple-600 hover:bg-purple-700">
+            <Button onClick={() => window.location.reload()} className="bg-emerald-500 hover:bg-emerald-600">
               Réessayer
             </Button>
           </div>
@@ -122,11 +122,11 @@ export const HomePage: React.FC = () => {
   // Empty state
   if (!agents || agents.length === 0) {
     return (
-      <div className="flex min-h-screen bg-[#0a0a1a]">
+      <div className="flex min-h-screen bg-[#0f1923]">
         <Sidebar />
         <main className="flex-1 lg:ml-[240px] flex items-center justify-center p-8">
           <div className="text-center space-y-6 max-w-md">
-            <div className="w-24 h-24 mx-auto bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+            <div className="w-24 h-24 mx-auto bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center">
               <Plus size={48} className="text-white" />
             </div>
             <h2 className="text-3xl font-bold text-white">
@@ -138,7 +138,7 @@ export const HomePage: React.FC = () => {
             <Button
               onClick={() => navigate('/agents/create')}
               size="lg"
-              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+              className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white"
             >
               <Plus className="mr-2" size={20} />
               Créer mon premier agent
@@ -150,7 +150,7 @@ export const HomePage: React.FC = () => {
   }
 
   return (
-    <div className="flex min-h-screen bg-[#0a0a1a]">
+    <div className="flex min-h-screen bg-[#0f1923]">
       {/* Sidebar */}
       <Sidebar />
 
@@ -191,7 +191,7 @@ export const HomePage: React.FC = () => {
                 <Button
                   type="submit"
                   size="lg"
-                  className="h-14 px-8 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-2xl shadow-2xl"
+                  className="h-14 px-8 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white rounded-2xl shadow-2xl"
                 >
                   <Send size={20} />
                 </Button>
@@ -222,7 +222,7 @@ export const HomePage: React.FC = () => {
             </Button>
             <Button
               onClick={() => navigate('/voice-library')}
-              className="px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-full font-medium shadow-lg hover:scale-105 transition-transform"
+              className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full font-medium shadow-lg hover:scale-105 transition-transform"
             >
               <Mic size={18} className="mr-2" />
               Bibliothèque de voix
@@ -269,8 +269,8 @@ export const HomePage: React.FC = () => {
 
             <Card className="bg-white/5 backdrop-blur border border-white/10 p-4 rounded-xl hover:bg-white/10 transition-all">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center">
-                  <Phone size={24} className="text-purple-400" />
+                <div className="w-12 h-12 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                  <Phone size={24} className="text-emerald-400" />
                 </div>
                 <div>
                   <p className="text-2xl font-bold text-white">{stats.calls}</p>
@@ -311,25 +311,25 @@ export const HomePage: React.FC = () => {
               <TabsList className="bg-white/5 border border-white/10">
                 <TabsTrigger
                   value="all"
-                  className="data-[state=active]:bg-white/10 data-[state=active]:border-b-2 data-[state=active]:border-purple-500 text-gray-400 data-[state=active]:text-white"
+                  className="data-[state=active]:bg-white/10 data-[state=active]:border-b-2 data-[state=active]:border-emerald-500 text-gray-400 data-[state=active]:text-white"
                 >
                   Tous les Agents
                 </TabsTrigger>
                 <TabsTrigger
                   value="active"
-                  className="data-[state=active]:bg-white/10 data-[state=active]:border-b-2 data-[state=active]:border-purple-500 text-gray-400 data-[state=active]:text-white"
+                  className="data-[state=active]:bg-white/10 data-[state=active]:border-b-2 data-[state=active]:border-emerald-500 text-gray-400 data-[state=active]:text-white"
                 >
                   Actifs
                 </TabsTrigger>
                 <TabsTrigger
                   value="inactive"
-                  className="data-[state=active]:bg-white/10 data-[state=active]:border-b-2 data-[state=active]:border-purple-500 text-gray-400 data-[state=active]:text-white"
+                  className="data-[state=active]:bg-white/10 data-[state=active]:border-b-2 data-[state=active]:border-emerald-500 text-gray-400 data-[state=active]:text-white"
                 >
                   Inactifs
                 </TabsTrigger>
                 <TabsTrigger
                   value="maintenance"
-                  className="data-[state=active]:bg-white/10 data-[state=active]:border-b-2 data-[state=active]:border-purple-500 text-gray-400 data-[state=active]:text-white"
+                  className="data-[state=active]:bg-white/10 data-[state=active]:border-b-2 data-[state=active]:border-emerald-500 text-gray-400 data-[state=active]:text-white"
                 >
                   Maintenance
                 </TabsTrigger>
