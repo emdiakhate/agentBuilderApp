@@ -55,22 +55,22 @@ export const TestAgentSidebar: React.FC<TestAgentSidebarProps> = ({
           const devices = await navigator.mediaDevices.enumerateDevices();
           const mics = devices.filter(device => device.kind === "audioinput");
           const speakers = devices.filter(device => device.kind === "audiooutput");
-          
+
           setAvailableMics(mics);
           setAvailableSpeakers(speakers);
-          
+
           if (mics.length > 0) setSelectedMic(mics[0].deviceId);
           if (speakers.length > 0) setSelectedSpeaker(speakers[0].deviceId);
         } catch (error) {
           console.error("Error accessing media devices:", error);
         }
       };
-      
+
       getDevices();
 
       const deviceChangeHandler = () => getDevices();
       navigator.mediaDevices.addEventListener('devicechange', deviceChangeHandler);
-      
+
       return () => {
         navigator.mediaDevices.removeEventListener('devicechange', deviceChangeHandler);
       };
@@ -158,10 +158,10 @@ export const TestAgentSidebar: React.FC<TestAgentSidebarProps> = ({
           <SheetHeader className="space-y-2 p-6 pb-2">
             <SheetTitle className="flex items-center gap-2">
               <Rocket className="h-5 w-5 text-primary" />
-              Test Agent
+              Tester l'Agent
             </SheetTitle>
             <SheetDescription>
-              Choose how you want to test and interact with your agent.
+              Choisissez comment vous souhaitez tester et interagir avec votre agent.
             </SheetDescription>
           </SheetHeader>
 
@@ -169,26 +169,26 @@ export const TestAgentSidebar: React.FC<TestAgentSidebarProps> = ({
             <TabsList className="grid grid-cols-2 mx-6 mb-4">
               <TabsTrigger value="voice" className="flex items-center gap-2">
                 <Mic className="h-4 w-4" />
-                Voice
+                Voix
               </TabsTrigger>
               <TabsTrigger value="chat" className="flex items-center gap-2">
                 <MessageSquare className="h-4 w-4" />
                 Chat
               </TabsTrigger>
             </TabsList>
-            
+
             <TabsContent value="voice" className="space-y-4 flex-1 overflow-y-auto px-6 pb-6">
               <div className="grid gap-4 mb-4 flex-1">
                 {callType === "inbound" ? (
                   <Card className="p-4">
                     <div className="font-medium mb-2 flex items-center gap-2">
                       <PhoneIncoming className="h-4 w-4 text-green-500" />
-                      Call Your Agent
+                      Appeler votre Agent
                     </div>
                     <p className="text-sm text-muted-foreground mb-4">
-                      Try your agent by calling them directly. Your agent will answer your call.
+                      Testez votre agent en l'appelant directement. Votre agent répondra à votre appel.
                     </p>
-                    
+
                     <div className="space-y-3 mb-4">
                       <div className="grid gap-2">
                         <Label htmlFor="mic-input">Microphone</Label>
@@ -205,9 +205,9 @@ export const TestAgentSidebar: React.FC<TestAgentSidebarProps> = ({
                           </SelectContent>
                         </Select>
                       </div>
-                      
+
                       <div className="grid gap-2">
-                        <Label htmlFor="speaker-output">Speaker</Label>
+                        <Label htmlFor="speaker-output">Haut-parleur</Label>
                         <Select value={selectedSpeaker} onValueChange={setSelectedSpeaker}>
                           <SelectTrigger id="speaker-output">
                             <SelectValue placeholder="Sélectionner un haut-parleur" />
@@ -215,39 +215,39 @@ export const TestAgentSidebar: React.FC<TestAgentSidebarProps> = ({
                           <SelectContent>
                             {availableSpeakers.map((speaker) => (
                               <SelectItem key={speaker.deviceId} value={speaker.deviceId}>
-                                {speaker.label || `Speaker ${speaker.deviceId.slice(0, 5)}`}
+                                {speaker.label || `Haut-parleur ${speaker.deviceId.slice(0, 5)}`}
                               </SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
                       </div>
                     </div>
-                    
+
                     <Button onClick={handleStartInboundCall} className="w-full">
-                      Start Inbound Call
+                      Démarrer l'appel entrant
                     </Button>
                   </Card>
                 ) : (
                   <Card className="p-4">
                     <div className="font-medium mb-2 flex items-center gap-2">
                       <PhoneOutgoing className="h-4 w-4 text-blue-500" />
-                      Get a Call from Your Agent
+                      Recevoir un appel de votre Agent
                     </div>
                     <p className="text-sm text-muted-foreground mb-4">
-                      Try your agent by having them call you at your preferred number.
+                      Testez votre agent en le faisant vous appeler sur le numéro de votre choix.
                     </p>
-                    
+
                     <div className="space-y-3 mb-4">
                       <div className="grid gap-2">
-                        <Label htmlFor="phone-number">Phone Number</Label>
+                        <Label htmlFor="phone-number">Numéro de téléphone</Label>
                         <Input
                           id="phone-number"
-                          placeholder="+1 (555) 123-4567"
+                          placeholder="+33 6 12 34 56 78"
                           value={phoneNumber}
                           onChange={(e) => setPhoneNumber(e.target.value)}
                         />
                       </div>
-                      
+
                       <div className="grid gap-2">
                         <Label htmlFor="mic-input">Microphone</Label>
                         <Select value={selectedMic} onValueChange={setSelectedMic}>
@@ -263,9 +263,9 @@ export const TestAgentSidebar: React.FC<TestAgentSidebarProps> = ({
                           </SelectContent>
                         </Select>
                       </div>
-                      
+
                       <div className="grid gap-2">
-                        <Label htmlFor="speaker-output">Speaker</Label>
+                        <Label htmlFor="speaker-output">Haut-parleur</Label>
                         <Select value={selectedSpeaker} onValueChange={setSelectedSpeaker}>
                           <SelectTrigger id="speaker-output">
                             <SelectValue placeholder="Sélectionner un haut-parleur" />
@@ -273,57 +273,57 @@ export const TestAgentSidebar: React.FC<TestAgentSidebarProps> = ({
                           <SelectContent>
                             {availableSpeakers.map((speaker) => (
                               <SelectItem key={speaker.deviceId} value={speaker.deviceId}>
-                                {speaker.label || `Speaker ${speaker.deviceId.slice(0, 5)}`}
+                                {speaker.label || `Haut-parleur ${speaker.deviceId.slice(0, 5)}`}
                               </SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
                       </div>
                     </div>
-                    
-                    <Button 
-                      onClick={handleStartOutboundCall} 
+
+                    <Button
+                      onClick={handleStartOutboundCall}
                       className="w-full"
                       disabled={!phoneNumber}
                     >
-                      Start Outbound Call
+                      Démarrer l'appel sortant
                     </Button>
                   </Card>
                 )}
-                
+
                 <div className="flex items-center gap-2 mt-2">
                   <RadioGroup value={callType} onValueChange={(value: "inbound" | "outbound") => setCallType(value)} className="flex space-x-4">
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="inbound" id="inbound" />
-                      <Label htmlFor="inbound" className="cursor-pointer">Inbound Call</Label>
+                      <Label htmlFor="inbound" className="cursor-pointer">Appel entrant</Label>
                     </div>
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="outbound" id="outbound" />
-                      <Label htmlFor="outbound" className="cursor-pointer">Outbound Call</Label>
+                      <Label htmlFor="outbound" className="cursor-pointer">Appel sortant</Label>
                     </div>
                   </RadioGroup>
                 </div>
               </div>
             </TabsContent>
-            
+
             <TabsContent value="chat" className="flex-1 flex flex-col h-full overflow-hidden">
               <div className="flex flex-col h-full px-6 pb-6">
-                <LiveTranscription 
+                <LiveTranscription
                   messages={chatMessages}
                   isCallActive={isProcessing}
                   className="flex-1 mb-4 overflow-y-auto"
                 />
-                
+
                 <div className="relative mt-auto">
                   <Textarea
-                    placeholder="Type your message..."
+                    placeholder="Tapez votre message..."
                     className="min-h-[60px] max-h-[120px] resize-none pr-12 py-3 rounded-lg bg-background"
                     value={chatMessage}
                     onChange={(e) => setChatMessage(e.target.value)}
                     onKeyDown={handleKeyDown}
                   />
-                  <Button 
-                    size="icon" 
+                  <Button
+                    size="icon"
                     className="absolute bottom-3 right-3 h-8 w-8 rounded-full"
                     onClick={handleSendMessage}
                     disabled={!chatMessage.trim() || isProcessing}

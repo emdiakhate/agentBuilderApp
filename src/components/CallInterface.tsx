@@ -529,7 +529,7 @@ export const CallInterface: React.FC<CallInterfaceProps> = ({
             </div>
 
             <div className="rounded-lg border border-gray-200 dark:border-gray-800 p-4 flex flex-col h-full overflow-hidden">
-              <h4 className="font-medium text-sm mb-3 text-gray-900 dark:text-white">Transcription en Direct</h4>
+              <h4 className="font-medium text-sm mb-3 text-gray-900 dark:text-white">Transcription en direct</h4>
               <ScrollArea className="flex-1 pr-2">
                 <div className="space-y-4">
                   {transcriptions.length === 0 && (

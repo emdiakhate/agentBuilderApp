@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
-import { ArrowLeft, Bot, Loader2, Sparkles, Cpu, Mic, Settings, Upload, FileText, Trash2, Database, BookOpen } from "lucide-react";
+import { ArrowLeft, Bot, Loader2, Sparkles, Cpu, Mic, Settings, Upload, FileText, Trash2, Database, BookOpen, Play, Square } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -16,6 +16,133 @@ import { TemplateDetail } from "@/services/templateService";
 import { VoiceSelector, getVoiceConfig } from "@/components/VoiceSelector";
 import { type AvailableVoice } from "@/services/voiceService";
 import { Badge } from "@/components/ui/badge";
+
+const BACKGROUND_SOUNDS = [
+  { value: "off", label: "Aucun", description: "Pas de bruit de fond", emoji: "🔇" },
+  { value: "office", label: "Bureau", description: "Environnement de bureau calme", emoji: "🏢" },
+  { value: "restaurant", label: "Restaurant", description: "Ambiance avec conversations", emoji: "🍽️" },
+  { value: "clinic", label: "Clinique", description: "Environnement médical", emoji: "🏥" },
+  { value: "noisy", label: "Bruyant", description: "Centre d'appels, très bruyant", emoji: "📢" },
+  { value: "home", label: "Domestique", description: "Maison avec TV/musique", emoji: "🏠" },
+  { value: "cafe", label: "Café", description: "Ambiance café avec discussions", emoji: "☕" },
+];
+
+// Vapi background sound preview URLs
+const SOUND_PREVIEW_URLS: Record<string, string> = {
+  office: "https://cdn.vapi.ai/background-sounds/office.mp3",
+  restaurant: "https://cdn.vapi.ai/background-sounds/restaurant.mp3",
+  clinic: "https://cdn.vapi.ai/background-sounds/clinic.mp3",
+  noisy: "https://cdn.vapi.ai/background-sounds/noisy.mp3",
+  home: "https://cdn.vapi.ai/background-sounds/home.mp3",
+  cafe: "https://cdn.vapi.ai/background-sounds/cafe.mp3",
+};
+
+const BackgroundSoundSelector: React.FC<{
+  value: string;
+  onChange: (value: string) => void;
+}> = ({ value, onChange }) => {
+  const [playingSound, setPlayingSound] = useState<string | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const handlePlayPreview = (e: React.MouseEvent, soundValue: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (soundValue === "off") return;
+
+    // If same sound is playing, stop it
+    if (playingSound === soundValue) {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
+      setPlayingSound(null);
+      return;
+    }
+
+    // Stop current audio
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+
+    const url = SOUND_PREVIEW_URLS[soundValue];
+    if (url) {
+      const audio = new Audio(url);
+      audio.volume = 0.5;
+      audio.loop = true;
+      audioRef.current = audio;
+
+      audio.play().then(() => {
+        setPlayingSound(soundValue);
+        // Auto-stop after 8 seconds
+        setTimeout(() => {
+          if (audioRef.current === audio) {
+            audio.pause();
+            audio.currentTime = 0;
+            setPlayingSound(null);
+          }
+        }, 8000);
+      }).catch(() => {
+        setPlayingSound(null);
+      });
+
+      audio.addEventListener('ended', () => {
+        setPlayingSound(null);
+      });
+    }
+  };
+
+  // Cleanup audio on unmount
+  useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []);
+
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+      {BACKGROUND_SOUNDS.map((sound) => (
+        <div
+          key={sound.value}
+          className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all border ${
+            value === sound.value
+              ? "bg-emerald-500/10 border-emerald-500/40 ring-1 ring-emerald-500/30"
+              : "bg-white/5 border-white/10 hover:border-white/20"
+          }`}
+          onClick={() => onChange(sound.value)}
+        >
+          <span className="text-xl flex-shrink-0">{sound.emoji}</span>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-white">{sound.label}</p>
+            <p className="text-xs text-gray-500 truncate">{sound.description}</p>
+          </div>
+          {sound.value !== "off" && (
+            <button
+              type="button"
+              className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-all ${
+                playingSound === sound.value
+                  ? "bg-emerald-500 text-white"
+                  : "bg-white/10 text-gray-400 hover:bg-white/20 hover:text-white"
+              }`}
+              onClick={(e) => handlePlayPreview(e, sound.value)}
+              title={playingSound === sound.value ? "Arrêter" : "Écouter"}
+            >
+              {playingSound === sound.value ? (
+                <Square className="h-3 w-3" />
+              ) : (
+                <Play className="h-3 w-3 ml-0.5" />
+              )}
+            </button>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+};
 
 const AgentCreate = () => {
   const navigate = useNavigate();
@@ -623,23 +750,13 @@ const AgentCreate = () => {
 
             <div className="space-y-2">
               <Label className="text-white">Bruit de fond</Label>
-              <Select value={formData.background_sound} onValueChange={(value) => handleSelectChange("background_sound", value)}>
-                <SelectTrigger className="bg-white/10 border-white/20 text-white">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-[#0c1520] border-white/10">
-                  <SelectItem value="off" className="text-white hover:bg-white/10">🔇 Aucun - Pas de bruit de fond</SelectItem>
-                  <SelectItem value="office" className="text-white hover:bg-white/10">🏢 Bureau - Environnement de bureau calme</SelectItem>
-                  <SelectItem value="restaurant" className="text-white hover:bg-white/10">🍽️ Restaurant - Ambiance avec conversations</SelectItem>
-                  <SelectItem value="clinic" className="text-white hover:bg-white/10">🏥 Clinique - Environnement médical</SelectItem>
-                  <SelectItem value="noisy" className="text-white hover:bg-white/10">📢 Bruyant - Centre d'appels, environnement très bruyant</SelectItem>
-                  <SelectItem value="home" className="text-white hover:bg-white/10">🏠 Domestique - Maison avec TV/musique</SelectItem>
-                  <SelectItem value="cafe" className="text-white hover:bg-white/10">☕ Café - Ambiance café avec discussions</SelectItem>
-                </SelectContent>
-              </Select>
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-gray-500 mb-3">
                 Ajoute un bruit de fond ambiant pour rendre les conversations plus naturelles
               </p>
+              <BackgroundSoundSelector
+                value={formData.background_sound}
+                onChange={(value) => handleSelectChange("background_sound", value)}
+              />
             </div>
 
             <div className="flex items-center justify-between py-2">

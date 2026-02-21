@@ -1,31 +1,16 @@
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Bot, Users, Activity, TrendingUp, Phone, MessageSquare, Zap, Settings, Rocket } from 'lucide-react';
+import { Plus, Bot, Activity, TrendingUp, Phone } from 'lucide-react';
 import { useAgents } from '@/hooks/useAgents';
-import { AgentToggle } from '@/components/AgentToggle';
-import { Link, useNavigate } from 'react-router-dom';
-import { cn } from '@/lib/utils';
+import { AgentCard } from '@/components/AgentCard';
+import { useNavigate } from 'react-router-dom';
 
 const AgentsDashboard: React.FC = () => {
   const navigate = useNavigate();
   const [activeFilter, setActiveFilter] = useState('all-agents');
   const { agents, isLoading, error } = useAgents(activeFilter);
-
-  const handleToggleAgent = (e: React.MouseEvent, agentId: string) => {
-    e.preventDefault();
-    e.stopPropagation();
-    console.log(`Basculer l'état de l'agent ${agentId}`);
-  };
-
-  const handleTestAgent = (e: React.MouseEvent, agentId: string) => {
-    e.preventDefault();
-    e.stopPropagation();
-    navigate(`/agents/${agentId}?test=true`);
-  };
 
   if (isLoading) {
     return (
@@ -52,34 +37,6 @@ const AgentsDashboard: React.FC = () => {
       </div>
     );
   }
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'active': return 'bg-green-500/20 text-green-600 dark:text-green-400 border-green-500/30';
-      case 'inactive': return 'bg-gray-500/20 text-gray-600 dark:text-gray-400 border-gray-500/30';
-      case 'maintenance': return 'bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 border-yellow-500/30';
-      default: return 'bg-gray-500/20 text-gray-600 dark:text-gray-400 border-gray-500/30';
-    }
-  };
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'active': return 'Actif';
-      case 'inactive': return 'Inactif';
-      case 'maintenance': return 'Maintenance';
-      default: return 'Inconnu';
-    }
-  };
-
-  const getTypeText = (type: string) => {
-    switch (type) {
-      case 'Customer Service': return 'Support';
-      case 'Sales & Marketing': return 'Ventes';
-      case 'Customer Onboarding': return 'Formation';
-      case 'Technical Support': return 'Support Technique';
-      default: return 'Général';
-    }
-  };
 
   const stats = [
     {
@@ -168,86 +125,14 @@ const AgentsDashboard: React.FC = () => {
           </TabsList>
 
           <TabsContent value={activeFilter} className="mt-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {agents.map((agent) => (
-                <Card
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {agents.map((agent, index) => (
+                <AgentCard
                   key={agent.id}
-                  className="bg-white dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-200 cursor-pointer group hover:border-emerald-500/50"
-                  onClick={() => navigate(`/agents/${agent.id}`)}
-                >
-                  <CardHeader className="pb-3">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-center gap-3">
-                        <Avatar className="h-12 w-12">
-                          <AvatarImage
-                            src={agent.avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${agent.id}`}
-                            alt={agent.name}
-                          />
-                          <AvatarFallback className="bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-semibold">
-                            {agent.name.charAt(0)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <CardTitle className="text-lg text-gray-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
-                            {agent.name}
-                          </CardTitle>
-                          <div className="flex items-center gap-2 mt-1">
-                            <Badge variant="outline" className={cn("text-xs", getStatusColor(agent.status))}>
-                              {getStatusText(agent.status)}
-                            </Badge>
-                            <Badge variant="secondary" className="text-xs">
-                              {getTypeText(agent.type)}
-                            </Badge>
-                          </div>
-                        </div>
-                      </div>
-                      <AgentToggle
-                        isActive={agent.status === 'active'}
-                        onToggle={(e) => handleToggleAgent(e, agent.id)}
-                      />
-                    </div>
-                  </CardHeader>
-
-                  <CardContent className="space-y-4">
-                    <CardDescription className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
-                      {agent.description}
-                    </CardDescription>
-
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div>
-                        <p className="text-gray-500 dark:text-gray-400">Total Appels</p>
-                        <p className="font-semibold text-gray-900 dark:text-white">{agent.totalCalls || 0}</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-500 dark:text-gray-400">Note Moyenne</p>
-                        <p className="font-semibold text-gray-900 dark:text-white">{agent.averageRating || 0}/5</p>
-                      </div>
-                    </div>
-
-                    <div className="flex gap-2 pt-2 border-t border-gray-200 dark:border-gray-700">
-                      <Button
-                        size="sm"
-                        className="flex-1 bg-emerald-500/20 border border-emerald-500/30 text-emerald-700 dark:text-emerald-200 hover:bg-emerald-500/30"
-                        onClick={(e) => handleTestAgent(e, agent.id)}
-                      >
-                        <Rocket className="mr-2 h-3 w-3" />
-                        Tester
-                      </Button>
-                      <Button
-                        size="sm"
-                        className="flex-1 bg-emerald-500/20 border border-emerald-500/30 text-emerald-700 dark:text-emerald-200 hover:bg-emerald-500/30"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          navigate(`/agents/${agent.id}`);
-                        }}
-                      >
-                        <Settings className="mr-2 h-3 w-3" />
-                        Configurer
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
+                  agent={agent}
+                  index={index}
+                  onTest={(agentId) => navigate(`/agents/${agentId}?test=true`)}
+                />
               ))}
             </div>
           </TabsContent>
