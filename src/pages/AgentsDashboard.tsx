@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, Bot, Activity, TrendingUp, Phone } from 'lucide-react';
 import { useAgents } from '@/hooks/useAgents';
 import { AgentCard } from '@/components/AgentCard';
+import { TemplatesSection } from '@/components/TemplatesSection';
 import { useNavigate } from 'react-router-dom';
 
 const AgentsDashboard: React.FC = () => {
@@ -156,6 +157,9 @@ const AgentsDashboard: React.FC = () => {
             </Button>
           </div>
         )}
+
+        {/* Templates d'agents pré-configurés */}
+        <TemplatesSection />
       </div>
     </>
   );

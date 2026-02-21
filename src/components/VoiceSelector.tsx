@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/components/ui/use-toast';
-import { getAvailableVoices, getVoiceConfig, type AvailableVoice } from '@/services/voiceService';
+import { getAvailableVoices, getVoiceConfig, getVoicePreviewUrl, type AvailableVoice } from '@/services/voiceService';
 
 interface VoiceSelectorProps {
   selectedVoice: AvailableVoice | null;
@@ -84,7 +84,8 @@ export const VoiceSelector: React.FC<VoiceSelectorProps> = ({
   });
 
   const playVoiceSample = async (voice: AvailableVoice) => {
-    const url = voice.sampleUrl || voice.previewUrl;
+    // Try multiple sources: sampleUrl, previewUrl, or backend TTS fallback
+    const url = voice.sampleUrl || voice.previewUrl || getVoicePreviewUrl(voice.id);
     if (!url) {
       toast({
         title: 'Aperçu indisponible',
@@ -230,20 +231,18 @@ export const VoiceSelector: React.FC<VoiceSelectorProps> = ({
                   {selectedVoice.characteristics.slice(0, 3).join(', ')}
                 </p>
               </div>
-              {(selectedVoice.sampleUrl || selectedVoice.previewUrl) && (
-                <Button
-                  onClick={() => playVoiceSample(selectedVoice)}
-                  variant="outline"
-                  size="sm"
-                  className="bg-white/10 border-white/20 text-white hover:bg-white/20"
-                >
-                  {playingVoice === selectedVoice.id ? (
-                    <Pause className="h-4 w-4" />
-                  ) : (
-                    <Play className="h-4 w-4" />
-                  )}
-                </Button>
-              )}
+              <Button
+                onClick={() => playVoiceSample(selectedVoice)}
+                variant="outline"
+                size="sm"
+                className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+              >
+                {playingVoice === selectedVoice.id ? (
+                  <Pause className="h-4 w-4" />
+                ) : (
+                  <Play className="h-4 w-4" />
+                )}
+              </Button>
             </div>
           </div>
         )}
@@ -267,23 +266,21 @@ export const VoiceSelector: React.FC<VoiceSelectorProps> = ({
                   <h5 className="text-white font-medium">{voice.name}</h5>
                   <p className="text-xs text-gray-400">{voice.accent}</p>
                 </div>
-                {(voice.sampleUrl || voice.previewUrl) && (
-                  <Button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      playVoiceSample(voice);
-                    }}
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 w-8 p-0 hover:bg-white/10"
-                  >
-                    {playingVoice === voice.id ? (
-                      <Pause className="h-4 w-4 text-white" />
-                    ) : (
-                      <Play className="h-4 w-4 text-white" />
-                    )}
-                  </Button>
-                )}
+                <Button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    playVoiceSample(voice);
+                  }}
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0 hover:bg-white/10"
+                >
+                  {playingVoice === voice.id ? (
+                    <Pause className="h-4 w-4 text-white" />
+                  ) : (
+                    <Play className="h-4 w-4 text-white" />
+                  )}
+                </Button>
               </div>
 
               <div className="flex flex-wrap gap-1 mb-2">

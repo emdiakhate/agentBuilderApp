@@ -3,13 +3,16 @@ Voice selection API endpoints
 """
 
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.responses import Response
 from typing import List, Dict, Any, Optional
 from loguru import logger
+import httpx
 
 from app.core.config import settings
 from app.core.security import get_current_user_optional
 from app.models.user import User
 from app.services.elevenlabs_service import ElevenLabsService
+from app.core.background_sounds import BACKGROUND_SOUND_URLS, BACKGROUND_SOUND_LABELS
 
 router = APIRouter()
 
@@ -137,7 +140,7 @@ CARTESIA_VOICES = [
     }
 ]
 
-# ElevenLabs Voices (static fallback)
+# ElevenLabs Voices (static fallback with preview URLs from Google Storage)
 ELEVENLABS_VOICES = [
     {
         "id": "N2lVS1w4EtoT3dr4eOWO",
@@ -148,7 +151,7 @@ ELEVENLABS_VOICES = [
         "age": 28,
         "language": "en",
         "characteristics": ["warm", "friendly", "professional"],
-        "previewUrl": None,
+        "previewUrl": "https://storage.googleapis.com/eleven-public-prod/premade/voices/N2lVS1w4EtoT3dr4eOWO/ac833bd8-ffda-4938-9ebc-b0f99ca25481.mp3",
         "category": "ElevenLabs"
     },
     {
@@ -160,7 +163,7 @@ ELEVENLABS_VOICES = [
         "age": 35,
         "language": "en",
         "characteristics": ["deep", "authoritative", "clear"],
-        "previewUrl": None,
+        "previewUrl": "https://storage.googleapis.com/eleven-public-prod/premade/voices/pNInz6obpgDQGcFmaJgB/102de6f2-22ed-43e0-a1f1-111fa75c5481.mp3",
         "category": "ElevenLabs"
     },
     {
@@ -172,7 +175,7 @@ ELEVENLABS_VOICES = [
         "age": 22,
         "language": "en",
         "characteristics": ["young", "energetic", "bright"],
-        "previewUrl": None,
+        "previewUrl": "https://storage.googleapis.com/eleven-public-prod/premade/voices/EXAVITQu4vr4xnSDxMaL/04365bce-98cc-4e3d-99a4-5c3e8d2b1b0e.mp3",
         "category": "ElevenLabs"
     },
     {
@@ -184,7 +187,7 @@ ELEVENLABS_VOICES = [
         "age": 30,
         "language": "en",
         "characteristics": ["calm", "soothing", "professional"],
-        "previewUrl": None,
+        "previewUrl": "https://storage.googleapis.com/eleven-public-prod/premade/voices/21m00Tcm4TlvDq8ikWAM/cb4e7c50-b509-44c7-904c-f6c1d274cf4c.mp3",
         "category": "ElevenLabs"
     },
     {
@@ -196,7 +199,7 @@ ELEVENLABS_VOICES = [
         "age": 26,
         "language": "en",
         "characteristics": ["strong", "confident", "clear"],
-        "previewUrl": None,
+        "previewUrl": "https://storage.googleapis.com/eleven-public-prod/premade/voices/AZnzlk1XvdvUeBnXmlld/35738308-1982-47a2-be14-6ca8bf4d1cbd.mp3",
         "category": "ElevenLabs"
     }
 ]
@@ -509,3 +512,58 @@ async def get_voice_providers(
     ]
 
     return {"providers": providers}
+
+
+@router.get("/background-sounds")
+async def get_background_sounds(
+    current_user: User = Depends(get_current_user_optional)
+):
+    """Get available background sounds with their labels"""
+    sounds = []
+    for key, url in BACKGROUND_SOUND_URLS.items():
+        sounds.append({
+            "id": key,
+            "label": BACKGROUND_SOUND_LABELS.get(key, key),
+            "url": url,
+            "hasPreview": key not in ("off",)
+        })
+    return {"sounds": sounds}
+
+
+@router.get("/background-sounds/{name}/preview")
+async def preview_background_sound(name: str):
+    """
+    Proxy background sound audio for preview playback.
+    This avoids CORS issues with external audio URLs.
+    """
+    url = BACKGROUND_SOUND_URLS.get(name)
+    if not url or url == "off":
+        raise HTTPException(status_code=404, detail="No preview available for this sound")
+
+    # For Vapi built-in sounds like "office", we can't proxy them
+    if url == "office":
+        raise HTTPException(status_code=404, detail="Built-in Vapi sound, no direct preview available")
+
+    try:
+        async with httpx.AsyncClient(follow_redirects=True, timeout=15.0) as client:
+            response = await client.get(url)
+            if response.status_code != 200:
+                raise HTTPException(
+                    status_code=502,
+                    detail=f"Could not fetch audio from source (status {response.status_code})"
+                )
+
+            content_type = response.headers.get("content-type", "audio/mpeg")
+            return Response(
+                content=response.content,
+                media_type=content_type,
+                headers={
+                    "Cache-Control": "public, max-age=86400",
+                    "Content-Disposition": f"inline; filename={name}_preview.mp3"
+                }
+            )
+    except httpx.TimeoutException:
+        raise HTTPException(status_code=504, detail="Audio source timed out")
+    except Exception as e:
+        logger.error(f"Error proxying background sound {name}: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch audio preview: {str(e)}")

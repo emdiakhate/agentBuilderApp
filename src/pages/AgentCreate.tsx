@@ -27,15 +27,9 @@ const BACKGROUND_SOUNDS = [
   { value: "cafe", label: "Café", description: "Ambiance café avec discussions", emoji: "☕" },
 ];
 
-// Vapi background sound preview URLs
-const SOUND_PREVIEW_URLS: Record<string, string> = {
-  office: "https://cdn.vapi.ai/background-sounds/office.mp3",
-  restaurant: "https://cdn.vapi.ai/background-sounds/restaurant.mp3",
-  clinic: "https://cdn.vapi.ai/background-sounds/clinic.mp3",
-  noisy: "https://cdn.vapi.ai/background-sounds/noisy.mp3",
-  home: "https://cdn.vapi.ai/background-sounds/home.mp3",
-  cafe: "https://cdn.vapi.ai/background-sounds/cafe.mp3",
-};
+// Background sound preview URLs - proxied through backend to avoid CORS issues
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const getSoundPreviewUrl = (name: string) => `${API_BASE}/api/voices/background-sounds/${name}/preview`;
 
 const BackgroundSoundSelector: React.FC<{
   value: string;
@@ -66,7 +60,7 @@ const BackgroundSoundSelector: React.FC<{
       audioRef.current.currentTime = 0;
     }
 
-    const url = SOUND_PREVIEW_URLS[soundValue];
+    const url = getSoundPreviewUrl(soundValue);
     if (url) {
       const audio = new Audio(url);
       audio.volume = 0.5;

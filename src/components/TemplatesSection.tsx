@@ -187,10 +187,10 @@ export const TemplatesSection: React.FC = () => {
     return (
       <section className="space-y-6">
         <div>
-          <h2 className="text-2xl font-semibold text-white mb-2">
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-2">
             Templates d'Agents Préconfigurés
           </h2>
-          <p className="text-gray-400">
+          <p className="text-gray-500 dark:text-gray-400">
             Chargement des templates depuis le backend...
           </p>
         </div>
@@ -206,10 +206,10 @@ export const TemplatesSection: React.FC = () => {
     return (
       <section className="space-y-6">
         <div>
-          <h2 className="text-2xl font-semibold text-white mb-2">
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-2">
             Templates d'Agents Préconfigurés
           </h2>
-          <p className="text-gray-400">
+          <p className="text-gray-500 dark:text-gray-400">
             Aucun template disponible. Vérifiez la connexion au backend.
           </p>
         </div>
@@ -220,10 +220,10 @@ export const TemplatesSection: React.FC = () => {
   return (
     <section className="space-y-6">
       <div>
-        <h2 className="text-2xl font-semibold text-white mb-2">
+        <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-2">
           Templates d'Agents Préconfigurés
         </h2>
-        <p className="text-gray-400">
+        <p className="text-gray-500 dark:text-gray-400">
           Choisissez un template pour démarrer rapidement avec une configuration optimisée
         </p>
       </div>
