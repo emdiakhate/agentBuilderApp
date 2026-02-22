@@ -78,8 +78,10 @@ async def list_conversations(
             search_lower = search.lower()
             filtered_calls = []
             for call in calls:
-                transcript = call.get("artifact", {}).get("transcript", [])
-                transcript_text = " ".join([msg.get("message", "") for msg in transcript]).lower()
+                messages = call.get("artifact", {}).get("messages", [])
+                if not isinstance(messages, list):
+                    messages = []
+                transcript_text = " ".join([msg.get("message", "") or msg.get("content", "") for msg in messages]).lower()
                 if search_lower in transcript_text:
                     filtered_calls.append(call)
             calls = filtered_calls
@@ -104,10 +106,20 @@ async def list_conversations(
                 except:
                     pass
 
-            # Ensure transcript is always a list
-            transcript = call.get("artifact", {}).get("transcript", [])
-            if not isinstance(transcript, list):
-                transcript = []
+            # Build structured transcript from artifact.messages
+            # (artifact.transcript is a plain text string, not an array)
+            raw_messages = call.get("artifact", {}).get("messages", [])
+            if not isinstance(raw_messages, list):
+                raw_messages = []
+            transcript = [
+                {
+                    "role": msg.get("role", ""),
+                    "message": msg.get("message", "") or msg.get("content", ""),
+                    "time": msg.get("secondsFromStart", msg.get("time", 0))
+                }
+                for msg in raw_messages
+                if msg.get("role") in ("assistant", "user") and (msg.get("message") or msg.get("content"))
+            ]
 
             enriched_calls.append({
                 "id": call.get("id"),
@@ -119,6 +131,7 @@ async def list_conversations(
                 "cost": call.get("cost"),
                 "transcript": transcript,
                 "recording": call.get("artifact", {}).get("recordingUrl"),
+                "recordingUrl": call.get("artifact", {}).get("recordingUrl"),
                 "summary": call.get("analysis", {}).get("summary"),
                 "sentiment": call.get("analysis", {}).get("sentiment"),
                 "phoneNumber": call.get("phoneNumber"),
@@ -188,14 +201,20 @@ async def get_conversation(
             except:
                 pass
 
-        # Ensure transcript and messages are always lists
-        transcript = call.get("artifact", {}).get("transcript", [])
-        if not isinstance(transcript, list):
-            transcript = []
-
-        messages = call.get("artifact", {}).get("messages", [])
-        if not isinstance(messages, list):
-            messages = []
+        # Build structured transcript from artifact.messages
+        # (artifact.transcript is a plain text string, not an array)
+        raw_messages = call.get("artifact", {}).get("messages", [])
+        if not isinstance(raw_messages, list):
+            raw_messages = []
+        transcript = [
+            {
+                "role": msg.get("role", ""),
+                "message": msg.get("message", "") or msg.get("content", ""),
+                "time": msg.get("secondsFromStart", msg.get("time", 0))
+            }
+            for msg in raw_messages
+            if msg.get("role") in ("assistant", "user") and (msg.get("message") or msg.get("content"))
+        ]
 
         conversation = {
             "id": call.get("id"),
@@ -206,7 +225,7 @@ async def get_conversation(
             "duration": duration,
             "cost": call.get("cost"),
             "transcript": transcript,
-            "messages": messages,
+            "messages": raw_messages,
             "recording": call.get("artifact", {}).get("recordingUrl"),
             "recordingUrl": call.get("artifact", {}).get("recordingUrl"),
             "logUrl": call.get("artifact", {}).get("logUrl"),
@@ -300,10 +319,13 @@ async def export_conversations_csv(
                 except:
                     pass
 
-            transcript = call.get("artifact", {}).get("transcript", [])
+            raw_msgs = call.get("artifact", {}).get("messages", [])
+            if not isinstance(raw_msgs, list):
+                raw_msgs = []
             transcript_text = "\n".join([
-                f"{msg.get('role')}: {msg.get('message')}"
-                for msg in transcript
+                f"{msg.get('role')}: {msg.get('message', '') or msg.get('content', '')}"
+                for msg in raw_msgs
+                if msg.get("role") in ("assistant", "user")
             ])
 
             writer.writerow({

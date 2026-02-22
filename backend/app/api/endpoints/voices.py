@@ -550,12 +550,15 @@ async def preview_background_sound(name: str):
                 )
 
             content_type = response.headers.get("content-type", "audio/mpeg")
+            # Determine file extension from URL
+            sound_url = BACKGROUND_SOUND_URLS.get(name, "")
+            ext = "flac" if sound_url.endswith(".flac") else "mp3"
             return Response(
                 content=response.content,
                 media_type=content_type,
                 headers={
-                    "Cache-Control": "public, max-age=86400",
-                    "Content-Disposition": f"inline; filename={name}_preview.mp3"
+                    "Cache-Control": "no-cache, must-revalidate",
+                    "Content-Disposition": f"inline; filename={name}_preview.{ext}"
                 }
             )
     except httpx.TimeoutException:

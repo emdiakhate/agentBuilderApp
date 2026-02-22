@@ -35,11 +35,14 @@ export const ConversationsPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [exporting, setExporting] = useState(false);
 
-  // Create agent ID to name mapping
+  // Create agent ID to name mapping (both local ID and Vapi assistant ID)
   const agentMap = React.useMemo(() => {
     const map: Record<string, string> = {};
     agents?.forEach(agent => {
       map[agent.id] = agent.name;
+      if (agent.vapi_assistant_id) {
+        map[agent.vapi_assistant_id] = agent.name;
+      }
     });
     return map;
   }, [agents]);

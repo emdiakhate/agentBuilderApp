@@ -168,6 +168,12 @@ class VapiService:
             if first_message:
                 payload["firstMessage"] = first_message
 
+            # Add analysis plan for French summaries
+            payload["analysisPlan"] = {
+                "summaryPrompt": "Fournissez un résumé concis de cette conversation en français. Décrivez le sujet principal, les points clés abordés et le résultat de l'échange.",
+                "successEvaluationPrompt": "Évaluez si l'objectif de cette conversation a été atteint. Répondez en français.",
+            }
+
             # Add background sound configuration
             # Use custom URLs for all environments
             # Only include backgroundSound if it's not "off"
