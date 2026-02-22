@@ -25,14 +25,12 @@ BACKGROUND_SOUND_URLS = {
     "off": "off",      # No background sound
     "office": "office", # Vapi built-in office sound (works out of the box)
 
-    # === SONS PERSONNALISÉS ===
-    # Remplacez ces URLs par vos propres fichiers MP3 hébergés sur un CDN
-    # Les URLs actuelles sont des exemples de Pixabay (peuvent ne pas fonctionner directement)
-    "restaurant": "https://cdn.pixabay.com/audio/2022/03/15/audio_115fb58836.mp3",
+    # === SONS PERSONNALISÉS (Cloudflare R2 CDN) ===
+    "restaurant": "https://pub-c5279a6f97c24d0b810f79f465f6298d.r2.dev/Restaurant.mp3",
     "cafe": "https://cdn.pixabay.com/audio/2024/11/04/audio_65b2ea5101.mp3",
-    "noisy": "https://cdn.pixabay.com/audio/2022/10/30/audio_f5bd819213.mp3",
+    "noisy": "https://pub-c5279a6f97c24d0b810f79f465f6298d.r2.dev/call_center.mp3",
     "home": "https://cdn.pixabay.com/audio/2022/01/20/audio_7d8e741664.mp3",
-    "clinic": "https://cdn.pixabay.com/audio/2024/06/06/audio_7a3361a00e.mp3",
+    "clinic": "https://pub-c5279a6f97c24d0b810f79f465f6298d.r2.dev/hopital.flac",
 }
 
 # Display names for UI (French)
