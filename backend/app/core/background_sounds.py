@@ -13,17 +13,15 @@ IMPORTANT: Pour ajouter vos propres sons ambiants :
 3. Remplacez les URLs ci-dessous par vos URLs hébergées
 4. Les URLs doivent être accessibles sans authentification (HTTPS direct)
 
-Note: "office" est un son intégré à Vapi (pas d'URL nécessaire).
-Les autres sons nécessitent des URLs publiques pour fonctionner
+Note: Les sons nécessitent des URLs publiques pour fonctionner
 à la fois en preview (frontend) et en appel réel (via Vapi).
 """
 
 # Background sound URLs mapping
-# "office" is a Vapi built-in sound (just pass the string "office")
-# For custom sounds, use publicly accessible HTTPS URLs to MP3/WAV files
+# For custom sounds, use publicly accessible HTTPS URLs to MP3/WAV/FLAC files
 BACKGROUND_SOUND_URLS = {
     "off": "off",      # No background sound
-    "office": "office", # Vapi built-in office sound (works out of the box)
+    "office": "https://pub-c5279a6f97c24d0b810f79f465f6298d.r2.dev/office.flac",
 
     # === SONS PERSONNALISÉS (Cloudflare R2 CDN) ===
     "restaurant": "https://pub-c5279a6f97c24d0b810f79f465f6298d.r2.dev/Restaurant.mp3",
@@ -53,7 +51,7 @@ def get_background_sound_url(environment: str) -> str:
         environment: Environment name (office, restaurant, clinic, etc.)
 
     Returns:
-        URL to audio file or Vapi built-in value ("off" or "office")
+        URL to audio file, or "off" if no background sound
     """
     return BACKGROUND_SOUND_URLS.get(environment, "off")
 
@@ -70,7 +68,7 @@ def get_all_background_sounds() -> dict:
         result[key] = {
             "url": url,
             "label": BACKGROUND_SOUND_LABELS.get(key, key),
-            "is_builtin": key in ("off", "office"),
-            "is_custom_url": key not in ("off", "office"),
+            "is_builtin": key == "off",
+            "is_custom_url": key != "off",
         }
     return result

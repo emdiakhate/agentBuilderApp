@@ -169,8 +169,7 @@ class VapiService:
                 payload["firstMessage"] = first_message
 
             # Add background sound configuration
-            # Use custom URLs for environments (restaurant, clinic, etc.)
-            # or Vapi built-in sounds ("office")
+            # Use custom URLs for all environments
             # Only include backgroundSound if it's not "off"
             background_sound_url = get_background_sound_url(background_sound)
             if background_sound_url and background_sound_url != "off":

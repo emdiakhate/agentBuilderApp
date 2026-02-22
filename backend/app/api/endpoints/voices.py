@@ -540,10 +540,6 @@ async def preview_background_sound(name: str):
     if not url or url == "off":
         raise HTTPException(status_code=404, detail="No preview available for this sound")
 
-    # For Vapi built-in sounds like "office", we can't proxy them
-    if url == "office":
-        raise HTTPException(status_code=404, detail="Built-in Vapi sound, no direct preview available")
-
     try:
         async with httpx.AsyncClient(follow_redirects=True, timeout=15.0) as client:
             response = await client.get(url)
